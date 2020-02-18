@@ -38,7 +38,7 @@ clearvars
 rng(244, 'twister');    % set seed
 
 % ================== Modify ===============================================
-subjects    = 0179;     % specify subject ID
+subjects    = 0180;     % specify subject ID
 savePlots   = true;    % true will save plots in plotFolder directory
 plotFolder  = "./Figures/SubjectLevel";     % figure path as a string
 
@@ -183,7 +183,7 @@ line([0, length(data.choice_plot)],...
 line([0, length(data.choice_plot)],...
     [settings.design.rerate{2},settings.design.rerate{2}],...
     'LineStyle', '--', 'Color', AZcactus, 'linewidth',0.5);  hold on
-plot(data.choice_plot, 'k*', 'color', AZred, 'markersize',5);
+plot(data.choice_plot, 'k*', 'markersize',5);
 plot(mySmooth(data.choice_plot,smoothingkernel,[],'backward'),...
         '-','color', [0.8500, 0.3250, 0.0980],'linewidth',1); 
 
