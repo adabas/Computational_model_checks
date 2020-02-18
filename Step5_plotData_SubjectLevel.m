@@ -177,26 +177,21 @@ set(fh.choice,'position', [500 500 700 400],'paperunits','centimeters',...
 ylim([-0.1 1.1]);
 
 % add data to the plot
-%hline(settings.design.rerate{1},'k:');    % p(reward|HR)
-plot(data.choice_plot,'k*','markersize',5);    % raw data.choices
-line([0, length(data.choice_plot)], [settings.design.rerate{1},...
-    settings.design.rerate{1}], 'LineStyle', ':', 'Color', 'black');       % add p(reward|HR)
+line([0, length(data.choice_plot)],...
+    [settings.design.rerate{1}, settings.design.rerate{1}],...
+    'LineStyle', '--', 'Color', AZsky, 'linewidth',0.5);  hold on    
+line([0, length(data.choice_plot)],...
+    [settings.design.rerate{2},settings.design.rerate{2}],...
+    'LineStyle', '--', 'Color', AZcactus, 'linewidth',0.5);  hold on
+plot(data.choice_plot, 'k*', 'color', AZred, 'markersize',5);
 plot(mySmooth(data.choice_plot,smoothingkernel,[],'backward'),...
-    '-','color', [0.8500, 0.3250, 0.0980],'linewidth',1);    % smoothed data choices
-
-line([0, length(choiceMean)], [rprob(1), rprob(1)],...
-        'LineStyle', '--', 'Color', AZsky, 'linewidth',0.5);  hold on    
-    line([0, length(choiceMean)], [rprob(2), rprob(2)],...
-        'LineStyle', '--', 'Color', AZcactus, 'linewidth',0.5);  hold on
-    plot(choiceMean, ':', 'color', AZred,'linewidth',0.5)
-    plot(mySmooth(choiceMean,smoothingkernel,[],'backward'),...
-        '-','color', AZred,'linewidth',1); 
+        '-','color', [0.8500, 0.3250, 0.0980],'linewidth',1); 
 
 % add labels
 title(sprintf('subject %i',subjects));
 ylabel('p(HR stimuli)');
 xlabel('trial');
-legend({'choice','p(reward|HR)','smoothed choice (HR)'},'location','northeastoutside')
+legend({'p(reward|HR)', 'p(reward|LR)','choice','smoothed choice (HR)'},'location','northeastoutside')
 legend boxoff
 
 if savePlots
@@ -353,7 +348,7 @@ figure(fh.choice)
 plot(PP(:,1)','--','color', [0, 0.4470, 0.7410],'linewidth',0.7);
 
 % update legend
-legend({'choice','p(reward|HR)','smoothed choice (HR)', 'estimated choice (HR)'},...
+legend({'p(reward|HR)', 'p(reward|LR)','choice','smoothed choice (HR)', 'estimated choice (HR)'},...
     'location','northeastoutside')
 legend boxoff
 
