@@ -82,6 +82,13 @@ load(sprintf('subject_0%i_settingsS2.mat',subjects));
 % load stimuli
 load(sprintf('subject_0%i_sessionII_items.mat', subjects), 'itemmat');
 
+% ================== Plot colors ==========================================
+global AZred AZcactus AZsky
+
+AZred   = [171,5,32]/256;
+AZcactus = [92, 135, 39]/256;
+AZsky   = [132, 210, 226]/256;
+
 %% Section 2: Data restructuring and organisation
 
 % store data.choices: HR coded as 1 and LR coded as 2
@@ -176,6 +183,14 @@ line([0, length(data.choice_plot)], [settings.design.rerate{1},...
     settings.design.rerate{1}], 'LineStyle', ':', 'Color', 'black');       % add p(reward|HR)
 plot(mySmooth(data.choice_plot,smoothingkernel,[],'backward'),...
     '-','color', [0.8500, 0.3250, 0.0980],'linewidth',1);    % smoothed data choices
+
+line([0, length(choiceMean)], [rprob(1), rprob(1)],...
+        'LineStyle', '--', 'Color', AZsky, 'linewidth',0.5);  hold on    
+    line([0, length(choiceMean)], [rprob(2), rprob(2)],...
+        'LineStyle', '--', 'Color', AZcactus, 'linewidth',0.5);  hold on
+    plot(choiceMean, ':', 'color', AZred,'linewidth',0.5)
+    plot(mySmooth(choiceMean,smoothingkernel,[],'backward'),...
+        '-','color', AZred,'linewidth',1); 
 
 % add labels
 title(sprintf('subject %i',subjects));
