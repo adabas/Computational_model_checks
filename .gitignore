@@ -1,3 +1,5 @@
-#Don't track content of these folders
-/Figures/SubjectLevel/
+## Don't track participant specific results
+Figures/SubjectLevel/**
 
+## Don't track subject analysis file
+/Step5.*
