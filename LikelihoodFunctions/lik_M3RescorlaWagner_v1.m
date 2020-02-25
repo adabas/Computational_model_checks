@@ -1,4 +1,4 @@
-function [NegLL, PP] = lik_M3RescorlaWagner_v1(a, r, alpha, beta, pt)
+function [NegLL, PP, delta] = lik_M3RescorlaWagner_v1(a, r, alpha, beta, pt)
 
 % store the initial (liking) value of the stimuli
 Q = [0.5 0.5];
@@ -6,8 +6,9 @@ Q = [0.5 0.5];
 % number of trials
 T = length(a);
 
-% store the evolving probabilities
+% store the evolving probabilities and prediction error
 PP = nan(T, 2);
+delta = nan(1, T);
 
 % loop over all trial
 for t = 1:T
@@ -25,11 +26,11 @@ for t = 1:T
     
     % update values but not for partial trials
     if ismember(t, pt)
-        delta = 0;
+        delta(t) = 0;
     else
-        delta   = r(t) - Q(a(t));
+        delta(t)   = r(t) - Q(a(t));
     end
-    Q(a(t)) = Q(a(t)) + alpha * delta;
+    Q(a(t)) = Q(a(t)) + alpha * delta(t);
 
 end
 
