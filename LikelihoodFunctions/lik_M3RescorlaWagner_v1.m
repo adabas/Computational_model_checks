@@ -1,4 +1,4 @@
-function [NegLL, PP, delta, Q] = lik_M3RescorlaWagner_v1(a, r, alpha, beta, pt)
+function [NegLL, PP, delta, QQ] = lik_M3RescorlaWagner_v1(a, r, alpha, beta, pt)
 
 % store the initial (liking) value of the stimuli
 Q = [0.5 0.5];
@@ -9,9 +9,14 @@ T = length(a);
 % store the evolving probabilities and prediction error
 PP = nan(T, 2);
 delta = nan(1, T);
+QQ = nan(T,2);
+
 
 % loop over all trial
 for t = 1:T
+    
+    % store the value
+    QQ(t,:) = Q; 
     
     % compute choice probabilities
     ev  = exp(beta*Q);
