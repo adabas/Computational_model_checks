@@ -1,4 +1,4 @@
-function [NegLL, PP, delta] = lik_M3RescorlaWagner_v1(a, r, alpha, beta, pt)
+function [NegLL, PP, delta, Q] = lik_M3RescorlaWagner_v1(a, r, alpha, beta, pt)
 
 % store the initial (liking) value of the stimuli
 Q = [0.5 0.5];
