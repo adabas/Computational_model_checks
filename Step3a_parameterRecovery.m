@@ -8,7 +8,7 @@
 % parameters, and if the variance of the estimated parameters is widely
 % spread.
 % 
-% This code is a modification of the code provided by Rob Wilson and Anne
+% This code is a modification of the code provided by Bob Wilson and Anne
 % Collins [2019].
 %
 % Modified by Aroma Dabas [dabas@cbs.mpg.de]
@@ -173,10 +173,13 @@ for i = 1:length(symbols)
     
     % calculate error
     fminX.error(i,:) = fminX.sim(i,:) - fminX.fit(i,:);
+    
     % calculate squared error
     fminX.sqerror(i,:) = fminX.error(i,:).^2;
+    
     % take the mean of the squared error
     fminX.meansqerror(i,:) = mean(fminX.sqerror(i,:));
+    
     % root mean squared error
     fminX.RMSE(i,:) = sqrt(fminX.meansqerror(i,:)); 
     

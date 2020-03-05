@@ -1,4 +1,7 @@
-% Modified from the online script provided by Robert Wilson & Anne Collins in
+function out = analysis_WSLS_v1(a, r)
+%ANALYSIS_WSLS_V1
+%
+% Modified from the online script provided by Bob Wilson & Anne Collins in
 % their 2019 paper "Ten Simple Rules for the computational modeling of
 % behavioral data".
 %
@@ -7,12 +10,12 @@
 % neutral and unpleasant.
 %
 % INPUT:
-%       1-by-nt (number of trials) vector of choices (a)
-%       1-by-nt vector of rewards (r)
+%       a: 1-by-nt (number of trials) vector of choices 
+%       r: 1-by-nt vector of rewards
 %
 % OUTPUT:
-%       1-by-3 vector of mean probability of staying with a choice for the
-%       three event categories.
+%       out: 1-by-3 vector of mean probability of staying with a choice for the
+%            three event categories.
 %
 % Aroma Dabas [dabas@cbs.mpg.de]
 % Max Planck Insitute from Human Cognitive and Brain Sciences
@@ -20,9 +23,6 @@
 %   version 1:  12-2019     Split rewards into the three event categories.
 %
 % =========================================================================
-
-function out = analysis_WSLS_v1(a, r)
-
 % create vector to store the previous choices
 aLast = [nan a(1:end-1)];
 

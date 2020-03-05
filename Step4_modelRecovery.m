@@ -5,7 +5,7 @@
 % defined as the probability that simulated by one model is best fit by
 % another, i.e., p(fit model|simulated model).
 %
-% This is a modification of the script by Rob Williams and Anne Collins
+% This is a modification of the script by Bob Wilson and Anne Collins
 % (2019).
 %
 % Modified by Aroma Dabas

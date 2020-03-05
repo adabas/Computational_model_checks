@@ -44,7 +44,8 @@ clear; close all
 %% Section 1: Settings (modify this section)
 
 % set up colors
-global AZred AZcactus AZsky
+%global AZred AZcactus AZsky
+% question: why global?
 
 AZred   = [171,5,32]/256;
 AZcactus = [92, 135, 39]/256;
@@ -59,10 +60,11 @@ addpath('./HelperFunctions')
 rng(7, 'twister');
 
 % experiment parameters
-T       = 132;      % number of trials
-rbounds = [0 1];    % bounds of the mean reward
-nrep    = 40;       % number of simulation repetitions
+T       = 132;       % number of trials
+rbounds = [0 1];     % bounds of the mean reward
+nrep    = 40;        % number of simulation repetitions
 rprob   = [0.7 0.4]; % reward probability for [HR LR] stimuli 
+Npt     = 32;        % number of partial trials
 
 % specify the number and name of the model that you are interested in
 % simulating.
@@ -77,7 +79,7 @@ plotFolder  = './Figures/ModelSimulation/';
 % Model 1: Random responding
 for n = 1:nrep
     b = 0.5;    % initiate bias parameter
-    [a, r] = simulate_M1random_v1(T, rbounds, b, rprob);    % simulate data
+    [a, r] = simulate_M1random_v1(T, rbounds, b, rprob, Npt);    % simulate data
     sim(1).a(:,n) = a;  
     sim(1).r(:,n) = r;
 end
@@ -86,7 +88,7 @@ clear a r
 % Model 2: Noisy Win-stay-lose-shift
 for n = 1:nrep
     epsilon = 0.1; % probability of selecting an option
-    [a, r] = simulate_M2WSLS_v1(T, rbounds, epsilon, rprob);
+    [a, r] = simulate_M2WSLS_v1(T, rbounds, epsilon, rprob, Npt);
     sim(2).a(:,n) = a;
     sim(2).r(:,n) = r;
 end
@@ -96,7 +98,7 @@ clear a r
 for n = 1:nrep
     alpha   = 0.2;
     beta    = 12;
-    [a, r, ~, PP] = simulate_M3RescorlaWagner_v1(T, alpha, beta, rprob, rbounds);
+    [a, r, ~, PP] = simulate_M3RescorlaWagner_v1(T, alpha, beta, rprob, rbounds, Npt);
     sim(3).a(:,n) = a;
     sim(3).r(:,n) = r;
 end
@@ -129,15 +131,20 @@ clear a r
 % threshold? Or is the choice behaviour completely random for such a task?
 
 % ======================= Plot choice probability =========================
+
 % initiate the plot
 fh.score = figure('Name','score'); 
 set(fh.score,'position',[10 90 800 400], 'paperunits','centimeters','Color','w');
 set(gca, 'fontsize', 12)
 
+% extract high-reward choice option
+highRewAction = find(rprob==max(rprob));
+
 % loop over the number of models 
 for m = 1:length(nModels)
     
     hold on
+    
     % open the model's subplot
     subplot(1, length(nModels), m)
     
@@ -145,10 +152,14 @@ for m = 1:length(nModels)
     choice = sim(m).a;
     
     % convert the scoring such as the HR is 1 and LR is 0
-    choice = 2 - choice; 
-
+    if highRewAction == 2
+        highRewChoice = 2 - choice; 
+    else
+        highRewChoice = choice -1;
+    end
+        
     % calculate the probability that HR was selected
-    score = (nansum(choice == 1, 1))/T;
+    score = (nansum(highRewChoice == 1, 1))/T;
     
     % calculate overall probability that the high reward was selected
     barScatter(score,[],[],true);
@@ -190,6 +201,7 @@ fh.data = figure('Name','Data');
 set(fh.data,'position',[10 100 800 800],'paperunits','centimeters','Color','w');
 set(gca, 'fontsize', 12)
 
+% cycle over models
 for m = 1:length(nModels)
     
     hold on
@@ -199,28 +211,32 @@ for m = 1:length(nModels)
     % smoothing over the raw data
     smoothingkernel = 6;
     
-    % calculate choice mean over each trial
-    choiceMean = nanmean(sim(m).a, 2);
+    % calculate HR choice mean over each trial
+    HR_choiceMean = nanmean(sim(m).a, 2);
     
     % rescale the choice mean such that it ranges between 0 (LR) and 1 (HR)
-    choiceMean = (2 - choiceMean)';
+    if highRewAction == 2
+        HR_choiceMean = (2 - HR_choiceMean)';
+    else
+        HR_choiceMean = (HR_choiceMean - 1)';
+    end
     
     % add data to the plot
-    line([0, length(choiceMean)], [rprob(1), rprob(1)],...
+    line([0, length(HR_choiceMean)], [rprob(1), rprob(1)],...
         'LineStyle', '--', 'Color', AZsky, 'linewidth',0.5);  hold on    
-    line([0, length(choiceMean)], [rprob(2), rprob(2)],...
+    line([0, length(HR_choiceMean)], [rprob(2), rprob(2)],...
         'LineStyle', '--', 'Color', AZcactus, 'linewidth',0.5);  hold on
-    plot(choiceMean, ':', 'color', AZred,'linewidth',0.5)
-    plot(mySmooth(choiceMean,smoothingkernel,[],'backward'),...
+    plot(HR_choiceMean, ':', 'color', AZred, 'linewidth',0.5)
+    plot(mySmooth(HR_choiceMean, smoothingkernel,[], 'backward'),...
         '-','color', AZred,'linewidth',1); 
 
     % y axis limits
     ylim([-0.1 1.1]);
     
     % add labels
-    ylabel('p(HR stimuli)');
+    ylabel('p(HR stimulus)');
     xlabel('trial');
-    legend({'p(reward|HR)', 'p(reward|LR)', 'mean choice', 'smoothed mean choice'},'location','southeast')
+    legend({'p(reward|HR)', 'p(reward|LR)', 'mean choice', 'smoothed mean choice'}, 'location', 'southeast')
     
     if m == 1
         title(sprintf('Model %i: %s \n b = %.2f', m, nameModels{m}, b));
@@ -247,7 +263,6 @@ if savePlots
     filename = fullfile(plotFolder, sprintf('./Choices/choices_models_%i-%i.png', nModels(1), nModels(end)));
     saveas(gcf, filename)
 end
-
 
 %% p(stay), also referred to as win stay lose shift (WSLS) analysis
 % determine the times the agent reselects the option that previously gave a
