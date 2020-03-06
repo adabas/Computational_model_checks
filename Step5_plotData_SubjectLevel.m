@@ -38,7 +38,7 @@ clearvars
 rng(244, 'twister');    % set seed
 
 % ================== Modify ===============================================
-subjects    = 0182;     % specify subject ID
+subjects    = 0186;     % specify subject ID
 savePlots   = true;    % true will save plots in plotFolder directory
 plotFolder  = "./Figures/SubjectLevel";     % figure path as a string
 
@@ -338,7 +338,7 @@ clear x y t tt i
 % estimate the trial-by-trial probability using the best parameter
 % estimates obtained from the fmincon method.
 
-[~, PP] = lik_M3RescorlaWagner_v1(data.choice',...
+[~, PP, delta] = lik_M3RescorlaWagner_v1(data.choice',...
             data.rate.norm', fminX.pars(1), fminX.pars(2), idPartial);
 
 % select the trial-by-trial choices plot
@@ -357,5 +357,34 @@ if savePlots
     fh.choice.PaperPositionMode = 'auto';
     saveas(gcf, sprintf('%s/Choices/M3_RescorlaWagner+Softmax/Est_choices_0%i.png', plotFolder, subjects))
 end
+
+% Plot prediction error
+% =========================================================================
+
+fh.delta = figure('Name', 'Trial-by-trial prediction error');
+box off; hold on;
+set(fh.delta,'position', [300 300 700 400],'paperunits','centimeters',...
+    'paperposition',[0 0 6 6],'Color','w');
+
+% set y axis limits
+ylim([-1 1]);
+
+% add data to the plot
+line([0, length(data.choice_plot)],...
+    [0, 0],...
+    'LineStyle', '--', 'Color', AZcactus, 'linewidth',0.3);  hold on    
+plot(delta,...
+        '-','color', AZsky,'linewidth',1);
+
+% add labels
+title(sprintf('subject %i',subjects));
+ylabel('prediction error');
+xlabel('trial');
+
+if savePlots
+    fh.delta.PaperPositionMode = 'auto';
+    saveas(gcf, sprintf('%s/Choices/M3_RescorlaWagner+Softmax/PredictionError_0%i.png', plotFolder, subjects))
+end
+
 
 % DONE
