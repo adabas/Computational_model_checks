@@ -29,7 +29,8 @@ rng(234, 'twister');
 T       = 132;      % number of trials
 rbounds = [0 1];    % bounds of the mean reward
 nRep    = 40;   % 100    % number of simulation repetitions
-rprob   = [0.7 0.4]; % reward probability for [HR LR] stimuli 
+rprob   = [0.7 0.4]; % reward probability for [HR LR] stimuli
+Npt     = 32;       % number of partial trials
 
 % store information about the parameter
 paramlabel  = {'alpha', 'beta'};
@@ -58,25 +59,14 @@ addpath('./LikelihoodFunctions')
 
 % ================== Plot settings ========================================
 
-% some color settings for plotting
-global AZred AZblue AZcactus AZsky AZriver AZsand AZmesa AZbrick
-
-AZred = [171,5,32]/256;
-AZblue = [12,35,75]/256;
-AZcactus = [92, 135, 39]/256;
-AZsky = [132, 210, 226]/256;
-AZriver = [7, 104, 115]/256;
-AZsand = [241, 158, 31]/256;
-AZmesa = [183, 85, 39]/256;
-AZbrick = [74, 48, 39]/256;
-
 savePlots   = 1;    % set as 1 if you want to save plots, otherwise 0
 plotFolder  = './Figures/ModelSimulation/';
 
 
 %% Section 2: Simulate one data set
 
-[choice, reward, pt, q] = simulate_M3RescorlaWagner_v1(T, realalpha, realbeta, rprob, rbounds);
+[choice, reward, pt] = simulate_M3RescorlaWagner_v1(T, realalpha, realbeta,...
+                            rprob, rbounds, Npt);
 
 %% Section 3: fmincon optimiser
 

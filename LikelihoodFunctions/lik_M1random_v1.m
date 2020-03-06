@@ -1,5 +1,6 @@
 function NegLL = lik_M1random_v1(a, b)
 
+% LIK_M1RANDOM_v1
 % Function to compute the negative log-likelihood values for fitting the model to the data.
 %
 % INPUT:
