@@ -140,7 +140,7 @@ fh.score = figure('Name','score');
 set(fh.score,'position',[10 90 800 400], 'paperunits','centimeters','Color','w');
 set(gca, 'fontsize', 12)
 
-% extract high-reward choice option  % Thats a great insertion!
+% extract high-reward choice option % 
 highRewAction = find(rprob==max(rprob));
 
 % loop over the number of models 

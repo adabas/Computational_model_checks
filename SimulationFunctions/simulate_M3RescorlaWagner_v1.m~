@@ -1,4 +1,4 @@
-function [a, r, pt, PP, QQ, delta] = simulate_M3RescorlaWagner_v1(T, alpha, beta, rprob, rbounds, Npt)
+function [a, r, pt, PP] = simulate_M3RescorlaWagner_v1(T, alpha, beta, rprob, rbounds, Npt)
 %SIMULATE_3RESORLAWAGNER_v1   Function for Model 3: Rescorla Wagner with softmax function.
 %
 % INPUT
@@ -13,10 +13,12 @@ function [a, r, pt, PP, QQ, delta] = simulate_M3RescorlaWagner_v1(T, alpha, beta
 %       a       : choices made at each trial
 %       r       : reward given for each of the choices. Reward ranges from
 %                 0 (unpleasant) to 1 (pleasant) with 0.5 (neutral).
-%       pt      : a 1XNpt vector contatining partial trial numbers
-%       PP      : choice probabilities at each trial
-%       QQ      : choice values at each trial
-%       delta   : prediction error at each trial
+%       q       : the value of the stimuli at the starting of the trial and
+%                 at the end of all trials.  <--- not consistent with
+%                 output
+%       pt      : trial numbers that were partial, i.e. no reward was
+%                 presented at this trial  <--- not consistent with
+%                 output
 %
 % Modified by Aroma Dabas [dabas@cbs.mpg.de]
 %   24-10-2019      Included partial trials.
@@ -34,21 +36,18 @@ function [a, r, pt, PP, QQ, delta] = simulate_M3RescorlaWagner_v1(T, alpha, beta
 % initiate the starting values
 q  = [0.5 0.5];
 
+% create storage for updating probabilities
+PP = nan(T, size(q, 2));
+
 % make list of partial trials
 pt = sort(randperm(T, Npt));
 
 % initialize variables
 a = nan(T, 1); % action
 r = nan(T, 1); % reward
-PP = nan(T, size(q, 2)); % probabilities
-QQ = nan(T, size(q, 2)); % value update
-delta = nan(T,1); % prediction error
 
 % cycle over trials
 for t = 1:T
-    
-    % store value
-    QQ(t,:) = q;
     
     % compute choice probabilities
     ev  = exp(beta*q);
@@ -58,10 +57,27 @@ for t = 1:T
     % store the trial probability
     PP(t,:) = p;
     
-    % generate choice according to choice probabability of a_t = 2
+    % gererate choice according to choice probabability of a_t = 2
     a(t) = choose(p(2));
     
-    % determine if the choice a(t) results in a pleasant or unpleasant reward
+    %     % select the reward probability of the selected choice
+    %     switch a(t)
+    %         case 1
+    %             rprob_tmp = rprob(1);
+    %
+    %         case 2
+    %              rprob_tmp = rprob(2);
+    %     end
+    %
+    %     % determine if this choice should receive a reward or not based on the
+    %     % selected reward probability
+    %     x = rand;
+    %     if x < rprob_tmp
+    %         select = 1;  % reward
+    %     else
+    %         select = 2;  % no receive reward
+    %     end
+    
     select = binornd(1, rprob(a(t)))+1;
     
     % determine the corresponding reward value
@@ -70,14 +86,15 @@ for t = 1:T
     
     % compute prediction error (zero if the trial is a partial trial)
     if ismember(t, pt)
-        delta(t) = 0;  % no update
+        delta = 0;  % no update
     else
-        delta(t) = r(t) - q(a(t));
+        delta = r(t) - q(a(t));
     end
     
     % update the value
-    q(a(t)) = q(a(t)) + alpha * delta(t);
+    q(a(t)) = q(a(t)) + alpha * delta;
     
 end
+
 
 end
