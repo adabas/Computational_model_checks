@@ -1,5 +1,23 @@
 function [Xfit, LL, BIC] = fit_M3RescorlaWagner_v1(a, r, pt)
 
+% FIT_M3RESCORLAWAGNER_v1
+% Function to find the parameter values that best fit the data.
+%
+% INPUT:
+%       a       : choices vector
+%       r       : reward received
+%       pt      : vector containing partial trial numbers
+%
+% OUPUT:
+%       Xfit    : a vector containing the best fitting parameter values
+%       LL      : the negative loglikelihood value for the best fitting
+%                 parameter values
+%       BIC     : the bayesian information criterion value
+%
+% Aroma Dabas [dabas@cbs.mpg.de]
+% January 2020
+% =========================================================================
+
 % set fmincon settings
 options=optimset('MaxFunEval', 100000, 'Display', 'notify', ...
     'algorithm', 'active-set');

@@ -42,9 +42,7 @@ addpath('./LikelihoodFunctions')
 
 % ================== Plot settings ========================================
 
-% some color settings for plotting
-global AZred AZblue AZriver
-
+% color settings for plotting
 AZred = [171,5,32]/256;
 AZblue = [12,35,75]/256;
 AZriver = [7, 104, 115]/256;
