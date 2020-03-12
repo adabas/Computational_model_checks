@@ -31,7 +31,6 @@ PP = nan(T, 2);
 delta = nan(1, T);
 QQ = nan(T,2);
 
-
 % loop over all trial
 for t = 1:T
     

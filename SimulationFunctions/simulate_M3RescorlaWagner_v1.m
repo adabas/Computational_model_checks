@@ -1,5 +1,5 @@
 function [a, r, pt, PP, QQ, delta] = simulate_M3RescorlaWagner_v1(T, alpha, beta, rprob, rbounds, Npt)
-%SIMULATE_3RESORLAWAGNER_v1   Function for Model 3: Rescorla Wagner with softmax function.
+%SIMULATE_M3RESCORLAWAGNER_V1   Function for Model 3: Rescorla Wagner with softmax function.
 %
 % INPUT
 %       T       : total number of trials
@@ -31,18 +31,16 @@ function [a, r, pt, PP, QQ, delta] = simulate_M3RescorlaWagner_v1(T, alpha, beta
 %                   probabilities
 % =========================================================================
 
-% initiate the starting values
-q  = [0.5 0.5];
-
 % make list of partial trials
 pt = sort(randperm(T, Npt));
 
 % initialize variables
+q  = [0.5 0.5]; % initial expected reward values
 a = nan(T, 1); % action
 r = nan(T, 1); % reward
 PP = nan(T, size(q, 2)); % probabilities
 QQ = nan(T, size(q, 2)); % value update
-delta = nan(T,1); % prediction error
+delta = nan(T, 1); % prediction error
 
 % cycle over trials
 for t = 1:T
@@ -55,7 +53,7 @@ for t = 1:T
     sev = sum(ev);
     p = ev / sev;
     
-    % store the trial probability
+    % store the trial's choice probability
     PP(t,:) = p;
     
     % generate choice according to choice probabability of a_t = 2

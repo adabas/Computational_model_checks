@@ -44,12 +44,6 @@ clear; close all
 %% Section 1: Settings (modify this section)
 
 % set up colors
-%global AZred AZcactus AZsky
-% question: why global?
-% answer: I wanted to set up the colors one time for all other "Step"
-% scripts. But then discarded the idea realising global functions are a bit of a
-% pain in the neck, and clearly forgot to update it here. 
-
 AZred   = [171,5,32]/256;
 AZcactus = [92, 135, 39]/256;
 AZsky   = [132, 210, 226]/256;
@@ -82,7 +76,7 @@ plotFolder  = './Figures/ModelSimulation/';
 % Model 1: Random responding
 for n = 1:nrep
     b = 0.5;    % initiate bias parameter
-    [a, r] = simulate_M1random_v1(T, rbounds, b, rprob, Npt);    % simulate data
+    [a, r] = simulate_M1random_v1(T, rbounds, b, rprob, Npt); % simulate data
     sim(1).a(:,n) = a;  
     sim(1).r(:,n) = r;
 end

@@ -33,7 +33,7 @@ function [a, r, pt] = simulate_M2WSLS_v1(T, rbounds, epsilon, rprob, Npt)
 rLast = nan;
 aLast = nan;
 
-% randomise 32 trials over T trials as partial trials
+% randomise Npt trials over T trials as partial trials
 pt = sort(randperm(T,Npt));
 
 % initialize variables
