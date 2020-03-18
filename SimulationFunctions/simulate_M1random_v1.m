@@ -28,7 +28,7 @@ function [a, r, pt] = simulate_M1random_v1(T, rbounds, b, rprob, Npt)
 %   28-01-2020      Update rewards as per the uncorrelated reward probabilities
 % =========================================================================
 
-% randomise 32 trials over T trials as partial trials
+% randomise Npt trials over T trials as partial trials
 pt = sort(randperm(T, Npt));
 
 % initialize variables
@@ -45,16 +45,12 @@ for t = 1:T
     a(t) = choose(p(2));
     
     % determine if the choice a(t) results in a pleasant or unpleasant reward
-    % Is there any particular reason for this? Does my simplification below work
-    % for you?
-    % Yes, perfectly.
     select = binornd(1, rprob(a(t)))+1;
     
-    % if the trial is a partial trial
+    % if the trial is a partial trial...
     if ismember(t, pt)
         
-        
-        % find the previous trial when a(t) was selected
+        % ...find the previous trial when a(t) was selected
         tp = find(a(1:(t-1)) == a(t), 1, 'last');
         if isempty(tp)
             r(t) = 0.5;     % neutral reward
@@ -69,7 +65,8 @@ for t = 1:T
         % Answer: Actually not because of the partial trials. But because
         % the task rewards are not binary but varies on a continuous scale.
         % We could split the scale to make the reward binary but I wonder
-        % if that is over simplification.
+        % if that is over simplification. Ok, we'll keep this in mind and
+        % discuss after I've reviewed the rest.
         
     else
         rpos = [abs(rbounds(2)-0.5*rand()) abs(rbounds(1)-0.5*rand())];

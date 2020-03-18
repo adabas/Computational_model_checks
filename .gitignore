@@ -4,3 +4,5 @@ Figures/SubjectLevel/**
 ## Don't track subject analysis file
 /Step5.*
 Step5_plotData_SubjectLevel.m
+
+*.png
