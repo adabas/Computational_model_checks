@@ -39,7 +39,7 @@ rng(244, 'twister');    % set seed
 
 % ================== Modify ===============================================
 subjects    = 0186;     % specify subject ID
-savePlots   = true;    % true will save plots in plotFolder directory
+savePlots   = false;    % true will save plots in plotFolder directory
 plotFolder  = "./Figures/SubjectLevel";     % figure path as a string
 
 % specify the bounds, and the number of bins for grid search
@@ -338,7 +338,7 @@ clear x y t tt i
 % estimate the trial-by-trial probability using the best parameter
 % estimates obtained from the fmincon method.
 
-[~, PP, delta] = lik_M3RescorlaWagner_v1(data.choice',...
+[~, PP, d, Q] = lik_M3RescorlaWagner_v1(data.choice',...
             data.rate.norm', fminX.pars(1), fminX.pars(2), idPartial);
 
 % select the trial-by-trial choices plot
@@ -373,7 +373,7 @@ ylim([-1 1]);
 line([0, length(data.choice_plot)],...
     [0, 0],...
     'LineStyle', '--', 'Color', AZcactus, 'linewidth',0.3);  hold on    
-plot(delta,...
+plot(d,...
         '-','color', AZsky,'linewidth',1);
 
 % add labels
