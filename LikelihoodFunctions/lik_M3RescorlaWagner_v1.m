@@ -20,13 +20,11 @@ function [NegLL, PP, delta, QQ] = lik_M3RescorlaWagner_v1(a, r, alpha, beta, pt)
 % January 2020
 % =========================================================================
 
-% store the initial (liking) value of the stimuli
-Q = [0.5 0.5];
-
 % number of trials
 T = length(a);
 
-% store the evolving probabilities and prediction error
+% initialise values
+q = [0.5 0.5];
 PP = nan(T, 2);
 delta = nan(1, T);
 QQ = nan(T,2);
@@ -35,12 +33,13 @@ QQ = nan(T,2);
 for t = 1:T
     
     % store the value
-    QQ(t,:) = Q; 
+    QQ(t,:) = q; 
     
     % compute choice probabilities
-    ev  = exp(beta*Q);
-    sev = sum(ev);
-    p   = ev / sev;
+%     ev  = exp(beta*q);
+%     sev = sum(ev);
+%     p   = ev / sev;
+    p = M3_softmaxFunction(q, beta);
     
     % store choice probabilities
     PP(t,:) = p;
@@ -49,12 +48,16 @@ for t = 1:T
     choiceProb(t) = p(a(t));
     
     % update values but not for partial trials
-    if ismember(t, pt)
-        delta(t) = 0;
-    else
-        delta(t)   = r(t) - Q(a(t));
-    end
-    Q(a(t)) = Q(a(t)) + alpha * delta(t);
+%     if ismember(t, pt)
+%         delta(t) = 0;
+%     else
+%         delta(t)   = r(t) - q(a(t));
+%     end
+    
+%    q(a(t)) = q(a(t)) + alpha * delta(t);
+
+    % value update
+    q(a(t)) = M3_valueUpdate(alpha, q(a(t)), r(t), t, pt);
 
 end
 

@@ -45,11 +45,6 @@ n.bin   = [20 30];
 realalpha   = .2;
 realbeta    = 10;
 
-% reward conditions
-% these conditions don't seem to be used
-% cond        = {'High Reward', 'Low Reward'};
-% n.cond      = length(cond);
-
 % ================== Add paths ============================================
 
 addpath('./SimulationFunctions')
@@ -93,9 +88,11 @@ for count = 1:10
     % to simulate and to compute the likelihood or to write different
     % sub-functions (e.g., softmax, delta-rule) and call them in both
     % functions to make sure both functions share exactly the same
-    % sub-functions for all shared computations. 
+    % sub-functions for all shared computations.
+    % That is a valid concern. I worked in the sub-functions for the three
+    % models.
+    
     obFunc = @(x) lik_M3RescorlaWagner_v1(choice, reward, x(1), x(2), pt);
-%   obFunc = @(x) lik_M3RescorlaWagner_v1(data.choice', data.rate.norm, X0(1), X0(2), idPartial);
 
     % store the lower and upper bounds of [alpha beta] parameters
     LB = [bounds(1,1) bounds(2,1)];

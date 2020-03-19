@@ -26,7 +26,8 @@ rng(234, 'twister');
 T       = 132;      % number of trials
 rbounds = [0 1];    % bounds of the mean reward
 nRep    = 1000;     % number of simulation repetitions
-rprob   = [0.7 0.4]; % reward probability for [HR LR] stimuli 
+rprob   = [0.7 0.4]; % reward probability for [HR LR] stimuli
+Npt     = 32;       % number of partial trials
 
 % reward conditions
 cond        = {'High Reward', 'Low Reward'};
@@ -64,7 +65,7 @@ for count = 1:nRep
     beta = exprnd(10);
     
     % simulate data
-    [choice, reward, pt, q] = simulate_M3RescorlaWagner_v1(T, alpha, beta, rprob, rbounds);
+    [choice, reward, pt, q] = simulate_M3RescorlaWagner_v1(T, alpha, beta, rprob, rbounds, Npt);
     
     % fit the data
     [xf, LL] = fit_M3RescorlaWagner_v1(choice, reward, pt);

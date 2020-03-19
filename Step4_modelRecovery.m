@@ -25,6 +25,7 @@ T    = 132;          % number of trials
 mu   = [0.7 0.4];    % reward probabilities
 nRep = 100;          % number of repetitions#
 rbounds = [0 1];     % bounds of the mean reward
+Npt  = 32;          % number of partial trials
 
 % ================== Add paths ============================================
 
@@ -80,20 +81,20 @@ for count = 1:nRep
     
     % Model 1
     b = rand;
-    [a, r, pt] = simulate_M1random_v1(T, rbounds, b, mu);
+    [a, r, pt] = simulate_M1random_v1(T, rbounds, b, mu, Npt);
     [BIC, iBEST, BEST] = fit_all_v1(a, r, pt);
     CM(1,:) = CM(1,:) + BEST;
     
     % Model 2
     epsilon = rand;
-    [a, r, pt] = simulate_M2WSLS_v1(T, rbounds, epsilon, mu);
+    [a, r, pt] = simulate_M2WSLS_v1(T, rbounds, epsilon, mu, Npt);
     [BIC, iBEST, BEST] = fit_all_v1(a, r, pt);
     CM(2,:) = CM(2,:) + BEST;
     
     % Model 3
     alpha = rand;
     beta  = 1 + exprnd(1);
-    [a, r, pt] = simulate_M3RescorlaWagner_v1(T, alpha, beta, mu, rbounds);
+    [a, r, pt] = simulate_M3RescorlaWagner_v1(T, alpha, beta, mu, rbounds, Npt);
     [BIC, iBEST, BEST] = fit_all_v1(a, r, pt);
     CM(3,:) = CM(3,:) + BEST;
     

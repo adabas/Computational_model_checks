@@ -26,34 +26,37 @@ T = length(a);
 for t = 1:T
     
      % compute choice probabilities
-    if isnan(rLast)
-        
-        % first trial choose randomly
-        p = [0.5 0.5];
-        
-    else
-        
-        % choice depends on last reward
-        if rLast >= 0.5
-            
-            % win stay (with probability epsilon)
-            p = epsilon/2*[1 1];
-            p(aLast) = 1-epsilon/2;
-            
-        else
-            
-            % lose shift (with probability 1-epsilon)
-            p = (1-epsilon/2) * [1 1];
-            p(aLast) = epsilon / 2;
-            
-        end
-    end
+     p = M2_WSLSprob(aLast, rLast, epsilon);
+%     if isnan(rLast)
+%         
+%         % first trial choose randomly
+%         p = [0.5 0.5];
+%         
+%     else
+%         
+%         % choice depends on last reward
+%         if rLast >= 0.5
+%             
+%             % win stay (with probability epsilon)
+%             p = epsilon/2*[1 1];
+%             p(aLast) = 1-epsilon/2;
+%             
+%         else
+%             
+%             % lose shift (with probability 1-epsilon)
+%             p = (1-epsilon/2) * [1 1];
+%             p(aLast) = epsilon / 2;
+%             
+%         end
+%     end
     
     % compute choice probability for actual choice
     choiceProb(t) = p(a(t));
     
-    aLast = a(t);
-    rLast = r(t);
+    % update last choice
+    [aLast, rLast] = M2_updateChoice(a(t), r(t));
+%     aLast = a(t);
+%     rLast = r(t);
 end
 
 % compute negative log-likelihood

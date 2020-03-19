@@ -21,7 +21,8 @@ T = length(a);
 for t = 1:T
     
     % compute choice probabilities
-    p = [b 1-b];
+    p = M1_randomRespondingBias(b);
+%    p = [b 1-b];
     
     % compute choice probability for actual choice
     choiceProb(t) = p(a(t));

@@ -39,7 +39,8 @@ r = nan(T, 1); % reward
 for t = 1:T
     
     % determine choice probabilites based on bias parameter b
-    p = [b 1-b];
+    p = M1_randomRespondingBias(b);
+%    p = [b 1-b];
     
     % generate choice according to choice probabability of a_t = 2
     a(t) = choose(p(2));

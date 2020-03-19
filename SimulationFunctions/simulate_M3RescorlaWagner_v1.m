@@ -14,7 +14,7 @@ function [a, r, pt, PP, QQ, delta] = simulate_M3RescorlaWagner_v1(T, alpha, beta
 %       r       : reward given for each of the choices. Reward ranges from
 %                 0 (unpleasant) to 1 (pleasant) with 0.5 (neutral).
 %       pt      : a 1XNpt vector contatining partial trial numbers
-%       PP      : choice probabilities at each trial
+%       PP      : choice probabilities at each trials
 %       QQ      : choice values at each trial
 %       delta   : prediction error at each trial
 %
@@ -49,11 +49,12 @@ for t = 1:T
     QQ(t,:) = q;
     
     % compute choice probabilities
-    ev  = exp(beta*q);
-    sev = sum(ev);
-    p = ev / sev;
+%     ev  = exp(beta*q);
+%     sev = sum(ev);
+%     p = ev / sev;
+    p = M3_softmaxFunction(q, beta);
     
-    % store the trial's choice probability
+    % store choice probability
     PP(t,:) = p;
     
     % generate choice according to choice probabability of a_t = 2
@@ -67,14 +68,17 @@ for t = 1:T
     r(t) = rpos(select);
     
     % compute prediction error (zero if the trial is a partial trial)
-    if ismember(t, pt)
-        delta(t) = 0;  % no update
-    else
-        delta(t) = r(t) - q(a(t));
-    end
+%     if ismember(t, pt)
+%         delta(t) = 0;  % no update
+%     else
+%         delta(t) = r(t) - q(a(t));
+%     end
     
     % update the value
-    q(a(t)) = q(a(t)) + alpha * delta(t);
+%    q(a(t)) = q(a(t)) + alpha * delta(t);
+
+    % value update
+    q(a(t)) = M3_valueUpdate(alpha, q(a(t)), r(t), t, pt);
     
 end
 
