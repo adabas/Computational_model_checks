@@ -70,6 +70,7 @@ for t = 1:T
         % discuss after I've reviewed the rest.
         
     else
+        % You can create a reward function as well
         rpos = [abs(rbounds(2)-0.5*rand()) abs(rbounds(1)-0.5*rand())];
         r(t) = rpos(select);
         

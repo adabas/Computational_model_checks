@@ -45,28 +45,6 @@ for t = 1:T
     
     % compute choice probabilities
     p = M2_WSLSprob(aLast, rLast, epsilon);
-%     if isnan(rLast)
-%         
-%         % first trial choose randomly
-%         p = [0.5 0.5];
-%         
-%     else
-%         
-%         % choice depends on last reward
-%         if rLast >= 0.5
-%             
-%             % win stay (with probability epsilon)
-%             p = epsilon/2*[1 1];
-%             p(aLast) = 1 - epsilon / 2;
-%             
-%         else
-%             
-%             % lose shift (with probability 1-epsilon)
-%             p = (1-epsilon/2) * [1 1];
-%             p(aLast) = epsilon / 2;
-%             
-%         end
-%     end
     
     % generate choice according to choice probabability of a_t = 2
     a(t) = choose(p(2));
@@ -75,6 +53,7 @@ for t = 1:T
     select = binornd(1, rprob(a(t)))+1;
     
     % determine the corresponding reward value (range 0 to 1 with 0.5 as neutral)
+    % You can create a reward function as well
     rpos = [abs(rbounds(2)-0.5*rand()) abs(rbounds(1)-0.5*rand())];
     r(t) = rpos(select);
     

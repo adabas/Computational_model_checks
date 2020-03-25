@@ -25,7 +25,7 @@ rng(234, 'twister');
 % experiment parameters
 T       = 132;      % number of trials
 rbounds = [0 1];    % bounds of the mean reward
-nRep    = 1000;     % number of simulation repetitions
+nRep    = 100; %1000;     % number of simulation repetitions
 rprob   = [0.7 0.4]; % reward probability for [HR LR] stimuli
 Npt     = 32;       % number of partial trials
 
@@ -62,27 +62,38 @@ for count = 1:nRep
 
     % random parameter value for generating data
     alpha = rand;
-    beta = exprnd(10);
-    
+    % beta = exprnd(10);
+    % I adjusted the beta values. You previously used values of e.g. 60,
+    % which I feel is too high. 
+    beta = exprnd(4);
+
     % simulate data
     [choice, reward, pt, q] = simulate_M3RescorlaWagner_v1(T, alpha, beta, rprob, rbounds, Npt);
     
     % fit the data
     [xf, LL] = fit_M3RescorlaWagner_v1(choice, reward, pt);
+    
+    % Here you could add the option to cycle over multiple (random) starting points.
+    % I.e., call [xf, LL] = fit_M3RescorlaWagner_v1(choice, reward, pt); 
+    % n times and select parameter of the iteration with the best fit (lowest neg. log-likelihood)
+    % At the moment you only use one random starting point. Using more
+    % starting point might improve the estimates in some cases. 
+    % Especially in models with more free parameters, you'll notice a
+    % difference
 
-    % store simulated and fitted values, and also the - log likelihood
+    % store simulated and fitted values, and also the log likelihood
     fminX.sim(1,count) = alpha;
     fminX.sim(2,count) = beta;
     fminX.fit(1,count) = xf(1);
     fminX.fit(2,count) = xf(2);
-    fminX.negLL(count) = LL;
+    fminX.negLL(count) = LL; % isn't this the positive LL?
 
     % clear repeating variables from the workspace
     clear X0 xf NegLL LB UB
 
 end
 
-%% Section 3: basic parameter recovey plots (simulated vs recovered)
+%% Section 3: basic parameter recovery plots (simulated vs recovered)
 
 % initiate figure
 fh = figure('Name', 'Parameter Recovery'); clf;
@@ -90,27 +101,36 @@ set(gcf, 'Position', [300   513   900   370])
 [~,~,~,ax] = easy_gridOfEqualFigures([0.2  0.1], [0.1 0.18 0.04]);
 
 % plot simulate versus fit parameters
-for i= 1:size(fminX.sim,1)
+for i = 1:size(fminX.sim,1)
     axes(ax(i)); hold on;
     plot(fminX.sim(i,:), fminX.fit(i,:), 'o', 'color', AZred, 'markersize', 8, 'linewidth', 1)
     xl = get(gca, 'xlim');
     plot(xl, xl, 'k--')
-    
 end
 
-% find 'bad' alpha values
-thresh = 0.25;
-ind = abs(fminX.sim(1,:) - fminX.fit(1,:)) > thresh;
+% find 'bad' parameter values
+% I think in the previous version, you also used the "bad" alpha parameters
+% for the plot of the "bad" beta values. I changed this and added a
+% different threshold for beta. 
 
-% mark the 'bad' alpha values
+% mark the 'bad' parameter values
 for i = 1:2
+    
+    if i == 1
+        thresh = 0.25;
+    else
+        thresh = 5;
+    end
+    ind = abs(fminX.sim(i,:) - fminX.fit(i,:)) > thresh;
     axes(ax(i));
     plot(fminX.sim(i,ind), fminX.fit(i,ind), 'o', 'color', AZblue, 'markersize', 8, 'linewidth', 1, ...
     'markerfacecolor', [1 1 1]*0.5)
 end
 
 % set softmax parameter scale to a log scale
-set(ax(1,2),'xscale', 'log', 'yscale' ,'log')
+% Not sure if this helps me. I think it's not necessary to see if it works, especially with lower beta values.
+% But of course not wrong.
+% set(ax(1,2),'xscale', 'log', 'yscale' ,'log')
 
 % set titles and axis labels
 for i = 1:size(names, 2)
@@ -190,6 +210,7 @@ fprintf('beta = %.3f\n', fminX.RMSE(2,:))
 % --
 
 % PLOT
+% I would propose to use separate plots or subplots with different y-axes
 
 % open plot and settings
 figure(3); clf; hold on

@@ -35,10 +35,11 @@ UB = [1 20];
 % estimate the parameter fit and the neg log
 [Xfit, NegLL] = fmincon(obFunc, X0, [], [], [], [], LB, UB, [], options);
 
-% store the log likelihood as the negative log likelihood
+% store log likelihood
 LL = -NegLL;
 
 % calculate the BIC
+% You can create a BIC function as well
 BIC = length(X0) * log(length(a)) + 2*NegLL;
 
 end

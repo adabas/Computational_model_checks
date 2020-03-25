@@ -49,9 +49,6 @@ for t = 1:T
     QQ(t,:) = q;
     
     % compute choice probabilities
-%     ev  = exp(beta*q);
-%     sev = sum(ev);
-%     p = ev / sev;
     p = M3_softmaxFunction(q, beta);
     
     % store choice probability
@@ -64,18 +61,9 @@ for t = 1:T
     select = binornd(1, rprob(a(t)))+1;
     
     % determine the corresponding reward value
+    % You can create a reward function as well
     rpos = [abs(rbounds(2)-0.5*rand()) abs(rbounds(1)-0.5*rand())];
     r(t) = rpos(select);
-    
-    % compute prediction error (zero if the trial is a partial trial)
-%     if ismember(t, pt)
-%         delta(t) = 0;  % no update
-%     else
-%         delta(t) = r(t) - q(a(t));
-%     end
-    
-    % update the value
-%    q(a(t)) = q(a(t)) + alpha * delta(t);
 
     % value update
     q(a(t)) = M3_valueUpdate(alpha, q(a(t)), r(t), t, pt);

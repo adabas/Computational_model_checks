@@ -25,9 +25,10 @@ T = length(a);
 
 % initialise values
 q = [0.5 0.5];
-PP = nan(T, 2);
-delta = nan(1, T);
+PP = nan(T,2);
+delta = nan(1,T);
 QQ = nan(T,2);
+choiceProb = nan(1,T);
 
 % loop over all trial
 for t = 1:T
@@ -36,9 +37,6 @@ for t = 1:T
     QQ(t,:) = q; 
     
     % compute choice probabilities
-%     ev  = exp(beta*q);
-%     sev = sum(ev);
-%     p   = ev / sev;
     p = M3_softmaxFunction(q, beta);
     
     % store choice probabilities
@@ -47,15 +45,6 @@ for t = 1:T
     % compute choice probability for actual choice
     choiceProb(t) = p(a(t));
     
-    % update values but not for partial trials
-%     if ismember(t, pt)
-%         delta(t) = 0;
-%     else
-%         delta(t)   = r(t) - q(a(t));
-%     end
-    
-%    q(a(t)) = q(a(t)) + alpha * delta(t);
-
     % value update
     q(a(t)) = M3_valueUpdate(alpha, q(a(t)), r(t), t, pt);
 

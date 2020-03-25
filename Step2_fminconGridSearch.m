@@ -76,22 +76,6 @@ for count = 1:10
     X0  = [rand exprnd(10)];
 
     % create RW+softmax function handle to input in fmincon
-    % You can reduce the probability for an error in the code if you avoid
-    % using different functions for the simulation (simulate_M3RescorlaWagner_v1) 
-    % and the likelihood (lik_M3RescorlaWagner_v1) (at least the way you
-    % currently do it): The functions are very similar and share 99
-    % percent of the computations. That is, if you  change anything in one
-    % function you also have to change exactly the
-    % same thing in the other function. This increases the probability for
-    % errors, for example, if you forget to change sth. in both functions. 
-    % I would either combine both function in one function with an option
-    % to simulate and to compute the likelihood or to write different
-    % sub-functions (e.g., softmax, delta-rule) and call them in both
-    % functions to make sure both functions share exactly the same
-    % sub-functions for all shared computations.
-    % That is a valid concern. I worked in the sub-functions for the three
-    % models.
-    
     obFunc = @(x) lik_M3RescorlaWagner_v1(choice, reward, x(1), x(2), pt);
 
     % store the lower and upper bounds of [alpha beta] parameters

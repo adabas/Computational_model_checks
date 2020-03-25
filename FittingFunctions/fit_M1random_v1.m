@@ -41,6 +41,7 @@ UB = 1;
 LL = -NegLL;
 
 % calculate the BIC
+% You can create a BIC function as well
 BIC = length(X0) * log(length(a)) + 2*NegLL;
 
 end
