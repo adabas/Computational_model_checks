@@ -51,7 +51,7 @@ AZsky   = [132, 210, 226]/256;
 % add paths
 addpath('./SimulationFunctions')
 addpath('./AnalysisFunctions')
-addpath('./HelperFunctions')
+addpath(genpath('./HelperFunctions'))
 
 % set seed for result reproducibility
 rng(7, 'twister');

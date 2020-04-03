@@ -38,15 +38,7 @@ clearvars
 rng(244, 'twister');    % set seed
 
 % ================== Modify ===============================================
-<<<<<<< HEAD
-<<<<<<< HEAD
 subjects    = 0;     % specify subject ID
-=======
-subjects    = 0186;     % specify subject ID
->>>>>>> parent of 9a670d1... Update of Step3a_parameterRecovery.m based on review
-=======
-subjects    = 0;     % specify subject ID
->>>>>>> 77c850e549d032751f78eb5fcd78d26fb2070b4d
 savePlots   = false;    % true will save plots in plotFolder directory
 plotFolder  = "./Figures/SubjectLevel";     % figure path as a string
 
@@ -68,15 +60,9 @@ tmp = fileparts(which('Step5_plotData_SubjectLevel'));
 addpath(tmp);
 
 % add path to required folders in the current folder
-<<<<<<< HEAD
-<<<<<<< HEAD
 addpath(genpath(fullfile(tmp, 'HelperFunctions')))
-=======
 addpath(fullfile(tmp, 'HelperFunctions'));
->>>>>>> parent of 9a670d1... Update of Step3a_parameterRecovery.m based on review
-=======
 addpath(genpath(fullfile(tmp, 'HelperFunctions')))
->>>>>>> 77c850e549d032751f78eb5fcd78d26fb2070b4d
 addpath(fullfile(tmp, 'LikelihoodFunctions'))
 addpath(fullfile(tmp, 'SimulationFunctions'))
 
@@ -303,7 +289,6 @@ end
 
 %% Section 5: Plot estimated parameters
 
-
 % Plot grid surface with estimated parameters from both grid search and fmincon method 
 % =====================================================================
 
@@ -401,6 +386,5 @@ if savePlots
     fh.delta.PaperPositionMode = 'auto';
     saveas(gcf, sprintf('%s/Choices/M3_RescorlaWagner+Softmax/PredictionError_0%i.png', plotFolder, subjects))
 end
-
 
 % DONE

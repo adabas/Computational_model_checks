@@ -1,4 +1,4 @@
-function [Xfit, LL, BIC] = fit_M2WSLS_v1(a, r)
+function [Xfit, LL, b] = fit_M2WSLS_v1(a, r)
 
 % FIT_M2WSLS_v1
 % Function to compute the parameter values that best fit the data.
@@ -9,8 +9,7 @@ function [Xfit, LL, BIC] = fit_M2WSLS_v1(a, r)
 %
 % OUPUT:
 %       Xfit    : a vector containing the best fitting parameter value
-%       LL      : the negative loglikelihood value for the best fitting
-%                 parameter value
+%       LL      : the loglikelihood value for the best fitting parameter value
 %       BIC     : the bayesian information criterion value
 %
 % Aroma Dabas [dabas@cbs.mpg.de]
@@ -42,7 +41,7 @@ UB = 1;
 LL = -NegLL;
 
 % calculate the BIC
-% You can create a BIC function as well
-BIC = length(X0) * log(length(a)) + 2*NegLL;
+b = BIC(length(X0), length(a), NegLL);
+%BIC = length(X0) * log(length(a)) + 2*NegLL;
 
 end

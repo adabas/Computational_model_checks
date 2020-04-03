@@ -27,6 +27,7 @@ T       = 132;      % number of trials
 rbounds = [0 1];    % bounds of the mean reward
 nRep    = 100; %1000;     % number of simulation repetitions
 rprob   = [0.7 0.4]; % reward probability for [HR LR] stimuli
+nFit    = 10;       % iterate over the fitting function for multiple starting points
 Npt     = 32;       % number of partial trials
 
 % reward conditions
@@ -37,7 +38,7 @@ n.cond      = length(cond);
 
 addpath('./SimulationFunctions')
 addpath('./AnalysisFunctions')
-addpath('./HelperFunctions')
+addpath(genpath('./HelperFunctions'))
 addpath('./FittingFunctions')
 addpath('./LikelihoodFunctions')
 
@@ -64,14 +65,26 @@ for count = 1:nRep
     alpha = rand;
     % beta = exprnd(10);
     % I adjusted the beta values. You previously used values of e.g. 60,
-    % which I feel is too high. 
+    % which I feel is too high. Danke.
     beta = exprnd(4);
 
     % simulate data
     [choice, reward, pt, q] = simulate_M3RescorlaWagner_v1(T, alpha, beta, rprob, rbounds, Npt);
     
-    % fit the data
-    [xf, LL] = fit_M3RescorlaWagner_v1(choice, reward, pt);
+    % iterate to find the best fitting parameter
+    for iter = 1:nFit
+    
+        % fit the data
+        [xf, LL] = fit_M3RescorlaWagner_v1(choice, reward, pt);
+        
+        fit(1,iter) = xf(1);
+        fit(2,iter) = xf(2);
+        negLL(iter) = -LL;  % store the negative log likelihood
+     end
+
+     % find global best
+     [mf,i]=min(negLL(:));
+     pars = fit(:,i);
     
     % Here you could add the option to cycle over multiple (random) starting points.
     % I.e., call [xf, LL] = fit_M3RescorlaWagner_v1(choice, reward, pt); 
@@ -79,17 +92,18 @@ for count = 1:nRep
     % At the moment you only use one random starting point. Using more
     % starting point might improve the estimates in some cases. 
     % Especially in models with more free parameters, you'll notice a
-    % difference
+    % difference. Right, I recall that we discussed this. Thanks for the
+    % reminder. Implemented it above. I think 10 iterations should be sufficient.
 
     % store simulated and fitted values, and also the log likelihood
     fminX.sim(1,count) = alpha;
     fminX.sim(2,count) = beta;
-    fminX.fit(1,count) = xf(1);
-    fminX.fit(2,count) = xf(2);
-    fminX.negLL(count) = LL; % isn't this the positive LL?
+    fminX.fit(1,count) = pars(1);
+    fminX.fit(2,count) = pars(2);
+    fminX.negLL(count) = mf; % isn't this the positive LL? Yes, it was.
 
     % clear repeating variables from the workspace
-    clear X0 xf NegLL LB UB
+    clear xf NegLL LL mf i
 
 end
 
@@ -111,7 +125,7 @@ end
 % find 'bad' parameter values
 % I think in the previous version, you also used the "bad" alpha parameters
 % for the plot of the "bad" beta values. I changed this and added a
-% different threshold for beta. 
+% different threshold for beta. Again, thanks!
 
 % mark the 'bad' parameter values
 for i = 1:2
@@ -129,7 +143,8 @@ end
 
 % set softmax parameter scale to a log scale
 % Not sure if this helps me. I think it's not necessary to see if it works, especially with lower beta values.
-% But of course not wrong.
+% But of course not wrong. Yes, in this case doesn't seem necessary. But
+ % I'll keep this commented out.
 % set(ax(1,2),'xscale', 'log', 'yscale' ,'log')
 
 % set titles and axis labels
@@ -211,22 +226,34 @@ fprintf('beta = %.3f\n', fminX.RMSE(2,:))
 
 % PLOT
 % I would propose to use separate plots or subplots with different y-axes
+% plot settings: set y axis limits for the parameters
+ yLim = [[-1 1]; [-20 20]];
 
-% open plot and settings
-figure(3); clf; hold on
-set(gcf, 'Position', [500   113   400   370])       % position figure window
-set(gca, 'tickdir', 'out', 'fontsize', 18);         % set tick and font size
+ % initiate figure
+ fh3 = figure('Name', 'Parameter Estimation Error'); clf;
+ set(gcf, 'Position',[500   113   550   370])
+ %set(gca, 'tickdir', 'out', 'fontsize', 18);         % set tick and font size
+ [~,~,~,ax] = easy_gridOfEqualFigures([0.2  0.1], [0.1 0.18 0.04]);
 
-% plot
-boxplot([fminX.error(1,:)',fminX.error(2,:)'])
-hold on;
-line([0, 3], [0, 0], 'LineStyle', ':', 'Color', 'black');
+ % plot estimation error
+ for i = 1:size(fminX.error,1)
+     axes(ax(i)); hold on;       % select axis
+     boxplot(fminX.error(i,:)', 'Labels',{[]})  % boxplot
+     hold on;
+     ylim(yLim(i,:))
+     line([0, 3], [0, 0], 'LineStyle', ':', 'Color', 'black'); % add reference line
+ end
 
-% labels
-set(gca,...
-    'xticklabel', {char(945), char(946)}, 'fontsize', 14)
-ylabel(sprintf('simulated - estimated\nparameter error'))
-xlabel('parameters')
+ % set titles and axis labels
+ for i = 1:size(names, 2)
+     axes(ax(i));                % select axis
+ %    t(i) = title(names{i});
+     xlabel(sprintf('%s', symbols{i}))
+     ylabel(sprintf('simulated - estimated\nparameter error'));
+ end
+
+ % set font and tick sizes
+ set(ax, 'tickdir', 'out', 'fontsize', 12);
 
 % save plot
 if savePlots
