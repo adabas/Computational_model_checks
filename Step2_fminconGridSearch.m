@@ -49,7 +49,7 @@ realbeta    = 10;
 
 addpath('./SimulationFunctions')
 addpath('./AnalysisFunctions')
-addpath(genpath('./HelperFunctions'))
+addpath('./HelperFunctions')
 addpath('./FittingFunctions')
 addpath('./LikelihoodFunctions')
 

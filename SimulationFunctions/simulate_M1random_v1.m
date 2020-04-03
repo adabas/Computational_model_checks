@@ -40,13 +40,13 @@ for t = 1:T
     
     % determine choice probabilites based on bias parameter b
     p = M1_randomRespondingBias(b);
+%    p = [b 1-b];
     
     % generate choice according to choice probabability of a_t = 2
     a(t) = choose(p(2));
     
     % determine if the choice a(t) results in a pleasant or unpleasant reward
-    select = choiceReward(rprob, a(t));
-%    select = binornd(1, rprob(a(t)))+1;
+    select = binornd(1, rprob(a(t)))+1;
     
     % if the trial is a partial trial...
     if ismember(t, pt)
@@ -70,9 +70,8 @@ for t = 1:T
         % discuss after I've reviewed the rest.
         
     else
-
-        rpos = rewardValues(rbounds);
-%         rpos = [abs(rbounds(2)-0.5*rand()) abs(rbounds(1)-0.5*rand())];
+        % You can create a reward function as well
+        rpos = [abs(rbounds(2)-0.5*rand()) abs(rbounds(1)-0.5*rand())];
         r(t) = rpos(select);
         
     end

@@ -34,7 +34,7 @@ n.cond      = length(cond);
 
 addpath('./SimulationFunctions')
 addpath('./AnalysisFunctions')
-addpath(genpath('./HelperFunctions'))
+addpath('./HelperFunctions')
 addpath('./FittingFunctions')
 addpath('./LikelihoodFunctions')
 

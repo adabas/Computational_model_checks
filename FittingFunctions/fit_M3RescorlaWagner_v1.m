@@ -1,4 +1,4 @@
-function [Xfit, LL, b] = fit_M3RescorlaWagner_v1(a, r, pt)
+function [Xfit, LL, BIC] = fit_M3RescorlaWagner_v1(a, r, pt)
 
 % FIT_M3RESCORLAWAGNER_v1
 % Function to find the parameter values that best fit the data.
@@ -10,7 +10,8 @@ function [Xfit, LL, b] = fit_M3RescorlaWagner_v1(a, r, pt)
 %
 % OUPUT:
 %       Xfit    : a vector containing the best fitting parameter values
-%       LL      : the log likelihood value for the best fitting parameter values
+%       LL      : the negative loglikelihood value for the best fitting
+%                 parameter values
 %       BIC     : the bayesian information criterion value
 %
 % Aroma Dabas [dabas@cbs.mpg.de]
@@ -25,7 +26,7 @@ options=optimset('MaxFunEval', 100000, 'Display', 'notify', ...
 obFunc = @(x) lik_M3RescorlaWagner_v1(a, r, x(1), x(2), pt);
 
 % create vector storing random alpha and beta starting values [alpha beta]
-X0 = [rand exprnd(4)];
+X0 = [rand exprnd(1)];
 
 % store the lower and upper bounds of [alpha beta] parameters
 LB = [0 0];
@@ -38,7 +39,7 @@ UB = [1 20];
 LL = -NegLL;
 
 % calculate the BIC
-b = BIC(length(X0), length(a), NegLL);
-%BIC = length(X0) * log(length(a)) + 2*NegLL;
+% You can create a BIC function as well
+BIC = length(X0) * log(length(a)) + 2*NegLL;
 
 end
