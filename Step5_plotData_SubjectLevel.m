@@ -38,7 +38,7 @@ clearvars
 rng(244, 'twister');    % set seed
 
 % ================== Modify ===============================================
-subjects    = 0186;     % specify subject ID
+subjects    = 0;     % specify subject ID
 savePlots   = false;    % true will save plots in plotFolder directory
 plotFolder  = "./Figures/SubjectLevel";     % figure path as a string
 
