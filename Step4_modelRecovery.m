@@ -31,7 +31,7 @@ Npt  = 32;          % number of partial trials
 
 addpath('./SimulationFunctions')
 addpath('./AnalysisFunctions')
-addpath('./HelperFunctions')
+addpath(genpath('./HelperFunctions'))
 addpath('./FittingFunctions')
 addpath('./LikelihoodFunctions')
 

@@ -60,7 +60,7 @@ tmp = fileparts(which('Step5_plotData_SubjectLevel'));
 addpath(tmp);
 
 % add path to required folders in the current folder
-addpath(fullfile(tmp, 'HelperFunctions'));
+addpath(genpath(fullfile(tmp, 'HelperFunctions')))
 addpath(fullfile(tmp, 'LikelihoodFunctions'))
 addpath(fullfile(tmp, 'SimulationFunctions'))
 
