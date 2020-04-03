@@ -50,11 +50,12 @@ for t = 1:T
     a(t) = choose(p(2));
     
     % determine if the choice a(t) results in a pleasant or unpleasant reward
-    select = binornd(1, rprob(a(t)))+1;
+    select = choiceReward(rprob, a(t));
+%    select = binornd(1, rprob(a(t)))+1;
     
     % determine the corresponding reward value (range 0 to 1 with 0.5 as neutral)
-    % You can create a reward function as well
-    rpos = [abs(rbounds(2)-0.5*rand()) abs(rbounds(1)-0.5*rand())];
+    rpos = rewardValues(rbounds);
+%     rpos = [abs(rbounds(2)-0.5*rand()) abs(rbounds(1)-0.5*rand())];
     r(t) = rpos(select);
     
     % update last choice trial
