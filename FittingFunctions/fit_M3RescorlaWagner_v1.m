@@ -39,6 +39,5 @@ LL = -NegLL;
 
 % calculate the BIC
 b = BIC(length(X0), length(a), NegLL);
-%BIC = length(X0) * log(length(a)) + 2*NegLL;
 
 end

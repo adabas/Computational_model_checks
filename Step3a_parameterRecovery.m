@@ -25,7 +25,7 @@ rng(234, 'twister');
 % experiment parameters
 T       = 132;      % number of trials
 rbounds = [0 1];    % bounds of the mean reward
-nRep    = 100; %1000;     % number of simulation repetitions
+nRep    = 100;      % number of simulation repetitions
 rprob   = [0.7 0.4]; % reward probability for [HR LR] stimuli
 nFit    = 10;       % iterate over the fitting function for multiple starting points
 Npt     = 32;       % number of partial trials
@@ -62,11 +62,8 @@ symbols = {'\alpha' '\beta'};
 for count = 1:nRep
 
     % random parameter value for generating data
-    alpha = rand;
-    % beta = exprnd(10);
-    % I adjusted the beta values. You previously used values of e.g. 60,
-    % which I feel is too high. Danke.
-    beta = exprnd(4);
+    alpha = rand; % 0.01 + (0.9)*rand; % this can be used for checking very "simple" parameter values.
+    beta = exprnd(4); % 5 + (5)*rand; % this can be used for checking very "simple" parameter values.
 
     % simulate data
     [choice, reward, pt, q] = simulate_M3RescorlaWagner_v1(T, alpha, beta, rprob, rbounds, Npt);
@@ -85,15 +82,6 @@ for count = 1:nRep
      % find global best
      [mf,i]=min(negLL(:));
      pars = fit(:,i);
-    
-    % Here you could add the option to cycle over multiple (random) starting points.
-    % I.e., call [xf, LL] = fit_M3RescorlaWagner_v1(choice, reward, pt); 
-    % n times and select parameter of the iteration with the best fit (lowest neg. log-likelihood)
-    % At the moment you only use one random starting point. Using more
-    % starting point might improve the estimates in some cases. 
-    % Especially in models with more free parameters, you'll notice a
-    % difference. Right, I recall that we discussed this. Thanks for the
-    % reminder. Implemented it above. I think 10 iterations should be sufficient.
 
     % store simulated and fitted values, and also the log likelihood
     fminX.sim(1,count) = alpha;
@@ -122,11 +110,6 @@ for i = 1:size(fminX.sim,1)
     plot(xl, xl, 'k--')
 end
 
-% find 'bad' parameter values
-% I think in the previous version, you also used the "bad" alpha parameters
-% for the plot of the "bad" beta values. I changed this and added a
-% different threshold for beta. Again, thanks!
-
 % mark the 'bad' parameter values
 for i = 1:2
     
@@ -142,9 +125,7 @@ for i = 1:2
 end
 
 % set softmax parameter scale to a log scale
-% Not sure if this helps me. I think it's not necessary to see if it works, especially with lower beta values.
-% But of course not wrong. Yes, in this case doesn't seem necessary. But
- % I'll keep this commented out.
+% I'll keep this commented out.
 % set(ax(1,2),'xscale', 'log', 'yscale' ,'log')
 
 % set titles and axis labels
@@ -224,10 +205,8 @@ fprintf('\nRMSE\nalpha = %.3f\n', fminX.RMSE(1,:))
 fprintf('beta = %.3f\n', fminX.RMSE(2,:))
 % --
 
-% PLOT
-% I would propose to use separate plots or subplots with different y-axes
 % plot settings: set y axis limits for the parameters
- yLim = [[-1 1]; [-20 20]];
+yLim = [[-1 1]; [-20 20]];
 
  % initiate figure
  fh3 = figure('Name', 'Parameter Estimation Error'); clf;

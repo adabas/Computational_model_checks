@@ -40,7 +40,6 @@ UB = 1;
 LL = -NegLL;
 
 % calculate the BIC
-b = BIC(lengthX0, length(a), NegLL);
-%BIC = length(X0) * log(length(a)) + 2*NegLL;
+b = BIC(length(X0), length(a), NegLL);
 
 end

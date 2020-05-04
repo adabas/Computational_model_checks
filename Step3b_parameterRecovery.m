@@ -4,7 +4,7 @@
 % parameters, and if the variance of the estimated parameters is widely
 % spread.
 % 
-% This code is a modification of the code provided by Rob Wilson and Anne
+% This code is a modification of the code provided by Bob Wilson and Anne
 % Collins [2019].
 %
 % Modified by Aroma Dabas [dabas@cbs.mpg.de]
@@ -22,7 +22,7 @@ rng(234, 'twister');
 % experiment parameters
 T       = 132;      % number of trials
 rbounds = [0 1];    % bounds of the mean reward
-nRep    = 1000;     % number of simulation repetitions
+nRep    = 100;     % number of simulation repetitions
 rprob   = [0.7 0.4]; % reward probability for [HR LR] stimuli
 Npt     = 32;       % number of partial trials
 
@@ -41,7 +41,7 @@ addpath('./LikelihoodFunctions')
 % ================== Plot settings ========================================
 
 % some color settings for plotting
-global AZred AZblue AZcactus AZsky AZriver AZsand AZmesa AZbrick
+% global AZred AZblue AZcactus AZsky AZriver AZsand AZmesa AZbrick
 
 AZred = [171,5,32]/256;
 AZblue = [12,35,75]/256;
@@ -66,7 +66,7 @@ for count = 1:nRep
 
     % random values for generating data
     alpha = rand;
-    beta = exprnd(10);
+    beta = exprnd(4); %exprnd(10);
     
     % simulate data
     [choice, reward, pt, q] = simulate_M3RescorlaWagner_v1(T, alpha, beta, rprob, rbounds, Npt);
@@ -157,6 +157,14 @@ fprintf('epsilon = %.3f\n', fminX.RMSE(4,:))
 % --
 
 % PLOT
+
+% Is there a particular reason why you have 3a and 3b instead of just 3
+% with all models/analyses. If not, I'd propose to put all parameter
+% recovery analyses in one script. In the current version, the y-axis was
+% the same for all parameter, which made it kind of hard to compare
+% variances. Moreover, it certainty can't hurt if you also plot
+% correlations of true and estimated parameters for Model 1 and 2. 
+
 
 % open figure and set settings
 figure(3); clf; hold on

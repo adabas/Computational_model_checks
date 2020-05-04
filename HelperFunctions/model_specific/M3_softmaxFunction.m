@@ -14,10 +14,8 @@ function p = M3_softmaxFunction(q, beta)
 % March 2020
 % =========================================================================
 
-
 ev  = exp(beta*q);
 sev = sum(ev);
 p = ev / sev;
-
 
 end

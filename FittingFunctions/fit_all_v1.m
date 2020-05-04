@@ -35,6 +35,8 @@ function [BIC, iBEST, BEST] = fit_all_v1(a, r, pt)
 
 [M, iBEST] = min(BIC);
 BEST = BIC == M;
+
+% why is this step neccesary? Isn't it always 1?
 BEST = BEST / sum(BEST);
 
 end
