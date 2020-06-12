@@ -1,4 +1,4 @@
-function [Xfit, LL, b] = fit_M2WSLS_v1(a, r)
+function [Xfit, LL, b] = fit_M2WSLS_v1(a, r, pbound, pstart)
 
 % FIT_M2WSLS_v1
 % Function to compute the parameter values that best fit the data.
@@ -6,6 +6,8 @@ function [Xfit, LL, b] = fit_M2WSLS_v1(a, r)
 % INPUT:
 %       a       : choices vector
 %       r       : reward received
+%       pbound  : parameter bounds [lower; upper];
+%       pstart  : random starting point
 %
 % OUPUT:
 %       Xfit    : a vector containing the best fitting parameter value
@@ -31,8 +33,8 @@ obFunc = @(x) lik_M2WSLS_v1(a, r, x);
 X0 = rand;
 
 % state the upper and lower bounds
-LB = 0;
-UB = 1;
+LB = pbound(1);
+UB = pbound(2);
 
 % estimate the parameters
 [Xfit, NegLL] = fmincon(obFunc, X0, [], [], [], [], LB, UB, [], options);

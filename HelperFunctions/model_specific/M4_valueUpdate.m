@@ -1,4 +1,4 @@
-function v = M3_valueUpdate(alpha, q, r, t, pt)
+function [v, k, d] = M4_valueUpdate(alpha, alpha_c, q, k, r, t, pt)
 
 % M3_VALUEUPDATE
 % The function updates choice value based on the Rescorla Wagner rule.
@@ -23,7 +23,14 @@ else
     d = r - q;
 end
 
-% compute value update
+% update values
 v = q + alpha * d;
 
-end
+% update choice kernel
+k = (1-alpha_c) * k;
+k = k + alpha_c * 1;
+
+% % compute value update
+% v = q + alpha * d;
+
+end 

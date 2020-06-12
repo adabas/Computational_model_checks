@@ -21,11 +21,17 @@ rng(2, 'twister');
 
 % ================== Modify ===============================================
 
-T    = 132;          % number of trials
-mu   = [0.7 0.4];    % reward probabilities
-nRep = 100;          % number of repetitions#
-rbounds = [0 1];     % bounds of the mean reward
-Npt  = 32;          % number of partial trials
+T    = 100;         % number of trials
+mu   = [0.7 0.4];   % reward probabilities
+nRep = 100;         % number of repetitions
+rbounds = [0 1];    % bounds of the mean reward
+Npt  = 0;           % number of partial trials
+nMod = 3;           % number of models
+% type = 1;           % 1 for determining best fitting model using BIC. 0 for
+%                     % using negative log likelihood.
+pbounds = [0 0 0 0;
+    1 1 1 7];    % bounds [lower; upper] * parameters [b epsilon alpha beta]
+   
 
 % ================== Add paths ============================================
 
@@ -40,39 +46,43 @@ addpath('./LikelihoodFunctions')
 savePlots = 1;
 plotFolder = './Figures/ModelSimulation/';
 
-%% Section 2: Confusion matrix.
+% colors
+AZred   = [171,5,32]/256;
+AZcactus = [92, 135, 39]/256;
+AZsky   = [132, 210, 226]/256;
+plotCol = {AZred AZcactus AZsky};
+
+%% Section 2a: Confusion matrix.
 % simulate and fit data. Calculate the best-fit probability conditional on the model used for simulation.
 
 % initiate confusion matrix 
-CM = zeros(3);
+CM = zeros(nMod);
+
+% initiate the plot
+fh.cm = figure('Name','CM');
+set(fh.cm,'position',[100 50 700 600],'paperunits','centimeters','Color','w');
+set(gca, 'fontsize', 12)
 
 for count = 1:nRep
     
     % Model 1
     b = rand;
     [a, r, pt] = simulate_M1random_v1(T, rbounds, b, mu, Npt);
-    [~, ~, BEST] = fit_all_v1(a, r, pt);
+    [~, ~, BEST, pars] = fit_all_v1(a, r, pt, nMod, pbounds);
     CM(1,:) = CM(1,:) + BEST;
     
     % Model 2
     epsilon = rand;
     [a, r, pt] = simulate_M2WSLS_v1(T, rbounds, epsilon, mu, Npt);
-    [~, ~, BEST] = fit_all_v1(a, r, pt);
+    [~, ~, BEST] = fit_all_v1(a, r, pt, nMod, pbounds);
     CM(2,:) = CM(2,:) + BEST;
     
     % Model 3
     alpha = rand;
     beta  = 1 + exprnd(1);
     [a, r, pt] = simulate_M3RescorlaWagner_v1(T, alpha, beta, mu, rbounds, Npt);
-    [~, ~, BEST] = fit_all_v1(a, r, pt);
+    [~, ~, BEST] = fit_all_v1(a, r, pt, nMod, pbounds);
     CM(3,:) = CM(3,:) + BEST;
-    
-    % I changed the order of simulation/estimation and plotting. If I
-    % understand it correctly, you previously didn't plot the last
-    % iteration (100) but instead iteration 0. Now you plot from 1 - 100.
-    
-    % open figure
-    figure(1); clf;
     
     % calculate probability
     FM = round(100*CM/sum(CM(1,:)))/100;
@@ -93,7 +103,7 @@ for count = 1:nRep
     title(['count = ' num2str(count)]);
    
     % set ticks and labels
-    set(gca, 'xtick', [1:3], 'ytick', [1:3], 'fontsize', 28, ...
+    set(gca, 'xtick', [1:3], 'ytick', [1:3], 'fontsize', 18, ...
         'xaxislocation', 'top', 'tickdir', 'out')
     xlabel('fit model')
     ylabel('simulated model')
@@ -124,7 +134,7 @@ end
 % simulation to compute the log likelihood. Then you use the same confusion
 % matrix but not with the best BIC but the best log-likelihood. That way we have a
 % better idea if the model likelihoods independent of the parameter
-% estimation are too similar or if they are actually very similar and
+% estimation are too similar or if they are actually very dissimilar and
 % the results you plotted thus far are more likely related to the 
 % parameter estimation procedure. 
 
@@ -134,6 +144,8 @@ end
 % range is not good, because we know that these models should in principle
 % make clearly dissociable predictions. 
 
+% Thanks for the suggestions. I tried the suggestions in section 2b and 3.
+
 % In the long run, I would also include exceedance probabilites, i.e.,
 % simply checking which model is most likely on the group level. I'd to
 % this both for model recovery with simulations and later for the empirical data.
@@ -141,16 +153,142 @@ end
 
 % settings
 title(sprintf('confusion matrix:\np(fit model | simulated model)'))
-set(gcf, 'Position', [311   217   700   600])
+set(gcf, 'Position', [311   217   700   600]) 
 set(gca, 'fontsize', 24);
 
 % save plot
 if savePlots
-    filename = fullfile(plotFolder, 'Model_recovery', 'confusionMatrix.png');
+    filename = fullfile(plotFolder, 'Model_recovery', 'CM.png');
     saveas(gcf, filename)
 end
 
-%% Section 3: Inversion matrix
+%% Section 2b: Additional analysis
+% Simulate choices, and estimate data using constricted parameters.
+% Use the log likelihood values for the best fitting model to create the CM.
+% I determined the parameter bounds for eliciting similar learning performance
+% by trial and testing the Step1_simulation.m script.
+
+% -- Poor learning behaviour --
+% specify the parameter bounds
+pbounds = [0.4 0.6 0.6 0.5;
+    0.6 1 1 2];
+
+% name the figure
+nameFig = 'CM (low learning)';
+
+% plot the confusion matrix
+CM_plot(T, mu, 'name', nameFig, 'pbounds', pbounds, 'nMod', nMod,...
+    'nRep', nRep);
+
+% save plot
+if savePlots
+    filename = fullfile(plotFolder, 'Model_recovery', 'CM_lowLearning.png');
+    saveas(gcf, filename)
+end
+
+% -- Fast learning behaviour --
+% specify the parameter bounds.
+pbounds = [0.3 0.1 0.7 4;
+    0.4 0.4 0.8 6];
+
+% name the figure
+nameFig = 'CM (fast learning)';
+
+% plot the confusion matrix
+CM_plot(T, mu, 'name', nameFig, 'pbounds', pbounds, 'nMod', nMod,...
+    'nRep', nRep);
+
+% save plot
+if savePlots
+    filename = fullfile(plotFolder, 'Model_recovery', 'CM_fastLearning.png');
+    saveas(gcf, filename)
+end
+
+
+%% Section 3: Plot learning performance
+% Simulate data using a model and estimate each model's learning
+% performance. Are the model estimation disparate from one another? 
+
+% parameter bounds for simulating the data
+pbounds = [0.3 0.1 0.7 4;
+    0.4 0.4 0.8 15];
+
+% initiate the plot
+fh.ch = figure('Name','Model based choice estimation');
+set(fh.ch,'position',[10 100 800 1000],'paperunits','centimeters','Color','w');
+set(gca, 'fontsize', 12)
+
+% plot
+for model = 1:nMod
+    
+    % simulate and estimate data
+    [sim, fit] = choiceEstimation('pbounds', pbounds, 'model', model, 'rewProb', mu,...
+        'nMod', nMod, 'ntrials', T);
+    
+    % plot
+    % smoothing over the raw data
+    smoothingkernel = 6;
+
+    % extract high-reward choice option
+    highRewAction = find(mu==max(mu));
+
+    hold on
+    % open the model's subplot
+    subplot(nMod-1, 2, model)
+
+    % calculate mean HR choice over each trial for simulated data
+    HR_choiceMean = nanmean(sim(1).a, 2);
+
+    % rescale the choice mean such that it ranges between 0 (LR) and 1 (HR)
+    if highRewAction == 2
+        HR_choiceMean = (2 - HR_choiceMean)';
+    else
+        HR_choiceMean = (HR_choiceMean - 1)';
+    end
+
+    % calculate mean HR choice over each trial for fitted data
+    for m = 1:nMod
+        % calculate mean
+       fit(m).mean = nanmean(fit(m).a,2);
+
+       % rescale
+       if highRewAction == 2
+            fit(m).mean = (2 - fit(m).mean)';
+       else
+            fit(m).mean = (fit(m).mean - 1)';
+       end
+
+    end
+
+    % add data to the plot
+    plot(mySmooth(HR_choiceMean, smoothingkernel,[], 'backward'),...
+        '-','color', plotCol{model},'linewidth',2); hold on
+    for m = 1:nMod
+        plot(mySmooth(fit(m).mean, smoothingkernel, [], 'backward'),...
+            '-', 'color', plotCol{m}, 'linewidth', 0.8); hold on
+    end
+
+     % y axis limits
+    ylim([-0.1 1.1]);
+
+    % add labels
+    ylabel('p(HR stimulus)');
+    xlabel('trial');
+    legend({sprintf('sim. model %i', model), 'Model 1', 'Model 2', 'Model 3'}, 'location', 'southeast')
+    
+    legend boxoff
+
+end
+
+if savePlots
+    filename = fullfile(plotFolder, 'Model_recovery', 'choice_estimated.png');
+    saveas(gcf, filename)
+end
+
+% For the given parameter bounds, the models' learning performace is quite
+% similar, particularly for data simulated by model 2.
+
+%% Section 4: Inversion matrix
 % Given the model that fits our data best, which model is most likely to have
 % generated the data? p(simulated data|fit model).
 
@@ -183,6 +321,8 @@ set(gca, 'fontsize', 24);
 
 % save plot
 if savePlots
-    filename = fullfile(plotFolder, 'Model_recovery', 'inversionMatrix.png');
+    filename = fullfile(plotFolder, 'Model_recovery', 'IM.png');
     saveas(gcf, filename)
 end
+
+% DONE

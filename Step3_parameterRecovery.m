@@ -25,6 +25,8 @@ rbounds = [0 1];    % bounds of the mean reward
 nRep    = 100;     % number of simulation repetitions
 rprob   = [0.7 0.4]; % reward probability for [HR LR] stimuli
 Npt     = 32;       % number of partial trials
+pbounds = [0 0 0 0;
+    1 1 1 7];    % bounds [lower; upper] * parameters [b epsilon alpha beta]
 
 % reward conditions
 cond        = {'High Reward', 'Low Reward'};
@@ -41,8 +43,6 @@ addpath('./LikelihoodFunctions')
 % ================== Plot settings ========================================
 
 % some color settings for plotting
-% global AZred AZblue AZcactus AZsky AZriver AZsand AZmesa AZbrick
-
 AZred = [171,5,32]/256;
 AZblue = [12,35,75]/256;
 AZcactus = [92, 135, 39]/256;
@@ -55,9 +55,10 @@ AZbrick = [74, 48, 39]/256;
 savePlots   = 1;    % set as 1 if you want to save plots, otherwise 0
 plotFolder  = './Figures/ModelSimulation/';
 
-% labels and titles
-names = {'learning rate' 'softmax temperature', 'option bias', 'WSLS probabilistic'};
+% model names, and corresponding parameters and subplot label
+names = {'Rescorla Wagner model' 'Rescorla Wagner model', 'Random Responding model', 'WSLS model'};
 symbols = {'\alpha' '\beta' 'b' '\epsilon'};
+subplotLabel = {'A' 'B' 'C' 'D'};
 
 %% Section 2a: simulate and fit data for RW + softmax function
 
@@ -66,15 +67,15 @@ for count = 1:nRep
 
     % random values for generating data
     alpha = rand;
-    beta = exprnd(4); %exprnd(10);
+    beta = exprnd(4);
     
     % simulate data
     [choice, reward, pt, q] = simulate_M3RescorlaWagner_v1(T, alpha, beta, rprob, rbounds, Npt);
     
     % fit the data
-    [xf, LL] = fit_M3RescorlaWagner_v1(choice, reward, pt);
+    [xf, LL] = fit_M3RescorlaWagner_v1(choice, reward, pt, pbounds(:, 3:4));
 
-    % store simulated values, fitted values, and - loglikelihood
+    % store true values, estimated values, and - loglikelihood
     fminX.sim(1,count) = alpha;
     fminX.sim(2,count) = beta;
     fminX.fit(1,count) = xf(1);
@@ -88,9 +89,7 @@ end
 
 %% Section 2b: simulate and fit data for random responding model
 
-
 for count = 1:nRep
-    
     % random parameter value for generating data
     b = rand;
     
@@ -98,16 +97,15 @@ for count = 1:nRep
     [choice] = simulate_M1random_v1(T, rbounds, b, rprob, Npt);
     
     % fit the data
-    [xf, LL] = fit_M1random_v1(choice);
+    [xf, LL] = fit_M1random_v1(choice, pbounds(:,1));
     
-    % store simulated values, fitted values and the - loglikelihood
+    % store true values, estimated values and the - loglikelihood
     fminX.sim(3,count) = b;
     fminX.fit(3,count) = xf;
     fminX.negLL(2,count) = LL;
     
     clear xf LL choice
 end
-
 
 %% Section 2c: simulate and fit data for noisy WSLS model
 
@@ -120,22 +118,108 @@ for count = 1:nRep
     [choice, reward] = simulate_M2WSLS_v1(T, rbounds, epsilon, rprob, Npt);
     
     % fit the data
-    [xf, LL] = fit_M2WSLS_v1(choice, reward);
+    [xf, LL] = fit_M2WSLS_v1(choice, reward, pbounds(:,2));
     
-    % store simulated values, fitted values and the - loglikelihood
-    fminX.sim(4,count) = b;
+    % store true values, estimated values and the - loglikelihood
+    fminX.sim(4,count) = epsilon;
     fminX.fit(4,count) = xf;
     fminX.negLL(3,count) = LL;
     
     clear xf LL choice reward
 end
 
-%% Section 3: Check for bias-variance tradeoff in parameter estimation (RMSE)
+%% Section 3: basic parameter recovery plots (true vs estimated)
 
-% loop over the free parameters
+% initiate figure
+fh = figure('Name', 'Parameter Recovery'); clf;
+set(gcf, 'Position', [300   313   900   650])
+
+% plot simulate versus fit parameters
+for i = 1:size(fminX.sim,1)
+    % select the subplot
+    subplot(2,2,i); hold on
+    
+    % plot the true vs fit parameter values
+    plot(fminX.sim(i,:), fminX.fit(i,:), 'o', 'color', AZred, 'markersize', 8, 'linewidth', 1)
+    
+    % plot the diagonal
+    xl = get(gca, 'xlim');
+    plot(xl, xl, 'k--')
+end
+
+% mark the 'bad' parameter values
+for i = 1:size(fminX.sim,1)
+    % determine threshold for 'bad' parameter values
+    if i == 1 || i == 3 || i == 4
+        thresh = 0.25;
+    elseif i == 2
+        thresh = 5;
+    end
+    
+    % parameter values that exceed the threshold
+    ind = abs(fminX.sim(i,:) - fminX.fit(i,:)) > thresh;
+    
+    % select the subplot
+    subplot(2,2,i); hold on
+    
+    % set 'bad' parameter values in grey
+    plot(fminX.sim(i,ind), fminX.fit(i,ind), 'o', 'color', AZblue, 'markersize', 8, 'linewidth', 1, ...
+    'markerfacecolor', [1 1 1]*0.5)
+end
+
+% set titles and axis labels
+for i = 1:size(names, 2)
+    % select subplot
+    subplot(2,2,i); hold on;
+    
+    % select the parameter name
+    t(i) = title(names{i});
+    
+    % add label
+    xlabel(sprintf('true %s', symbols{i}))
+    ylabel(sprintf('estimated %s', symbols{i}));
+
+    % set font and tick sizes
+    ax = gca;
+    set(ax, 'tickdir', 'out', 'fontsize', 12);
+    
+    % add subplot label
+    addABCs(ax, [-0.06 0.05], 12, subplotLabel(i));
+end
+
+% save figure
+if savePlots
+    fh.PaperPositionMode = 'auto';
+    filename = fullfile(plotFolder, 'Parameter_recovery', 'fit-vs-true.png');
+    saveas(gcf, filename)
+end
+
+%% Section 4: Check correlation between the estimated alpha and beta parameters
+
+% create table containing parameter values
+alpha = fminX.fit(1,:)';
+beta = fminX.fit(2,:)';
+parTable = table(alpha, beta);
+
+% plot the table and check if the correlation is significant
+corrplot(parTable, 'type', 'Spearman', 'testR','on', 'rows', 'pairwise');
+
+annotation('textbox', [.02 .01 .29 .05], 'String', 'estimated parmeters');
+
+% save figure
+if savePlots
+%     fh2.PaperPositionMode = 'auto';
+    filename = fullfile(plotFolder, 'Parameter_recovery', 'fit-vs-fit.png');
+    saveas(gcf, filename)
+end
+
+%% Section 5: Plot bias-variance tradeoff in parameter estimation (RMSE)
+
+% calculate the error between the true and estimated parameter values
 for i = 1:length(symbols)
     
-    % calculate the error between the estimated and simulated parameter
+    % calculate the error between the estimated and true parameter
+    % values
     fminX.error(i,:) = fminX.sim(i,:) - fminX.fit(i,:);
     
     % calculate squared error
@@ -164,22 +248,39 @@ fprintf('epsilon = %.3f\n', fminX.RMSE(4,:))
 % the same for all parameter, which made it kind of hard to compare
 % variances. Moreover, it certainty can't hurt if you also plot
 % correlations of true and estimated parameters for Model 1 and 2. 
+% One script makes absolute sense. I implemented the suggestions. Thanks!
 
+ % initiate figure
+ fh3 = figure('Name', 'Parameter Estimation Error'); clf;
+ set(gcf, 'Position',[500   113   850   370])
 
-% open figure and set settings
-figure(3); clf; hold on
-set(gcf, 'Position', [500   113   600   370])       % position figure window
-set(gca, 'tickdir', 'out', 'fontsize', 18);         % set tick and font size
-
-% plot
-boxplot([fminX.error(1,:)', fminX.error(2,:)', fminX.error(3,:)', fminX.error(4,:)'])
-line([0, 5], [0, 0], 'LineStyle', ':', 'Color', 'black');
-
-% labels
-xlabel('parameters')
-ylabel(sprintf('simulated - estimated\nparameter error'))
-set(gca,...
-    'xticklabel', {char(945), char(946), 'b', char(949)}, 'fontsize', 14)
+ % plot estimation error
+ for i = 1:size(fminX.error,1)
+     % select the subplot
+     subplot(1,4,i); hold on;
+     
+     % boxplot
+     boxplot(fminX.error(i,:)', 'Labels',{[]}); hold on;
+     
+     % set y axis limits
+     yl = get(gca, 'ylim');
+     yl_max = max(abs(yl));
+     ylim([-yl_max yl_max]);
+    
+     % add reference line
+     line([0, 3], [0, 0], 'LineStyle', ':', 'Color', 'black');
+     
+     % add label
+     xlabel(sprintf('%s', symbols{i}));
+     ylabel(sprintf('true - estimated error'));
+     
+     % set font and tick sizes
+     ax = gca;
+     set(ax, 'tickdir', 'out', 'fontsize', 11);
+     
+     % add subplot label
+     addABCs(ax, [-0.06 0.05], 11, subplotLabel(i));
+ end
 
 % save plot
 if savePlots

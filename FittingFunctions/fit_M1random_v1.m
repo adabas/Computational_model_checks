@@ -1,15 +1,16 @@
-function [Xfit, LL, b] = fit_M1random_v1(a)
+function [Xfit, LL, b] = fit_M1random_v1(a, pbound)
 
 % FIT_M1RANDOM_v1
 % Function to compute the parameter values that best fit the data.
 %
 % INPUT:
 %       a       : choices vector
+%       pbound  : parameter bound [lower; upper];
 %
 % OUPUT:
 %       Xfit    : a vector containing the best fitting parameter value
 %       LL      : the loglikelihood value for the best fitting parameter value
-%       BIC     : the bayesian information criterion value
+%       b       : the bayesian information criterion value
 %
 % Aroma Dabas [dabas@cbs.mpg.de]
 % January 2020
@@ -30,8 +31,8 @@ obFunc = @(x) lik_M1random_v1(a, x);
 X0 = rand;
 
 % bounds
-LB = 0;
-UB = 1;
+LB = pbound(1);
+UB = pbound(2);
 
 % run fmincon
 [Xfit, NegLL] = fmincon(obFunc, X0, [], [], [], [], LB, UB, [], options);
