@@ -93,8 +93,8 @@ clear a r
 
 % Model 3: Rescorla Wagner
 for n = 1:nrep
-    alpha   = 0.2;
-    beta    = 12;
+    alpha   = 0.2; 
+    beta    = 12; 
     [a, r, pt, PP] = simulate_M3RescorlaWagner_v1(T, alpha, beta, rprob, rbounds, Npt);
     sim(3).a(:,n) = a;
     sim(3).r(:,n) = r;

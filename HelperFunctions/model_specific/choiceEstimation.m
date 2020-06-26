@@ -1,7 +1,7 @@
 function [sim, fit] = choiceEstimation(varargin)
 
 % choiceEstimation
-% The function estimate and plots the estimated parameters trial-by-trial
+% The function estimates and plots the estimated parameters trial-by-trial
 % choice behaviour for the models of interest.
 %
 %   VARARGIN
@@ -91,7 +91,7 @@ for count = 1:nRep
     elseif model == 3
         alpha = pbounds(1,3) + (pbounds(2,3)-pbounds(1,3)) .* rand(1,1);
         beta = pbounds(1,4) + (pbounds(2,4)-pbounds(1,4)) .* rand(1,1);
-        [a, r, pt] = simulate_M3RescorlaWagner_v1(ntrials, alpha, beta, rewProb, rbounds, Npt);
+        [a, r, pt] = simulate_M3RescorlaWagner_v1(ntrials, alpha, beta, rewProb, rbounds, Npt); 
     end
 
     % store simulated data

@@ -79,7 +79,7 @@ for count = 1:nRep
     
     % Model 3
     alpha = rand;
-    beta  = 1 + exprnd(1);
+    beta  = 5 + exprnd(5); % 1 + exprnd(1);
     [a, r, pt] = simulate_M3RescorlaWagner_v1(T, alpha, beta, mu, rbounds, Npt);
     [~, ~, BEST] = fit_all_v1(a, r, pt, nMod, pbounds);
     CM(3,:) = CM(3,:) + BEST;
@@ -207,11 +207,11 @@ end
 
 %% Section 3: Plot learning performance
 % Simulate data using a model and estimate each model's learning
-% performance. Are the model estimation disparate from one another? 
+% performance. Are the model orignial and estimation-based results disparate from one another? 
 
 % parameter bounds for simulating the data
-pbounds = [0.3 0.1 0.7 4;
-    0.4 0.4 0.8 15];
+pbounds = [0.3 0.1 0.02 5;  % 0.7 4
+    0.4 0.4 0.2 30]; %  0.8 20
 
 % initiate the plot
 fh.ch = figure('Name','Model based choice estimation');
@@ -285,7 +285,7 @@ if savePlots
     saveas(gcf, filename)
 end
 
-% For the given parameter bounds, the models' learning performace is quite
+% For the given parameter bounds, the models' learning performance is quite
 % similar, particularly for data simulated by model 2.
 
 %% Section 4: Inversion matrix
