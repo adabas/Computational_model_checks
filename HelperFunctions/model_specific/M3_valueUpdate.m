@@ -1,4 +1,4 @@
-function v = M3_valueUpdate(alpha, q, r, t, pt)
+function [v, d] = M3_valueUpdate(alpha, q, r, t, pt)
 
 % M3_VALUEUPDATE
 % The function updates choice value based on the Rescorla Wagner rule.
@@ -12,6 +12,7 @@ function v = M3_valueUpdate(alpha, q, r, t, pt)
 %
 % OUTPUT
 %       v       : the updated choice value
+%       d       : prediction error
 %
 % Aroma Dabas [dabas@cbs.mpg.de]
 % =========================================================================

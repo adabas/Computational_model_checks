@@ -26,7 +26,7 @@ if isnan(rLast)
 else
 
     % ...choice depends on last reward
-    if rLast >= 0.5
+    if rLast > 0.5
 
         % win stay (with probability epsilon)
         p = epsilon/2*[1 1];

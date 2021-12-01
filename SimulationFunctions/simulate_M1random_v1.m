@@ -45,7 +45,6 @@ for t = 1:T
     a(t) = choose(p(2));
     
     % determine if the choice a(t) results in a pleasant or unpleasant reward
-    % created a function
     select = choiceReward(rprob, a(t));
 %     select = binornd(1, rprob(a(t)))+1;
     

@@ -5,7 +5,7 @@ function p = M1_randomRespondingBias(b)
 % model.
 %
 % INPUT:
-%       b   : bias paramter for a choice
+%       b   : bias parameter for a choice
 %
 % OUTPUT:
 %       p   : vector indicating choice probabilities

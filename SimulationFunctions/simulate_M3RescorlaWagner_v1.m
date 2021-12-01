@@ -19,16 +19,6 @@ function [a, r, pt, PP, QQ, delta] = simulate_M3RescorlaWagner_v1(T, alpha, beta
 %       delta   : prediction error at each trial
 %
 % Modified by Aroma Dabas [dabas@cbs.mpg.de]
-%   24-10-2019      Included partial trials.
-%   08-01-2020      Changed binary reward (0 and 1) to continuous reward
-%                   options.
-%   09-01-2020      Save the value of the stimuli
-%                   Save partial trials (pt)
-%   10-01-2020      Cleaned the input and output arguments
-%   21-01-2020      Included reward probability
-%   23-01-2020      Set initial value of the stimuli to 0.5
-%   29-01-2020      Updated rewards as per the uncorrelated reward
-%                   probabilities
 % =========================================================================
 
 % make list of partial trials
@@ -67,7 +57,7 @@ for t = 1:T
     r(t) = rpos(select);
 
     % value update
-    q(a(t)) = M3_valueUpdate(alpha, q(a(t)), r(t), t, pt);
+    [q(a(t)), delta(t)] = M3_valueUpdate(alpha, q(a(t)), r(t), t, pt);
     
 end
 
