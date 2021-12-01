@@ -1,7 +1,10 @@
 function [a, r, pt, PP, QQ, CK, delta] = simulate_M4RWCK_v1(T, alpha, beta, alpha_c, beta_c, rprob, rbounds, Npt)
 
-% SIMULATE_M5RWCK_V1
-% Function simulates data for a Rescorla Wagner and a choice kernal model.
+% SIMULATE_M4RWCK_V1
+% Function simulates data for a Rescorla Wagner and a choice kernel model.
+% Here, we compute the value update while keeping a track of how frequently
+% a choice is selected.
+% 
 % INPUT
 %       T       : total number of trials
 %       alpha   : alpha parameter value
@@ -29,7 +32,7 @@ function [a, r, pt, PP, QQ, CK, delta] = simulate_M4RWCK_v1(T, alpha, beta, alph
 pt = sort(randperm(T, Npt));
 
 % initialise variables
-q  = [0.5 0.5]; % initial expected reward values
+q  = [0.5 0.5]; % initial expected values
 k = [0 0];     % initialise choice kernel
 a = nan(T, 1); % action
 r = nan(T, 1); % reward
@@ -40,12 +43,12 @@ delta = nan(T, 1); % prediction error
 
 for t = 1:T
     
-    % store value
+    % store value and kernel
     QQ(t,:) = q;
     CK(t,:) = k;
     
     % compute choice probabilities
-    p = M4_softmaxCK(q, k, beta, beta_c);
+    p = M4_softmaxRWCK(q, k, beta, beta_c);
     
     % store choice probability
     PP(t,:) = p;
