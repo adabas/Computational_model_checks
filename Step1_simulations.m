@@ -25,12 +25,6 @@
 %               alpha_c
 %               beta_c
 %
-% Updated by Aroma Dabas [dabas@cbs.mpg.de]
-%   12-2019         First version
-%   01-2020         Implemented random responding model
-%                   Implemented Noisy WSLS model
-%                   Commented and cleaned the scripts
-% 
 % =========================================================================
 
 clear; close all
