@@ -14,18 +14,16 @@
 %       Model 3: Rescorla Wagner
 %               alpha : learning rate
 %               beta : inverse temperature function
-%       Not implemented yet, but upcoming:
-%       Model 4: Choice kernel (people tend to repeat their previous actions)
+%       Model 5: Choice kernel (people tend to repeat their previous actions)
 %               alpha_c : learning rate for the choice kernel; choice
 %               kernel keeps track of how frequently an option was choosen
 %               in the recent past
 %               beta_c : inverse temperature function for choice kernel
-%       Model 5: Rescorla-Wagner + choice kernel
+%       Model 4: Rescorla-Wagner + choice kernel
 %               alpha
 %               beta
 %               alpha_c
 %               beta_c
-%       Model 6: Rescorla Wagner + stickiness function
 %
 % Updated by Aroma Dabas [dabas@cbs.mpg.de]
 %   12-2019         First version
@@ -33,11 +31,7 @@
 %                   Implemented Noisy WSLS model
 %                   Commented and cleaned the scripts
 % 
-% Original code by:
-% Bob Wilson & Anne Collins
-% 2018
-% Code to produce figure 2 in submitted paper "Ten simple rules for the
-% computational modeling of behavioral data"
+% =========================================================================
 
 clear; close all
 
@@ -57,16 +51,16 @@ addpath(genpath('./HelperFunctions'))
 rng(7, 'twister');
 
 % experiment parameters
-T       = 132;       % number of trials
+T       = 100;       % number of trials
 rbounds = [0 1];     % bounds of the mean reward
 nrep    = 40;        % number of simulation repetitions
-rprob   = [0.7 0.4]; % reward probability for [HR LR] stimuli 
-Npt     = 32;        % number of partial trials % thanks for implementing this!
+rprob   = [0.8 0.35]; % reward probability for [HR LR] stimuli 
+Npt     = 0;        % number of partial trials
 
 % specify the number and name of the model that you are interested in
-% simulating.
-nModels     = [1 2 3];
-nameModels  = {'Random responding', 'Noisy WSLS', 'RW+Softmax'};
+% simulating
+nModels     = [1 2 3 4 5];
+nameModels  = {'Random responding', 'Noisy WSLS', 'RW', 'RW-CK', 'CK'};
 
 % for plotting
 savePlots   = 1;    % set as 1 if you want to save plots, otherwise 0
@@ -84,7 +78,7 @@ clear a r
 
 % Model 2: Noisy Win-stay-lose-shift
 for n = 1:nrep
-    epsilon = 0.1; % probability of selecting an option
+    epsilon = 0.3; % probability of selecting an option
     [a, r] = simulate_M2WSLS_v1(T, rbounds, epsilon, rprob, Npt);
     sim(2).a(:,n) = a;
     sim(2).r(:,n) = r;
@@ -93,35 +87,31 @@ clear a r
 
 % Model 3: Rescorla Wagner
 for n = 1:nrep
-    alpha   = 0.2; 
-    beta    = 12; 
-    [a, r, pt, PP] = simulate_M3RescorlaWagner_v1(T, alpha, beta, rprob, rbounds, Npt);
+    alpha   = 0.1; 
+    beta    = 5; 
+    [a, r] = simulate_M3RescorlaWagner_v1(T, alpha, beta, rprob, rbounds, Npt);
     sim(3).a(:,n) = a;
     sim(3).r(:,n) = r;
 end
 clear a r
 
-% % Model 4: Choice kernel
-% for n = 1:Nrep
-%     alpha_c = 0.1;
-%     beta_c = 3;
-%     [a, r] = simulate_M4ChoiceKernel_v1(T, mu, alpha_c, beta_c);
-%     sim(4).a(:,n) = a;
-%     sim(4).r(:,n) = r;
-% end
-% clear a r
-% 
-% % Model 5: Rescorla-Wagner + choice kernel
-% for n = 1:Nrep
-%     alpha = 0.05;
-%     beta = 4;
-%     alpha_c = 0.1;
-%     beta_c = 1;
-%     [a, r] = simulate_M5RWCK_v1(T, mu, alpha, beta, alpha_c, beta_c);
-%     sim(5).a(:,n) = a;
-%     sim(5).r(:,n) = r;
-% end
-% clear a r
+% Model 4: Rescorla Wagner with Choice kernel
+for n = 1:nrep
+    alpha_c = 0.1;
+    beta_c = 3;
+    [a, r] = simulate_M4RWCK_v1(T, alpha, beta, alpha_c, beta_c, rprob, rbounds, Npt);
+    sim(4).a(:,n) = a;
+    sim(4).r(:,n) = r;
+end
+clear a r
+
+% Model 5: Choice kernel
+for n = 1:nrep
+    [a, r] = simulate_M5CK_v1(T, alpha_c, beta_c, rprob, rbounds, Npt);
+    sim(5).a(:,n) = a;
+    sim(5).r(:,n) = r;
+end
+clear a r
 
 %% Section 2: Plot choice selection for HR stimuli
 % Is the choice behaviour evolving over the trials to move towards the HR
@@ -131,10 +121,10 @@ clear a r
 
 % initiate the plot
 fh.score = figure('Name','score'); 
-set(fh.score,'position',[10 90 800 400], 'paperunits','centimeters','Color','w');
+set(fh.score,'position',[10 90 1400 400], 'paperunits','centimeters','Color','w');
 set(gca, 'fontsize', 12)
 
-% extract high-reward choice option  % Thats a great insertion!
+% extract high-reward choice option
 highRewAction = find(rprob==max(rprob));
 
 % loop over the number of models 
@@ -170,7 +160,13 @@ for m = 1:length(nModels)
     elseif m == 2
         title(sprintf('Model %i: %s \n epsilon = %.2f', m, nameModels{m}, epsilon));
     elseif m == 3
-        title(sprintf('Model %i: %s \n alpha = %.2f; beta = %.2f', m, nameModels{m}, alpha, beta));
+        title(sprintf('Model %i: %s \n alpha = %.2f;\n beta = %.2f', m, nameModels{m}, alpha, beta));
+    elseif m == 4
+        title(sprintf('Model %i: %s \n alpha = %.2f; beta = %.2f \n alpha_c = %.2f; beta_c = %.2f',...
+            m, nameModels{m}, alpha, beta, alpha_c, beta_c));
+    elseif m == 5
+        title(sprintf('Model %i: %s \n alpha_c = %.2f; \n beta_c = %.2f',...
+            m, nameModels{m}, alpha_c, beta_c));
     end
 
     box off  
@@ -203,7 +199,7 @@ for m = 1:length(nModels)
     
     hold on
     % open the model's subplot
-    subplot(length(nModels)-1, 2, m)
+    subplot(ceil(length(nModels)/2), 2, m)
     
     % smoothing over the raw data
     smoothingkernel = 6;
@@ -241,6 +237,12 @@ for m = 1:length(nModels)
         title(sprintf('Model %i: %s \n epsilon = %.2f', m, nameModels{m}, epsilon));
     elseif m == 3
         title(sprintf('Model %i: %s \n alpha = %.2f; beta = %.2f', m, nameModels{m}, alpha, beta));
+    elseif m == 4
+        title(sprintf('Model %i: %s \n alpha = %.2f; beta = %.2f \n alpha_c = %.2f; beta_c = %.2f',...
+            m, nameModels{m}, alpha, beta, alpha_c, beta_c));
+    elseif m == 5
+        title(sprintf('Model %i: %s \n alpha_c = %.2f; beta_c = %.2f',...
+            m, nameModels{m}, alpha_c, beta_c));
     end
     
     legend boxoff
@@ -296,8 +298,7 @@ set(gca, 'xtick', [1 2 3], 'XTickLabel', {'Unpleasant', 'Neutral', 'Pleasant'}, 
     'tickdir', 'out', 'fontsize', 14, 'xlim', [0.5 3.5])
 
 % set title and labels
-legend({'M1: Random responding' 'M2: Noisy WSLS' 'M3: RW+softmax'}, ...
-    'location', 'southeast')
+legend(nameModels, 'Location', 'southeast')
 xlabel('previous event type')
 ylabel('p(stay)')
 
