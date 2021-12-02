@@ -1,4 +1,4 @@
-function [Xfit, LL, b] = fit_M3RescorlaWagner_v1(a, r, pt, pbound)
+function [Xfit, NegLL, b] = fit_M3RescorlaWagner_v1(a, r, pt, pbound)
 
 % FIT_M3RESCORLAWAGNER_v1
 % Function to find the parameter values that best fit the data.
@@ -11,7 +11,7 @@ function [Xfit, LL, b] = fit_M3RescorlaWagner_v1(a, r, pt, pbound)
 %
 % OUPUT:
 %       Xfit    : a vector containing the best fitting parameter values
-%       LL      : the loglikelihood value for the best fitting parameter values
+%       NegLL   : the neg loglikelihood value for the best fitting parameter values
 %       BIC     : the bayesian information criterion value
 %
 % Aroma Dabas [dabas@cbs.mpg.de]
