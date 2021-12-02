@@ -1,4 +1,4 @@
-function [LL, iBEST, BEST] = lik_all_v1(a, r, pt, b, epsilon, alpha, beta)
+function [LL, iBEST, BEST] = lik_all_v1(a, r, pt, b, epsilon, alpha, beta, alpha_c, beta_c)
 
 % LIK_ALL_v1
 % Function to compute the log likelihood of the data given the parameters
@@ -28,6 +28,8 @@ function [LL, iBEST, BEST] = lik_all_v1(a, r, pt, b, epsilon, alpha, beta)
 LL(1) = lik_M1random_v1(a, b);
 LL(2) = lik_M2WSLS_v1(a, r, epsilon);
 LL(3) = lik_M3RescorlaWagner_v1(a, r, alpha, beta, pt);
+LL(4) = lik_M4RWCK_v1(a, r, alpha, beta, alpha_c, beta_c, pt);
+LL(5) = lik_M5ChoiceKernel_v1(a, alpha_c, beta_c);
 
 % determine the model with the best likelihood value
 [M, iBEST] = min(LL);

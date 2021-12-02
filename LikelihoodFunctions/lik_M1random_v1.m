@@ -5,7 +5,6 @@ function NegLL = lik_M1random_v1(a, b)
 %
 % INPUT:
 %       a : choices vector
-%       r : reward received
 %       b : free parameter for estimating overall bias for one option over
 %               the other
 % OUPUT:
@@ -22,7 +21,6 @@ for t = 1:T
     
     % compute choice probabilities
     p = M1_randomRespondingBias(b);
-%    p = [b 1-b];
     
     % compute choice probability for actual choice
     choiceProb(t) = p(a(t));
