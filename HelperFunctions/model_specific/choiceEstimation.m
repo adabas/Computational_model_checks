@@ -91,7 +91,17 @@ for count = 1:nRep
     elseif model == 3
         alpha = pbounds(1,3) + (pbounds(2,3)-pbounds(1,3)) .* rand(1,1);
         beta = pbounds(1,4) + (pbounds(2,4)-pbounds(1,4)) .* rand(1,1);
-        [a, r, pt] = simulate_M3RescorlaWagner_v1(ntrials, alpha, beta, rewProb, rbounds, Npt); 
+        [a, r, pt] = simulate_M3RescorlaWagner_v1(ntrials, alpha, beta, rewProb, rbounds, Npt);
+    elseif model == 4
+        alpha = pbounds(1,3) + (pbounds(2,3)-pbounds(1,3)) .* rand(1,1);
+        beta = pbounds(1,4) + (pbounds(2,4)-pbounds(1,4)) .* rand(1,1);
+        alpha_c = pbounds(1,5) + (pbounds(2,5)-pbounds(1,5)) .* rand(1,1);
+        beta_c = pbounds(1,6) + (pbounds(2,6)-pbounds(1,6)) .* rand(1,1);
+        [a, r, pt] = simulate_M4RWCK_v1(ntrials, alpha, beta, alpha_c, beta_c, rewProb, rbounds, Npt);
+    elseif model == 5
+        alpha_c = pbounds(1,5) + (pbounds(2,5)-pbounds(1,5)) .* rand(1,1);
+        beta_c = pbounds(1,6) + (pbounds(2,6)-pbounds(1,6)) .* rand(1,1);
+        [a, r, pt] = simulate_M5CK_v1(ntrials, alpha_c, beta_c, rewProb, rbounds, Npt);
     end
 
     % store simulated data
@@ -116,6 +126,16 @@ for count = 1:nRep
     [a, r] = simulate_M3RescorlaWagner_v1(ntrials, pars(3,1), pars(3,2), rewProb, rbounds, Npt);
     fit(3).a(:,count) = a;
     fit(3).r(:,count) = r;
+    
+    % - Model 4
+    [a, r] = simulate_M4RWCK_v1(ntrials, pars(4,1), pars(4,2), pars(4,3), pars(4,4), rewProb, rbounds, Npt);
+    fit(4).a(:,count) = a;
+    fit(4).r(:,count) = r;
+    
+    % - Model 5
+    [a, r] = simulate_M5CK_v1(ntrials, pars(5,1), pars(5,2), rewProb, rbounds, Npt);
+    fit(5).a(:,count) = a;
+    fit(5).r(:,count) = r;
 
 end
 

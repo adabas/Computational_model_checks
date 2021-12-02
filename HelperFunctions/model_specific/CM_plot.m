@@ -82,21 +82,33 @@ for count = 1:nRep
     epsilon = pbounds(1,2) + (pbounds(2,2)-pbounds(1,2)) .* rand(1,1);
     alpha = pbounds(1,3) + (pbounds(2,3)-pbounds(1,3)) .* rand(1,1);
     beta = pbounds(1,4) + (pbounds(2,4)-pbounds(1,4)) .* rand(1,1);
+    alpha_c = pbounds(1,5) + (pbounds(2,5)-pbounds(1,5)) .* rand(1,1);
+    beta_c = pbounds(1,6) + (pbounds(2,6)-pbounds(1,6)) .* rand(1,1);
     
     % Model 1
     [a, r, pt] = simulate_M1random_v1(T, rbounds, b, mu, Npt);
-    [~, ~, BEST] = lik_all_v1(a, r, pt, b, epsilon, alpha, beta);
+    [~, ~, BEST] = lik_all_v1(a, r, pt, b, epsilon, alpha, beta, alpha_c, beta_c);
     CM_LL(1,:) = CM_LL(1,:) + BEST;
     
     % Model 2
     [a, r, pt] = simulate_M2WSLS_v1(T, rbounds, epsilon, mu, Npt);
-    [~, ~, BEST] = lik_all_v1(a, r, pt, b, epsilon, alpha, beta);
+    [~, ~, BEST] = lik_all_v1(a, r, pt, b, epsilon, alpha, beta, alpha_c, beta_c);
     CM_LL(2,:) = CM_LL(2,:) + BEST;
     
     % Model 3
     [a, r, pt] = simulate_M3RescorlaWagner_v1(T, alpha, beta, mu, rbounds, Npt);
-    [~, ~, BEST] = lik_all_v1(a, r, pt, b, epsilon, alpha, beta);
+    [~, ~, BEST] = lik_all_v1(a, r, pt, b, epsilon, alpha, beta, alpha_c, beta_c);
     CM_LL(3,:) = CM_LL(3,:) + BEST;
+    
+     % Model 4
+    [a, r, pt] = simulate_M4RWCK_v1(T, alpha, beta, alpha_c, beta_c, mu, rbounds, Npt);
+    [~, ~, BEST] = lik_all_v1(a, r, pt, b, epsilon, alpha, beta, alpha_c, beta_c);
+    CM_LL(4,:) = CM_LL(4,:) + BEST;
+    
+    % Model 5
+    [a, r, pt] = simulate_M5CK_v1(T, alpha_c, beta_c, mu, rbounds, Npt);
+    [~, ~, BEST] = lik_all_v1(a, r, pt, b, epsilon, alpha, beta, alpha_c, beta_c);
+    CM_LL(5,:) = CM_LL(5,:) + BEST;
     
     % open figure
     figure(fh.cm); clf;
@@ -120,7 +132,7 @@ for count = 1:nRep
     title(['count = ' num2str(count)]);
    
     % set ticks and labels
-    set(gca, 'xtick', 1:3, 'ytick', 1:3, 'fontsize', 18, ...
+    set(gca, 'xtick', 1:nMod, 'ytick', 1:nMod, 'fontsize', 18, ...
         'xaxislocation', 'top', 'tickdir', 'out')
     xlabel('fit model')
     ylabel('simulated model')

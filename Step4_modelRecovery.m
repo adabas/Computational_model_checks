@@ -1,9 +1,9 @@
-% The script assesses (in terms of probability) the extent to which each
-% model fits to the data simulated from every model. This allows us to
-% arbitrate between the different models of interest. 
-% This will be summarised in a confusion matrix. The confusion matix is
-% defined as the probability that simulated by one model is best fit by
-% another, i.e., p(fit model|simulated model).
+% The script assesses the probability that the best fitting model model to
+% a data is the model that simulated the data. This allows us to arbitrate
+% between the different models of interest. This is summarised in a
+% confusion matrix. The confusion matix is defined as the probability that
+% simulated by one model is best fit by another, i.e., p(fit
+% model|simulated model).
 %
 % This is a modification of the script by Bob Wilson and Anne Collins
 % (2019).
@@ -16,21 +16,20 @@
 
 clearvars; close all
 
-% set seed
-rng(2, 'twister');
-
 % ================== Modify ===============================================
 
 T    = 100;         % number of trials
-mu   = [0.7 0.4];   % reward probabilities
+mu   = [0.8 0.2];   % reward probabilities
 nRep = 100;         % number of repetitions
 rbounds = [0 1];    % bounds of the mean reward
 Npt  = 0;           % number of partial trials
-nMod = 3;           % number of models
+nMod = 5;           % number of models
 % type = 1;           % 1 for determining best fitting model using BIC. 0 for
 %                     % using negative log likelihood.
-pbounds = [0 0 0 0;
-    1 1 1 7];    % bounds [lower; upper] * parameters [b epsilon alpha beta]
+pbounds = [0 0 0.7 4 0.7 4;
+     1 1 0.8 6 0.8 6];
+%pbounds = [0 0 0 0 0 0;
+%   1 1 1 inf 1 inf];    % bounds [lower; upper] * parameters [b epsilon alpha beta]
    
 
 % ================== Add paths ============================================
@@ -50,7 +49,9 @@ plotFolder = './Figures/ModelSimulation/';
 AZred   = [171,5,32]/256;
 AZcactus = [92, 135, 39]/256;
 AZsky   = [132, 210, 226]/256;
-plotCol = {AZred AZcactus AZsky};
+brown = [171 104 87]./255;
+purple = [144 103 167]./255;
+plotCol = {AZred AZcactus AZsky brown purple};
 
 %% Section 2a: Confusion matrix.
 % simulate and fit data. Calculate the best-fit probability conditional on the model used for simulation.
@@ -63,12 +64,15 @@ fh.cm = figure('Name','CM');
 set(fh.cm,'position',[100 50 700 600],'paperunits','centimeters','Color','w');
 set(gca, 'fontsize', 12)
 
+% set seed
+rng(2, 'twister');
+
 for count = 1:nRep
     
     % Model 1
     b = rand;
     [a, r, pt] = simulate_M1random_v1(T, rbounds, b, mu, Npt);
-    [~, ~, BEST, pars] = fit_all_v1(a, r, pt, nMod, pbounds);
+    [~, ~, BEST] = fit_all_v1(a, r, pt, nMod, pbounds); 
     CM(1,:) = CM(1,:) + BEST;
     
     % Model 2
@@ -79,10 +83,26 @@ for count = 1:nRep
     
     % Model 3
     alpha = rand;
-    beta  = 5 + exprnd(5); % 1 + exprnd(1);
+    beta  = 3 + exprnd(3); % 1 + exprnd(1);
     [a, r, pt] = simulate_M3RescorlaWagner_v1(T, alpha, beta, mu, rbounds, Npt);
     [~, ~, BEST] = fit_all_v1(a, r, pt, nMod, pbounds);
     CM(3,:) = CM(3,:) + BEST;
+    
+     % Model 4
+    alpha = rand;
+    beta  = 3 + exprnd(3); % 1 + exprnd(1);
+    alpha_c = rand;
+    beta_c  = 3 + exprnd(3);
+    [a, r, pt] = simulate_M4RWCK_v1(T, alpha, beta, alpha_c, beta_c, mu, rbounds, Npt);
+    [~, ~, BEST] = fit_all_v1(a, r, pt, nMod, pbounds);
+    CM(4,:) = CM(4,:) + BEST;
+    
+    % Model 5
+    alpha_c = rand;
+    beta_c  = 3 + exprnd(3);
+    [a, r, pt] = simulate_M5CK_v1(T, alpha_c, beta_c, mu, rbounds, Npt);
+    [~, ~, BEST] = fit_all_v1(a, r, pt, nMod, pbounds);
+    CM(5,:) = CM(5,:) + BEST;
     
     % calculate probability
     FM = round(100*CM/sum(CM(1,:)))/100;
@@ -103,7 +123,7 @@ for count = 1:nRep
     title(['count = ' num2str(count)]);
    
     % set ticks and labels
-    set(gca, 'xtick', [1:3], 'ytick', [1:3], 'fontsize', 18, ...
+    set(gca, 'xtick', 1:nMod, 'ytick', 1:nMod, 'fontsize', 18, ...
         'xaxislocation', 'top', 'tickdir', 'out')
     xlabel('fit model')
     ylabel('simulated model')
@@ -170,8 +190,8 @@ end
 
 % -- Poor learning behaviour --
 % specify the parameter bounds
-pbounds = [0.4 0.6 0.6 0.5;
-    0.6 1 1 2];
+pbounds = [0 0 0.7 4 0.7 4;
+     1 1 0.8 6 0.8 6];
 
 % name the figure
 nameFig = 'CM (low learning)';
@@ -188,8 +208,8 @@ end
 
 % -- Fast learning behaviour --
 % specify the parameter bounds.
-pbounds = [0.3 0.1 0.7 4;
-    0.4 0.4 0.8 6];
+pbounds = [0.3 0.1 0.7 4 0.7 4;
+    0.4 0.4 0.8 6 0.8 6];
 
 % name the figure
 nameFig = 'CM (fast learning)';
@@ -207,11 +227,11 @@ end
 
 %% Section 3: Plot learning performance
 % Simulate data using a model and estimate each model's learning
-% performance. Are the model orignial and estimation-based results disparate from one another? 
+% performance. Are the model original and estimation-based results different from one another? 
 
 % parameter bounds for simulating the data
-pbounds = [0.3 0.1 0.02 5;  % 0.7 4
-    0.4 0.4 0.2 30]; %  0.8 20
+pbounds = [0 0 0.7 4 0.7 4;
+     1 1 0.8 6 0.8 6];
 
 % initiate the plot
 fh.ch = figure('Name','Model based choice estimation');
@@ -269,12 +289,12 @@ for model = 1:nMod
     end
 
      % y axis limits
-    ylim([-0.1 1.1]);
+    ylim([0.3 0.9]);
 
     % add labels
     ylabel('p(HR stimulus)');
     xlabel('trial');
-    legend({sprintf('sim. model %i', model), 'Model 1', 'Model 2', 'Model 3'}, 'location', 'southeast')
+    legend({sprintf('sim. model %i', model), 'Model 1', 'Model 2', 'Model 3', 'Model 4', 'Model 5'}, 'location', 'southeast')
     
     legend boxoff
 
@@ -284,9 +304,6 @@ if savePlots
     filename = fullfile(plotFolder, 'Model_recovery', 'choice_estimated.png');
     saveas(gcf, filename)
 end
-
-% For the given parameter bounds, the models' learning performance is quite
-% similar, particularly for data simulated by model 2.
 
 %% Section 4: Inversion matrix
 % Given the model that fits our data best, which model is most likely to have
