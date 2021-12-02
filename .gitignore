@@ -1,5 +1,5 @@
 ## Don't track participant specific results
-Figures/SubjectLevel/**
+Figures/**
 
 ## Don't track subject analysis file
 Step5_plotData_SubjectLevel.m
