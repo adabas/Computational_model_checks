@@ -109,7 +109,7 @@ for count = 1:nRep
     sim(1).r(:,count) = r;
 
     % estimate the best fitting parameters for all models
-    [~,~,~, pars] = fit_all_v1(a, r, pt, nMod, pbounds);
+    [~,~,~, pars] = fit_all_v1(a, r, pt, nMod, pbounds, a);
 
     % use parameter values to estimate the corresponding choice behaviour
     % - Model 1

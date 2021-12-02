@@ -1,4 +1,4 @@
-function [bic, iBEST, BEST, pars, NegLL] = fit_all_v1(a, r, pt, nMod, pbound)
+function [bic, iBEST, BEST, pars, NegLL] = fit_all_v1(a, r, pt, nMod, pbound, keycode)
 
 % FIT_ALL_v1 Function to compute the parameter values of each of the models
 % of interest that best fit the data. Currently, we have five models of
@@ -13,6 +13,7 @@ function [bic, iBEST, BEST, pars, NegLL] = fit_all_v1(a, r, pt, nMod, pbound)
 %       pt      : vector containing partial trial numbers
 %       nMod    : number of models
 %       pbound  : parameter bounds [lower; upper];
+%       keycode : keypresses
 %
 % OUPUT:
 %       bic     : a 1X(number of models) vector containing the BIC values
@@ -40,7 +41,7 @@ end
 
 % iterate to find the parameter values that best fit the data
 for iter = 1:10  % run this for 20 iterations
-       [x1(iter), l1(iter), b1(iter)] = fit_M1random_v1(a, pbound(:,1));
+       [x1(iter), l1(iter), b1(iter)] = fit_M1random_v1(keycode, pbound(:,1));
         [x2(iter), l2(iter), b2(iter)] = fit_M2WSLS_v1(a, r, pbound(:,2));
         [x3(iter,:), l3(iter), b3(iter)] = fit_M3RescorlaWagner_v1(a, r, pt, pbound(:,3:4));
         [x4(iter,:), l4(iter), b4(iter)] = fit_M4RWCK_v1(a, r, pt, pbound(:, 3:6));
