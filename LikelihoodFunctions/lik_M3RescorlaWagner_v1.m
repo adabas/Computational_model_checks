@@ -24,11 +24,11 @@ function [NegLL, PP, delta, QQ] = lik_M3RescorlaWagner_v1(a, r, alpha, beta, pt)
 T = length(a);
 
 % initialise values
-q = [0.5 0.5];
-PP = nan(T,2);
-delta = nan(1,T);
-QQ = nan(T,2);
-choiceProb = nan(1,T);
+q = [0.5 0.5];      % initial value of both stimuli
+PP = nan(T,2);      % probability of selecting either of the stimuli
+delta = nan(1,T);   % prediction error
+QQ = nan(T, size(q, 2));    % trial wise updated value
+choiceProb = nan(1,T);      % trial wise choice probability
 
 % loop over all trial
 for t = 1:T
@@ -42,13 +42,26 @@ for t = 1:T
     % store choice probabilities
     PP(t,:) = p;
     
-    % compute choice probability for actual choice
-    choiceProb(t) = p(a(t));
-    
-    % value update
-    q(a(t)) = M3_valueUpdate(alpha, q(a(t)), r(t), t, pt);
+    if isnan(a(t))
+        if t == 1   % missed first trial
+            q(t) = 0.5;
+            delta(t) = 0; %NaN; better 0 - no diff. b/w exp. and actual rew
+        else
+            choiceProb(t) = choiceProb(t-1);
+            delta(t) = 0;
+        end
+        
+    else
+        % compute choice probability for actual choice
+        choiceProb(t) = p(a(t));
 
+        % value update
+        [q(a(t)), delta(t)] = M3_valueUpdate(alpha, q(a(t)), r(t), t, pt);
+    end
 end
+
+% for last trial
+QQ(t,:) = q; 
 
 % compute negative log-likelihood
 NegLL = -sum(log(choiceProb));

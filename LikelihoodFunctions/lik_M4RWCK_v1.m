@@ -40,7 +40,7 @@ for t = 1:T
     CK(t,:) = k;
     
     % compute choice probabilities
-    p = M4_softmaxCK(q, k, beta, beta_c);
+    p = M4_softmaxRWCK(q, k, beta, beta_c);
     
     % store choice probability
     PP(t,:) = p;
@@ -52,6 +52,10 @@ for t = 1:T
     [q(a(t)), k(a(t)), delta(t)] = M4_valueUpdate(alpha, alpha_c, q(a(t)), k(a(t)), r(t), t, pt);
     
 end
+
+% for the last trial
+QQ(t,:) = q;
+CK(t,:) = k;
 
 % compute negative log-likelihood
 NegLL = -sum(log(choiceProb));
