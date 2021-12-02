@@ -49,7 +49,7 @@ if isempty(errors) | nargin==1;
     for t = 1:nbars
         tmp = data(t,~isnan(data(t,:)));
         errors(t) = std(tmp);
-%         errors(t) = errors(t)./sqrt(length(tmp)); % compute standard error of the mean
+        errors(t) = errors(t)./sqrt(length(tmp)); % compute standard error of the mean
     end
 elseif length(barvalues) ~= length(errors)
     error('barvalues and errors vectors must be of same dimension');
@@ -58,7 +58,7 @@ end
 if bScatter
     for t = 1:nbars
         tmp = data(t,~isnan(data(t,:)));
-        s = scatter(t*ones(1,length(tmp)),tmp,[],'k', 'jitter','on', 'jitterAmount',0.05);
+        s = scatter(t*ones(1,length(tmp)),tmp,[],'k', 'jitter','on', 'jitterAmount',0.13);%0.05);
         set(s,'MarkerEdgeColor',[1 0 0],'linewidth',2);
     end
 end
