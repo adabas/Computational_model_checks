@@ -37,7 +37,7 @@ addpath('./LikelihoodFunctions')
 
 % ================== Plot settings ========================================
 
-savePlots = 0;
+savePlots = 1;
 plotFolder = './Figures/ModelSimulation/';
 
 % colors
@@ -173,7 +173,7 @@ set(gca, 'fontsize', 24);
 
 % save plot
 if savePlots
-    filename = fullfile(plotFolder, 'Model_recovery', 'CM.png');
+    filename = fullfile(plotFolder, 'Model_recovery', sprintf('CM_t%d.png', T));
     saveas(gcf, filename)
 end
 
