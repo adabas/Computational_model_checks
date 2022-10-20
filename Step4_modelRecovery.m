@@ -18,19 +18,14 @@ clearvars; close all
 
 % ================== Modify ===============================================
 
-T    = 100;         % number of trials
-mu   = [0.8 0.2];   % reward probabilities
-nRep = 100;         % number of repetitions
-rbounds = [0 1];    % bounds of the mean reward
-Npt  = 0;           % number of partial trials
-nMod = 5;           % number of models
-% type = 1;           % 1 for determining best fitting model using BIC. 0 for
-%                     % using negative log likelihood.
-pbounds = [0 0 0.7 4 0.7 4;
-     1 1 0.8 6 0.8 6];
-%pbounds = [0 0 0 0 0 0;
-%   1 1 1 inf 1 inf];    % bounds [lower; upper] * parameters [b epsilon alpha beta]
-   
+T       = 96;               % number of trials
+mu      = [.8 .3];          % reward probabilities
+nRep    = 50;               % number of repetitions
+rbounds = [0 1];            % bounds of the mean reward
+Npt     = 0;                % number of partial trials
+nMod    = 5;                % number of models
+pbounds = [0 0 0 0 0 0;     % parameter bounds updated to empirical data     
+  1 1 1 400 1 250];
 
 % ================== Add paths ============================================
 
@@ -42,7 +37,7 @@ addpath('./LikelihoodFunctions')
 
 % ================== Plot settings ========================================
 
-savePlots = 1;
+savePlots = 0;
 plotFolder = './Figures/ModelSimulation/';
 
 % colors
