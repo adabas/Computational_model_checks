@@ -67,20 +67,20 @@ for count = 1:nRep
     % Model 1
     b = rand;
     [a, r, pt] = simulate_M1random_v1(T, rbounds, b, mu, Npt);
-    [~, ~, BEST] = fit_all_v1(a, r, pt, nMod, pbounds, a); 
+    [~, ~, BEST] = fit_all_v1(a, r, pt, nMod, pbounds); 
     CM(1,:) = CM(1,:) + BEST;
     
     % Model 2
     epsilon = rand;
     [a, r, pt] = simulate_M2WSLS_v1(T, rbounds, epsilon, mu, Npt);
-    [~, ~, BEST] = fit_all_v1(a, r, pt, nMod, pbounds, a);
+    [~, ~, BEST] = fit_all_v1(a, r, pt, nMod, pbounds);
     CM(2,:) = CM(2,:) + BEST;
     
     % Model 3
     alpha = rand;
     beta  = 3 + exprnd(3); % 1 + exprnd(1);
     [a, r, pt] = simulate_M3RescorlaWagner_v1(T, alpha, beta, mu, rbounds, Npt);
-    [~, ~, BEST] = fit_all_v1(a, r, pt, nMod, pbounds, a);
+    [~, ~, BEST] = fit_all_v1(a, r, pt, nMod, pbounds);
     CM(3,:) = CM(3,:) + BEST;
     
      % Model 4
@@ -89,14 +89,14 @@ for count = 1:nRep
     alpha_c = rand;
     beta_c  = 3 + exprnd(3);
     [a, r, pt] = simulate_M4RWCK_v1(T, alpha, beta, alpha_c, beta_c, mu, rbounds, Npt);
-    [~, ~, BEST] = fit_all_v1(a, r, pt, nMod, pbounds, a);
+    [~, ~, BEST] = fit_all_v1(a, r, pt, nMod, pbounds);
     CM(4,:) = CM(4,:) + BEST;
     
     % Model 5
     alpha_c = rand;
     beta_c  = 3 + exprnd(3);
     [a, r, pt] = simulate_M5CK_v1(T, alpha_c, beta_c, mu, rbounds, Npt);
-    [~, ~, BEST] = fit_all_v1(a, r, pt, nMod, pbounds, a);
+    [~, ~, BEST] = fit_all_v1(a, r, pt, nMod, pbounds);
     CM(5,:) = CM(5,:) + BEST;
     
     % calculate probability
