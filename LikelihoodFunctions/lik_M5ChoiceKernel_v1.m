@@ -42,9 +42,7 @@ for t = 1:T
     choiceProb(t) = p(a(t));
     
     % update choice kernel
-    %k(a(t)) = M5_CKUpdate(alpha_c, k(a(t)));
-    k = (1-alpha_c) * k;
-    k(a(t)) = k(a(t)) + alpha_c * 1;
+    k(a(t)) = M5_CKUpdate(alpha_c, k(a(t)));
 
 end
 
