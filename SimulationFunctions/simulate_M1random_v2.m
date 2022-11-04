@@ -27,8 +27,8 @@ function [a, r, pt, s] = simulate_M1random_v2(T, rbounds, b, rprob, Npt)
 % =========================================================================
 
 % create trial specific stimuli presentation
-s = stimuliPresentation(T);
-sSorted = sort(s,2);
+s = stimuliPresentation(T); 
+sSorted = sort(s,2); % [HR LR] sorted
 
 % randomise Npt trials over T trials as partial trials
 pt = sort(randperm(T, Npt));

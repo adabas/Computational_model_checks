@@ -1,4 +1,4 @@
-function [NegLL, PP, k] = lik_M5ChoiceKernel_v2(a, alpha_c, beta_c, stimPres)
+function [NegLL, PP, k] = lik_M5ChoiceKernel_v2(a, alpha_c, beta_c, s)
 
 % LIK_M3RESCORLAWAGNER_v1
 % Function to compute the negative log-likelihood values for fitting the model to the data.
@@ -7,6 +7,7 @@ function [NegLL, PP, k] = lik_M5ChoiceKernel_v2(a, alpha_c, beta_c, stimPres)
 %       a       : choices vector
 %       alpha_c : parameter alpha value
 %       beta_c  : parameter beta value
+%       s       : stimuli presented on each trial
 %
 % OUPUT:
 %       NegLL   : the negative log likelihood value
@@ -26,6 +27,9 @@ CK = nan(T, size(k, 2));
 PP = nan(T, 2); %size(k, 2));
 choiceProb = nan(1,T);
 
+% sort stimuli presentation into [HR LR]
+sSorted = sort(s, 2);
+
 % loop over all trial
 for t = 1:T
     
@@ -33,7 +37,7 @@ for t = 1:T
     CK(t,:) = k;
     
     % ck for presented
-    k_sub = k(stimPres(t,:));
+    k_sub = k(sSorted(t,:));
 
     % compute choice probabilities
     p = M5_softmaxCK(k_sub, beta_c);
@@ -42,7 +46,7 @@ for t = 1:T
     PP(t,:) = p;
     
     % compute choice probability for actual choice
-    choiceProb(t) = p(stimPres(t,:) == a(t));%p(a(t));
+    choiceProb(t) = p(sSorted(t,:) == a(t));%p(a(t));
     
     % update choice kernel
     k(a(t)) = M5_CKUpdate(alpha_c, k(a(t)));

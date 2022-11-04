@@ -36,6 +36,7 @@ CK = nan(T, size(k, 2)); % choice kernal update
 
 % load a stimuli presentation
 s = stimuliPresentation(T);
+sSorted = sort(s,2);
 
 for t = 1:T
     
@@ -43,7 +44,7 @@ for t = 1:T
     CK(t,:) = k;
     
     % choices presented at trial t
-    k_sub = k(s(t,:));
+    k_sub = k(sSorted(t,:));
     
     % compute choice probabilities
     p = M5_softmaxCK(k_sub, beta_c);
@@ -52,7 +53,7 @@ for t = 1:T
     PP(t,:) = p;
                 
     % generate choice according to choice probabability of a_t = 2
-    a(t) = s(t, choose(p(2)));
+    a(t) = sSorted(t, choose(p(2)));
     
     % UPDATE: for fMRI analysis, we are binaring the rewards.
     r(t) = rand < rprob(a(t));

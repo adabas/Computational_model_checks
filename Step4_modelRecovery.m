@@ -18,7 +18,7 @@ clearvars; close all
 
 % ================== Modify ===============================================
 
-T       = 96;               % number of trials
+T       = 1000; %96;               % number of trials
 mu      = [.8 .8 .3 .3]; %[.8 .3];          % reward probabilities
 nRep    = 50;               % number of repetitions
 rbounds = [0 1];            % bounds of the mean reward
@@ -80,7 +80,7 @@ for count = 1:nRep
     
     % Model 3
     alpha = rand;
-    beta  = 3 + exprnd(3); % 1 + exprnd(1);
+    beta  = 3 + exprnd(3);
     [a, r, pt, s] = simulate_M3RescorlaWagner_v2(T, alpha, beta, mu, rbounds, Npt);
     %[a, r, pt] = simulate_M3RescorlaWagner_v1(T, alpha, beta, mu, rbounds, Npt);
     [~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s); %fit_all_v1(a, r, pt, nMod, pbounds);

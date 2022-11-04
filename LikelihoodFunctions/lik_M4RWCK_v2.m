@@ -1,4 +1,4 @@
-function [NegLL, PP, delta, QQ, CK] = lik_M4RWCK_v2(a, r, alpha, beta, alpha_c, beta_c, pt, stimPres)
+function [NegLL, PP, delta, QQ, CK] = lik_M4RWCK_v2(a, r, alpha, beta, alpha_c, beta_c, pt, s)
 
 % LIK_M4RWCK_v1
 % Function to compute the negative log-likelihood values for fitting the model to the data.
@@ -9,6 +9,7 @@ function [NegLL, PP, delta, QQ, CK] = lik_M4RWCK_v2(a, r, alpha, beta, alpha_c, 
 %       alpha   : parameter alpha value
 %       beta    : parameter beta value
 %       pt      : vector containing partial trial numbers
+%       s       : stimuli presented trial wise
 %
 % OUPUT:
 %       NegLL   : the negative log likelihood value
@@ -18,7 +19,7 @@ function [NegLL, PP, delta, QQ, CK] = lik_M4RWCK_v2(a, r, alpha, beta, alpha_c, 
 %       CK      : matrix containing choice kernel value update
 %
 % Aroma Dabas
-% April 2020
+% October 2022
 % =========================================================================
 
 % number of trials
@@ -32,6 +33,9 @@ QQ = nan(T, size(q, 2)); % value update
 CK = nan(T, size(q, 2)); % choice kernal update
 delta = nan(T, 1); % prediction error
 
+% sort presented stimuli as [HR LR]
+sSorted = sort(s,2);
+
 % loop over all trial
 for t = 1:T
     
@@ -40,8 +44,8 @@ for t = 1:T
     CK(t,:) = k;
     
     % k and q for presented
-    q_sub = q(stimPres(t,:));
-    k_sub = k(stimPres(t,:));
+    q_sub = q(sSorted(t,:));
+    k_sub = k(sSorted(t,:));
     
     % compute choice probabilities
     p = M4_softmaxRWCK(q_sub, k_sub, beta, beta_c);
@@ -50,7 +54,7 @@ for t = 1:T
     PP(t,:) = p;
                 
     % compute choice probability for actual choice
-    choiceProb(t) = p(stimPres(t,:) == a(t));%p(a(t));
+    choiceProb(t) = p(sSorted(t,:) == a(t));%p(a(t));
     
     % update value and choice kernel
     [q(a(t)), k(a(t)), delta(t)] = M4_valueUpdate(alpha, alpha_c, q(a(t)), k(a(t)), r(t), t, pt);

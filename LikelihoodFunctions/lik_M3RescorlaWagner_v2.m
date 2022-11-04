@@ -31,6 +31,9 @@ delta = nan(1,T);           % prediction error
 QQ = nan(T, size(q, 2));    % trial wise updated value
 choiceProb = nan(1,T);      % trial wise choice probability
 
+% sort presented stimuli into [HR LR]
+sSorted = sort(s,2);
+
 % loop over all trial
 for t = 1:T
     
@@ -38,7 +41,7 @@ for t = 1:T
     QQ(t,:) = q; 
     
     % subset for the choices presented
-    q_sub = q(s(t,:));
+    q_sub = q(sSorted(t,:));
 
     % compute choice probabilities
     p = M3_softmaxFunction(q_sub, beta);
@@ -57,7 +60,7 @@ for t = 1:T
         
     else
         % compute choice probability for actual choice
-        choiceProb(t) = p(s(t,:) == a(t)); %p(a(t));
+        choiceProb(t) = p(sSorted(t,:) == a(t)); %p(a(t));
 
         % value update
         [q(a(t)), delta(t)] = M3_valueUpdate(alpha, q(a(t)), r(t), t, pt);

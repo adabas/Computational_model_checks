@@ -15,7 +15,7 @@ function s = stimuliPresentation(t)
 % Create order of the stimuli pairs without repeating the same presentation
 % twice
 nconditions = 4; 
-nrepeats = 24; %6;
+nrepeats = t/nconditions; %24; %6;
 n = nconditions * nrepeats;
 
 combInfo = {'one', 'two', 'three', 'four'};

@@ -39,7 +39,7 @@ T = length(a);
 % loop over all trial
 for t = 1:T
     
-    % select for the trial combination
+    % select last choice and reward for the trial combination
     trial_comb = s_comb{t};
     aLast = c.(sprintf('%s', trial_comb)).aLast;
     rLast = c.(sprintf('%s', trial_comb)).rLast;
@@ -48,12 +48,11 @@ for t = 1:T
     % compute choice probabilities
     p = M2_WSLSprob(aLast, rLast, epsilon);
     
-    % compute choice probability for actual choice
-    idChoice = find(sSorted(t,:) == a(t));
-    choiceProb(t) = p(idChoice);%p(a(t));
+    % compute choice probability for the selected choice
+    idChoice = find(trial_choices == a(t));
+    choiceProb(t) = p(idChoice);
     
     % update last choice
-    %[aLast, rLast] = M2_updateChoice(a(t), r(t));
     [c.(sprintf('%s', trial_comb)).aLast, c.(sprintf('%s', trial_comb)).rLast] = M2_updateChoice(idChoice, r(t));
 
 end

@@ -28,20 +28,22 @@ function [a, r, pt, s] = simulate_M2WSLS_v2(T, rbounds, epsilon, rprob, Npt)
 % October 2022
 % =========================================================================
 
-% combination options
-cName = {'one', 'two', 'three', 'four'};
-
 % create trial specific stimuli presentation
 s = stimuliPresentation(T);
 
-% sort into HR vs LR
+% sort into [HR LR]
 sSorted = sort(s,2);
+
+% ---
+% split into the four combinations
+cName = {'one', 'two', 'three', 'four'};
 
 s_comb = cell(96,1);
 s_comb(sSorted(:,1) == 1 & sSorted(:,2) == 3) = cName(1);
 s_comb(sSorted(:,1) == 1 & sSorted(:,2) == 4) = cName(2);
 s_comb(sSorted(:,1) == 2 & sSorted(:,2) == 3) = cName(3);
 s_comb(sSorted(:,1) == 2 & sSorted(:,2) == 4) = cName(4);
+% ---
 
 % last reward/action (initialize as nan) for each stimuli combination pair
 for i = 1:numel(cName)
@@ -84,8 +86,8 @@ for t = 1:T
 % %     rpos = [abs(rbounds(2)-0.5*rand()) abs(rbounds(1)-0.5*rand())];
 %     r(t) = rpos(select);
     
-    % update last choice trial
-    %[aLast, .rLast] = M2_updateChoice(a(t), r(t));
+    % update last choice trial as 1 for HR or 2 for LR; we need not store
+    % the exact stimuli selected
     [c.(sprintf('%s', trial_comb)).aLast, c.(sprintf('%s', trial_comb)).rLast] = M2_updateChoice(idChoice, r(t));
 
 end

@@ -7,8 +7,8 @@ function [bic, iBEST, BEST, pars, NegLL] = fit_all_v2(a, r, pt, nMod, pbound, s)
 % two free parameters, RW with choice kernel model with four parameters and
 % a simple choice kernel model with two free parameters.
 %
-% Difference from v1: Updated to fit data to the 4 stimuli, instead of the
-% two categories.
+% Difference from v1: Updated to fit data to the four stimuli, instead of
+% the two categories.
 %
 % INPUT:
 %       a       : choices vector
@@ -40,10 +40,16 @@ if any(isnan(a))
     [id,~] = find(isnan(a));
     a(id,:) = [];
     r(id,:) = [];
+    s(id,:) = [];
+elseif any(a == 0)
+    [id,~] = find(a == 0);
+    a(id,:) = [];
+    r(id,:) = [];
+    s(id,:) = [];
 end
 
 % iterate to find the parameter values that best fit the data
-for iter = 1:10  % run this for 20 iterations
+for iter = 1:10
     [x1(iter), l1(iter), b1(iter)] = fit_M1random_v2(a, pbound(:,1), s);
     [x2(iter), l2(iter), b2(iter)] = fit_M2WSLS_v2(a, r, pbound(:,2), s);
     [x3(iter,:), l3(iter), b3(iter)] = fit_M3RescorlaWagner_v2(a, r, pt, pbound(:,3:4), s);

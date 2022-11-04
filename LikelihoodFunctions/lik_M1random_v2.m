@@ -26,8 +26,7 @@ for t = 1:T
     p = M1_randomRespondingBias(b);
     
     % compute choice probability for actual choice
-    idChoice = find(sSorted(t,:) == a(t));
-    choiceProb(t) = p(idChoice);
+    choiceProb(t) = p(sSorted(t,:) == a(t));
     %choiceProb(t) = p(a(t));
     
 end

@@ -36,6 +36,7 @@ delta = nan(T, 1); % prediction error
 
 % load a stimuli presentation
 s = stimuliPresentation(T);
+sSorted = sort(s, 2);
 
 % cycle over trials
 for t = 1:T
@@ -44,7 +45,7 @@ for t = 1:T
     QQ(t,:) = q;
     
     % choices presented at trial t
-    q_sub = q(s(t,:));
+    q_sub = q(sSorted(t,:));
     
     % compute choice probabilities
     p = M3_softmaxFunction(q_sub, beta);
@@ -53,7 +54,7 @@ for t = 1:T
     PP(t,:) = p;
     
     % generate choice according to choice probabability of a_t = 2
-    a(t) = s(t, choose(p(2)));
+    a(t) = sSorted(t, choose(p(2)));
     
     % UPDATE: for fMRI analysis, we are binaring the rewards.
     r(t) = rand < rprob(a(t));
