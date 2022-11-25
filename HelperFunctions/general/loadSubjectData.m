@@ -70,14 +70,14 @@ data.feedback   = results(2:end, 12);
 idPartial  = find(cellfun('isempty', data.feedback));  % the empty cells are partial trials
 data.feedback(idPartial) = {'Missed'};
 
-% create stimuli presentation and choices
+% store trial wise stimuli presentated and choices
 for i = 1:length(itemmat)
     cond_id(i,1) = itemmat(i).ids{1};
     cond_id(i,2) = itemmat(i).cond;
 end
 
-stim = cell2mat(results(2:end, 7));
-for i = 1:4; data.stimuli(stim == cond_id(i,1)) = cond_id(i,2); end
+data.stimuliID = cell2mat(results(2:end, 7));
+for i = 1:4; data.stimuli(data.stimuliID == cond_id(i,1)) = cond_id(i,2); end
 data.stimuli = data.stimuli';
 
 data.stimPresented = [stimmat.presentation(1).trials; stimmat.presentation(2).trials;...
