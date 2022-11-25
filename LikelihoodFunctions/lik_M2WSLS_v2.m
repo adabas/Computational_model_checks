@@ -1,4 +1,4 @@
-function NegLL = lik_M2WSLS_v2(a, r, epsilon, s)
+function [NegLL, choiceProb, PP] = lik_M2WSLS_v2(a, r, epsilon, s)
 
 % LIK_M2WSLS_v2
 % Function to compute the negative log-likelihood values for fitting the model to the data.
@@ -10,7 +10,9 @@ function NegLL = lik_M2WSLS_v2(a, r, epsilon, s)
 %       s       : trial wise stimuli presentation
 %
 % OUPUT:
-%       NegLL : the negative log likelihood value
+%       NegLL   : the negative log likelihood value
+%       choiceProb: estimated choice
+%       PP      : trial wise choice probabilities for both HR and LR stim
 %
 % Aroma Dabas [dabas@cbs.mpg.de]
 % October 2022
@@ -36,6 +38,9 @@ end
 
 T = length(a);
 
+% track trial wise probability for both HR and LR stimuli
+PP = nan(T,2);
+
 % loop over all trial
 for t = 1:T
     
@@ -47,6 +52,7 @@ for t = 1:T
     
     % compute choice probabilities
     p = M2_WSLSprob(aLast, rLast, epsilon);
+    PP(t,:) = p;
     
     % compute choice probability for the selected choice
     idChoice = find(trial_choices == a(t));
