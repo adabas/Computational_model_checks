@@ -1,8 +1,8 @@
 ## Don't track participant specific results
-Figures/**
+# Figures/**
 
 ## Don't track subject analysis file
 Step5_plotData_SubjectLevel.m
 
 ## Ignore figures generated and saved while running the scripts
-*.png
+# *.png
