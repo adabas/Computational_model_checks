@@ -35,11 +35,13 @@ clearvars
 rng(244);    % set seed
 
 % ================== Modify ===============================================
-subjects    = [11:18 20:21 23:55 57:60]; %[11:18, 20:21, 23:60];  % specify subject IDs
+subjects    = [11:55 57:60]; %[11:18 20:21 23:55 57:60];  % specify subject IDs
+trialSeq    = 1:96;
 savePlots   = true;    % true will save plots in plotFolder directory
+saveData    = false;     
 highRewAction = 2;      % set 2 and 1 to plot HR choices and LR choices, respectively.
 rprob       = [0.8 0.3];
-plotFolder  = "./Figures/GroupLevel";     % figure path as a string
+plotFolder  = './Figures/GroupLevel';     % figure path as a string
 
 % store labels for plotting
 cond        = {'High Reward', 'Low Reward'};    % unconditioned stimuli labels
@@ -56,23 +58,25 @@ bounds  = [0 1; % alpha
 n.bin   = [20 30] ;
 
 % parameter bounds [lower; upper] * parameters [b epsilon alpha(RW) beta(RW) alpha(CK) beta(CK) alpha_c beta_c]
-pbounds = [0 0 0.01 0 0.01 0 0.01 0;
-           1 1 1 50 1 50 1 50];
-% pbounds = [0.25 0 0.01 0 0.01 0 0.01 0;
-%            0.75 1 1 50 1 50 1 50];
+pbounds = [0 0 0 0 0 0;     % parameter bounds updated to empirical data     
+  1 1 1 400 1 250];
 
-nameModels = {'RW model' 'RW model', 'RR model', 'WSLS model',...
-    'RW-CK', 'RW-CK', 'RW-CK', 'RW-CK'};
+% ================== Models ===============================================
+modNames    = {'RR', 'WSLS', 'RW', 'RW-CK', 'CK'}; % don't change the order
+nMod        = numel(modNames);
 
 % ================== Plot colors ==========================================
 AZred   = [171,5,32]/256;
 AZcactus = [92, 135, 39]/256;
 AZsky   = [132, 210, 226]/256;
+AZblack = [0, 0, 0];
+AZpurple = [0.4940 0.1840 0.5560];
+AZgreen = [0.4660 0.6740 0.1880];
 
 % ================== Add paths ============================================
 
 % add path of the current folder
-tmp = fileparts(which('Step6_plotData_GroupLevel'));
+tmp = fileparts(which('Step6_plotData_GroupLevel_v2'));
 addpath(tmp);
 
 % add path to required folders in the current folder
@@ -84,18 +88,30 @@ addpath(fullfile(tmp, 'SimulationFunctions'))
 addpath(fullfile(tmp, 'FittingFunctions'))
 
 % add path to the data folder
-rootdir     = tmp(1:end-32);
+rootdir     = tmp(1:end-37);
 datapath    = fullfile(rootdir, '01_Data', 'LSim_3_behavioural');
 
-%% Section 2a: For each subject, load and analyse simulation task data
+clear tmp
+
+%% Section 2: For each subject, load and analyse simulation task data
+
+% start counter
+a = 1;
+b = 2;
 
 for i = 1:length(subjects)  
 
     [data_subj, BIC(i,:), iBEST(i), BEST(i,:), pars, NegLL(i,:)] = subjectAnalysis_v2(subjects(i), datapath, nMod, pbounds);
     
+    % for missed trials, re  
+    if isnan(data_subj.choice(end)); data_subj.stimuli(end+1) = 0; end
+    
     % store subject data
     data.score(i) = data_subj.score;
     data.choice(:,i) = data_subj.choice;
+    data.stim(:,i) = data_subj.stimuli;
+    data.pres(:,a:b) = data_subj.stimPresented;
+    data.binRate(:,i) = data_subj.rate.binary;
     
     % store parameter values
     p(1).value(i) = pars(1,1);  % b
@@ -106,38 +122,46 @@ for i = 1:length(subjects)
     p(6).value(i) = pars(4,2);  % beta_n
     p(7).value(i) = pars(4,3);  % alpha_c
     p(8).value(i) = pars(4,4);  % beta_c
+    p(9).value(i) = pars(5,1);  % alpha_ck
+    p(10).value(i) = pars(5,2); % beta_ck
+    
+    a = a + 2;
+    b = b + 2;
     
 end
 
 % Store parameters in a table
-alpha = p(3).value';
-beta = p(4).value';
-alpha_n = p(5).value';
-beta_n = p(6).value';
-alpha_nc = p(7).value';
-beta_nc = p(8).value';
+alpha_rw = p(3).value';
+beta_rw = p(4).value';
+alpha_rwck_rw = p(5).value';
+beta_rwck_rw = p(6).value';
+alpha_rwck_ck = p(7).value';
+beta_rwck_ck = p(8).value';
+alpha_ck = p(9).value';
+beta_ck = p(10).value';
 epsilon = p(2).value';
 b = p(1).value';
 
-% store in tables
-t1 = table(subjects', alpha, beta, alpha_n, beta_n, alpha_nc, beta_nc, epsilon, b);
-t1.Properties.VariableNames([1]) = {'Subjects'};
+% store parameter values
+t1 = table(subjects', alpha_rw, beta_rw, alpha_rwck_rw, beta_rwck_rw,...
+    alpha_rwck_ck, beta_rwck_ck, alpha_ck, beta_ck, epsilon, b);
+t1.Properties.VariableNames(1) = {'Subjects'};
 
-% Store loglikelihoods and BIC values in a table
+% Store negative loglikelihoods and BIC values
 t2 = table(subjects', NegLL);
-t2.Properties.VariableNames([1]) = {'Subjects'};
+t2.Properties.VariableNames(1) = {'Subjects'};
 
-t3 = table(subjects', BIC);
-t3.Properties.VariableNames([1]) = {'Subjects'};
+t3 = table(subjects', iBEST', BIC);
+t3.Properties.VariableNames(1:2) = {'Subjects', 'winModel'};
  
-% Store accuracy values
+% Store accuracy
 t4 = table(subjects', data.score');
-t4.Properties.VariableNames([1]) = {'Subjects'};
-t4.Properties.VariableNames([2]) = {'Accuracy'};
+t4.Properties.VariableNames(1) = {'Subjects'};
+t4.Properties.VariableNames(2) = {'Accuracy'};
 
 % Save choice behaviour
 t5 = table(subjects', data.choice');
-t5.Properties.VariableNames([1]) = {'Subjects'};
+t5.Properties.VariableNames(1) = {'Subjects'};
 
 % % calculate LRT
 % df = length(subjects)*2;
@@ -145,57 +169,16 @@ t5.Properties.VariableNames([1]) = {'Subjects'};
 % t6 = table(subjects', h, pValue, stat, cValue);
 
 % save tables
-writetable(t1, sprintf("DataOutput/paramVal%i-%i.csv", min(subjects), max(subjects)));
-writetable(t2, sprintf("DataOutput/NegLLVal%i-%i.csv", min(subjects), max(subjects)))
-writetable(t3, sprintf("DataOutput/BICVal%i-%i.csv", min(subjects), max(subjects)))
-writetable(t4, sprintf("DataOutput/accuracy%i-%i.csv", min(subjects), max(subjects)))
-writetable(t5, sprintf("DataOutput/choicebehaviour%i-%i.csv", min(subjects), max(subjects)))
-
-%% Section 2b: For each subject, load and analyse bandit task data
-
-for i = 1:length(subjects)  
-
-    [data_subj_band, BIC_band(i,:), iBEST_band(i), BEST_band(i,:), pars_band, NegLL_band(i,:)] = subjectAnalysis_bandit(subjects(i), datapath, nMod, pbounds);
-    
-    % store subject data
-    data_band.score(i) = data_subj_band.score;
-    data_band.choice(:,i) = data_subj_band.choice;
-    
-    % store parameter values
-    p(1).band(i) = pars_band(1,1);  % b
-    p(2).band(i) = pars_band(2,1);  % epsilon
-    p(3).band(i) = pars_band(3,1);  % alpha
-    p(4).band(i) = pars_band(3,2);  % beta
-    p(5).band(i) = pars_band(4,1);  % alpha_n
-    p(6).band(i) = pars_band(4,2);  % beta_n
-    p(7).band(i) = pars_band(4,3);  % alpha_c
-    p(8).band(i) = pars_band(4,4);  % beta_c
-    
+if saveData
+    writetable(t1, sprintf("DataOutput/paramVal.csv"));
+    writetable(t2, sprintf("DataOutput/NegLLVal.csv"));
+    writetable(t3, sprintf("DataOutput/BICVal.csv"));
+    writetable(t4, sprintf("DataOutput/accuracy.csv"));
+    writetable(t5, sprintf("DataOutput/choices.csv"));
 end
 
-% Store parameters in a table
-alpha_band = p(3).band';
-beta_band = p(4).band';
-alpha_n_band = p(5).band';
-beta_n_band = p(6).band';
-alpha_nc_band = p(7).band';
-beta_nc_band = p(8).band';
-epsilon_band = p(2).band';
-b_band = p(1).band';
 
-% store in tables
-t7 = table(subjects', alpha_band, beta_band, alpha_n_band, beta_n_band, alpha_nc_band, beta_nc_band, epsilon_band, b_band);
-t7.Properties.VariableNames([1]) = {'Subjects'};
-
-% Store loglikelihoods and BIC values in a table
-t8 = table(subjects', NegLL_band);
-t8.Properties.VariableNames([1]) = {'Subjects'};
-
-% save tables
-writetable(t7, sprintf("DataOutput/paramVal-bandit%i-%i.csv", min(subjects), max(subjects)));
-writetable(t8, sprintf("DataOutput/NegLLVal-bandit%i-%i.csv", min(subjects), max(subjects)))
-
-%% Section 3a: Plot choice behaviour for simulation task
+%% Section 3: Plot choice behaviour for simulation task
 % Is the data.choice behaviour evolving over the trials to move towards the 
 % p(reward|HR) threshold?
 
@@ -215,130 +198,104 @@ set(gca, 'fontsize', 14)
 
 % save figure
 if savePlots
+    
+    if ~exist(plotFolder, 'dir'); mkdir(plotFolder); end
+    
     fh.score.PaperPositionMode = 'auto';
-    saveas(gcf, sprintf('%s/Prob_HR/prob_%i-%i.png', plotFolder,...
-        min(subjects),max(subjects)))
+    saveas(gcf, sprintf('%s/probHR.png', plotFolder))
 end
 
 % ======== Plot raw behavioural data & smoothed response function ========
 
-% calculate HR choice mean over each trial
-HR_choiceMean = nanmean(data.choice, 2);
+% estimate the mean HR choice for each model
+m = 1;
+n = 2;
+for i = 1:numel(subjects)
     
-% rescale the choice mean such that it ranges between 0 (LR) and 1 (HR)
-if highRewAction == 2
-    HR_choiceMean = (2 - HR_choiceMean)';
-else
-    HR_choiceMean = (HR_choiceMean - 1)';
-end
+    % remove missed trials
+    id = ~isnan(data.binRate(:,i));
+    stim = data.stim(id, i);
+    binRate = data.binRate(id, i);
+    stimPres = data.pres(id,m:n);
 
-% no. of trials over which to smooth
-smoothingkernel = 6;
+    % estimate the 5 models
+    [~, ~, tmp.p1] = lik_M1random_v2(stim, b(i), stimPres);
+    [~, ~, tmp.p2] = lik_M2WSLS_v2(stim, binRate, epsilon(i), stimPres);
+    [~, tmp.p3, d] = lik_M3RescorlaWagner_v2(stim, binRate,...
+        alpha_rw(i), beta_rw(i), [], stimPres);
+    [~, tmp.p4] = lik_M4RWCK_v2(stim, binRate, alpha_rwck_rw(i), beta_rwck_rw(i),...
+        alpha_rwck_ck(i), beta_rwck_ck(i), [], stimPres);
+    [~, tmp.p5] = lik_M5ChoiceKernel_v2(stim, alpha_ck(i), beta_ck(i), stimPres);
 
-% start plot
-fh.choice = figure('Name', 'Trial-by-trial choice');
-box off; hold on;
-set(fh.choice,'position', [500 500 700 450],'paperunits','centimeters',...
-    'paperposition',[0 0 6 6],'Color','w');
-set(gca, 'fontsize', 14)
-
-% set y axis limits
-ylim([-0.1 1.1]);
-
-% add data to the plot
-line([0, length(HR_choiceMean)],...
-    [rprob(1), rprob(1)],...
-    'LineStyle', '--', 'Color', AZsky, 'linewidth',0.5);  hold on    
-line([0, length(HR_choiceMean)],...
-    [rprob(2),rprob(2)],...
-    'LineStyle', '--', 'Color', AZcactus, 'linewidth',0.5);  hold on
-plot(HR_choiceMean', ':', 'color', AZred, 'linewidth',0.5)
-plot(mySmooth(HR_choiceMean, smoothingkernel,[], 'backward'),...
-        '-','color', AZred,'linewidth',1); 
-
-% add labels
-title(sprintf('Mean choice, subject %i-%i',subjects(1), subjects(end)), 'FontWeight','Normal');
-ylabel('p(HR)', 'fontweight','bold','fontsize',18);
-xlabel('trial', 'fontweight','bold','fontsize',18);
-legend({'p(reward|HR)', 'p(reward|LR)','mean choice','smoothed mean choice (HR)'},'location','southeast')
-%legend boxoff
-
-if savePlots
-    fh.choice.PaperPositionMode = 'auto';
-    saveas(gcf, sprintf('%s/Choices/choices_%i-%i.png',...
-        plotFolder, min(subjects), max(subjects)))
-end
-
-%% Section 3b: Plot choice behaviour for bandit task
-% Is the data.choice behaviour evolving over the trials to move towards the 
-% p(reward|HR) threshold?
-
-% ================== Plot p(correct data.choices)  =========================
-
-% plot using the barScatter.m function
-fh.score_band = figure('Name','bandit-score'); set(fh.score_band,'position',[100 500 250 400],'paperunits','centimeters',...
-    'paperposition',[0 0 6 6],'Color','w');
-barScatter(data_band.score,[],[],true);   % barplot function with error bars
-set(gca,'xtick',[]);
-ylabel('p(HR)');
-title(sprintf('Subject %i-%i', subjects(1), subjects(end)), 'FontWeight','Normal');
-ylim([0 1])
-box off  
-
-% save figure
-if savePlots
-    fh.score_band.PaperPositionMode = 'auto';
-    saveas(gcf, sprintf('%s/Prob_HR/BanditTask/probBandit_%i-%i.png', plotFolder,...
-        min(subjects),max(subjects)))
-end
-
-% ======== Plot raw behavioural data & smoothed response function ========
-
-% calculate HR choice mean over each trial
-HR_choiceMean = nanmean(data_band.choice, 2);
+    % replace missed trials with mean of nearest neighbours
+    for j = 1:5
+        tmp2 = nan(size(data.stim(:,i)));
+        tmp2(id) = tmp.(sprintf('p%d', j))(:,1);
+        tmp2 = interp1(trialSeq(~isnan(tmp2)), tmp2(~isnan(tmp2)), trialSeq);
+        PP.(sprintf('m%d', j))(i,:) = tmp2;
+        
+        clear tmp2
+    end
     
-% rescale the choice mean such that it ranges between 0 (LR) and 1 (HR)
-if highRewAction == 2
-    HR_choiceMean = (2 - HR_choiceMean)';
-else
-    HR_choiceMean = (HR_choiceMean - 1)';
+    m = m + 2;
+    n = n + 2;
+    
+    clear tmp id stim stimPres binRate
 end
 
-% no. of trials over which to smooth
-smoothingkernel = 6;
+% ---
+% calculate mean and standard error of mean across subject for HR choice
+for j = 1:5
+    PP.(sprintf('mean%d', j)) = nanmean(PP.(sprintf('m%d', j)), 1);
+    PP.(sprintf('smean%d',j)) = mySmooth(PP.(sprintf('mean%d', j)),6,[],'backward');
+    PP.(sprintf('std%d', j)) = nanstd( PP.(sprintf('m%d', j)) );
+    PP.(sprintf('sem%d', j)) = nanstd( PP.(sprintf('m%d', j)) ) / sqrt( numel(subjects) );
+end
 
-% start plot
-fh.choice_band = figure('Name', 'Trial-by-trial choice');
-box off; hold on;
-set(fh.choice_band,'position', [500 500 700 450],'paperunits','centimeters',...
-    'paperposition',[0 0 6 6],'Color','w');
+% calculate the mean of real choices
+if highRewAction == 2
+    choice = (2 - data.choice)';
+else
+    choice = (data.choice - 1)';
+end
+meanChoice = nanmean(choice, 1);
+
+% smooth the mean
+smoothMeanChoice = mySmooth(meanChoice,6,[],'backward');
+
+% ---
+% plot the mean with shaded standard error of mean for each model
+% estimation
+
+% initialise plot
+fh.est = figure('Name','Model estimates'); 
+set(fh.est,'position', [500 500 700 400],'paperunits','centimeters',...
+        'paperposition',[0 0 5 5],'Color','w');
 set(gca, 'fontsize', 12)
+hold on
+box off; hold on;
+ylim([0.3 1]);
 
-% set y axis limits
-ylim([-0.1 1.1]);
+% plot
+pl = plot(smoothMeanChoice, '-','color', AZblack,'linewidth',1.5); hold on
+hl1 = boundedline(trialSeq,PP.smean1, PP.sem1,'alpha','cmap',AZsky); hold on
+hl2 = boundedline(trialSeq,PP.smean2, PP.sem2,'alpha','cmap',[0.9290 0.6940 0.1250]); hold on
+hl3 = boundedline(trialSeq,PP.smean3, PP.sem3,'alpha','cmap',[0 0.4470 0.7410]); hold on
+hl4 = boundedline(trialSeq,PP.smean4, PP.sem4,'alpha','cmap',AZred); hold on
+hl5 = boundedline(trialSeq,PP.smean5, PP.sem5,'alpha','cmap',AZgreen); hold on
 
-% add data to the plot
-line([0, length(HR_choiceMean)],...
-    [rprob(1), rprob(1)],...
-    'LineStyle', '--', 'Color', AZsky, 'linewidth',0.5);  hold on    
-line([0, length(HR_choiceMean)],...
-    [rprob(2),rprob(2)],...
-    'LineStyle', '--', 'Color', AZcactus, 'linewidth',0.5);  hold on
-plot(HR_choiceMean', ':', 'color', AZred, 'linewidth',0.5)
-plot(mySmooth(HR_choiceMean, smoothingkernel,[], 'backward'),...
-        '-','color', AZred,'linewidth',1); 
-
-% add labels
-title(sprintf('Mean choice, subject %i-%i',subjects(1), subjects(end)), 'FontWeight','Normal');
-ylabel('p(HR stimuli)');
+% add labels and legend
+ylabel('choice');
 xlabel('trial');
-legend({'p(reward|HR)', 'p(reward|LR)','mean choice','smoothed mean choice (HR)'},'location','southeast')
-%legend boxoff
+Lgnd = legend([pl hl1 hl2 hl3 hl4 hl5], 'real choice', modNames{1}, modNames{2}, modNames{3},...
+    modNames{4}, modNames{5},'location', 'best');
+Lgnd.Box = 'off';
+title('Smoothed mean real and estimated choices');
 
+% save plot
 if savePlots
-    fh.choice_band.PaperPositionMode = 'auto';
-    saveas(gcf, sprintf('%s/Choices/BanditTask/choicesBandit_%i-%i.png',...
-        plotFolder, min(subjects), max(subjects)))
+    fh.est.PaperPositionMode = 'auto';
+    saveas(gcf, sprintf('%s/Model_est.png', plotFolder))
 end
 
 % done
