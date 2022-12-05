@@ -50,7 +50,7 @@ end
 
 % iterate to find the parameter values that best fit the data
 for iter = 1:10
-   [x1(iter), l1(iter), b1(iter)] = fit_M1random_v2(a, pbound(:,1), s);
+    [x1(iter), l1(iter), b1(iter)] = fit_M1random_v2(a, pbound(:,1), s);
     [x2(iter), l2(iter), b2(iter)] = fit_M2WSLS_v2(a, r, pbound(:,2), s);
     [x3(iter,:), l3(iter), b3(iter)] = fit_M3RescorlaWagner_v2(a, r, pt, pbound(:,3:4), s);
     [x4(iter,:), l4(iter), b4(iter)] = fit_M4RWCK_v2(a, r, pt, pbound(:, 3:6), s);

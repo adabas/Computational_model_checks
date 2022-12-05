@@ -16,7 +16,7 @@ rng(244, 'twister');    % set seed
 subjects    = 11:60;       % specify subject ID
 savePlots   = true;     % true will save plots in plotFolder directory
 plotFolder  = "./Figures/SubjectLevel";
-xdata       = 1:96;     % for plotting
+trialSeq       = 1:96;     % for plotting
 
 % specify the bounds, and the number of bins for grid search
 pbounds = [0 0 0 0 0 0;     % parameter bounds updated to empirical data     
@@ -143,8 +143,8 @@ for isub = subjects
     for i = 1:5
         PP.(sprintf('m%d', i)) = nan(size(data.choice));
         PP.(sprintf('m%d', i))(~isnan(data.choice)) = tmp.(sprintf('p%d', i))(:,1);
-        PP.(sprintf('m%d', i)) = interp1(xdata(~isnan(PP.(sprintf('m%d', i)))),...
-            PP.(sprintf('m%d', i))(~isnan(PP.(sprintf('m%d', i)))), xdata);
+        PP.(sprintf('m%d', i)) = interp1(trialSeq(~isnan(PP.(sprintf('m%d', i)))),...
+            PP.(sprintf('m%d', i))(~isnan(PP.(sprintf('m%d', i)))), trialSeq);
     end
     
     % ---
