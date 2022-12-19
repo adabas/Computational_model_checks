@@ -37,7 +37,7 @@ rng(244);    % set seed
 % ================== Modify ===============================================
 subjects    = [11:55 57:60]; %[11:18 20:21 23:55 57:60];  % specify subject IDs
 trialSeq    = 1:96;
-savePlots   = true;    % true will save plots in plotFolder directory
+savePlots   = false;    % true will save plots in plotFolder directory
 saveData    = false;     
 highRewAction = 2;      % set 2 and 1 to plot HR choices and LR choices, respectively.
 rprob       = [0.8 0.3];
@@ -58,8 +58,8 @@ bounds  = [0 1; % alpha
 n.bin   = [20 30] ;
 
 % parameter bounds [lower; upper] * parameters [b epsilon alpha(RW) beta(RW) alpha(CK) beta(CK) alpha_c beta_c]
-pbounds = [0 0 0 0 0 0;     % parameter bounds updated to empirical data     
-  1 1 1 400 1 250];
+pbounds = [0.5 0 0 0 0 0;     % parameter bounds updated to empirical data     
+  0.5 1 1 400 1 250];
 
 % ================== Models ===============================================
 modNames    = {'RR', 'WSLS', 'RW', 'RW-CK', 'CK'}; % don't change the order
@@ -298,4 +298,18 @@ if savePlots
     saveas(gcf, sprintf('%s/Model_est.png', plotFolder))
 end
 
+% save data
+if saveData
+    
+    % convert estimated choices and estimated standard error of mean to a
+    % table
+    t10 = table(meanChoice', smoothMeanChoice', PP.smean1', PP.sem1', PP.smean2', PP.sem2',...
+        PP.smean3', PP.sem3', PP.smean4', PP.sem4', PP.smean5', PP.sem5');
+    t10.Properties.VariableNames = {'meanChoice', 'smoothMeanChoice', 'nullMeanEst', 'nullSEMEst', 'wslsMeanEst', 'wslsSEMEst',...
+        'rwMeanEst', 'rwSEMEst', 'rwckMeanEst', 'rwckSEMEst', 'ckMeanEst', 'ckSEMEst'};
+    
+    % save
+    writetable(t10, sprintf("DataOutput/realEstimatedChoices.csv"));   
+    
+end
 % done
