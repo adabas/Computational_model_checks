@@ -49,35 +49,55 @@ elseif any(a == 0)
 end
 
 % iterate to find the parameter values that best fit the data
+% for iter = 1:10
+%    [x1(iter), l1(iter), b1(iter)] = fit_M1random_v2(a, pbound(:,1), s);
+%     [x2(iter), l2(iter), b2(iter)] = fit_M2WSLS_v2(a, r, pbound(:,2), s);
+%     [x3(iter,:), l3(iter), b3(iter)] = fit_M3RescorlaWagner_v2(a, r, pt, pbound(:,3:4), s);
+%     [x4(iter,:), l4(iter), b4(iter)] = fit_M4RWCK_v2(a, r, pt, pbound(:, 3:6), s);
+%     [x5(iter,:), l5(iter), b5(iter)] = fit_M5ChoiceKernel_v2(a, r, pt, pbound(:, 5:6), s);
+% end
 for iter = 1:10
-    [x1(iter), l1(iter), b1(iter)] = fit_M1random_v2(a, pbound(:,1), s);
-    [x2(iter), l2(iter), b2(iter)] = fit_M2WSLS_v2(a, r, pbound(:,2), s);
-    [x3(iter,:), l3(iter), b3(iter)] = fit_M3RescorlaWagner_v2(a, r, pt, pbound(:,3:4), s);
-    [x4(iter,:), l4(iter), b4(iter)] = fit_M4RWCK_v2(a, r, pt, pbound(:, 3:6), s);
-    [x5(iter,:), l5(iter), b5(iter)] = fit_M5ChoiceKernel_v2(a, r, pt, pbound(:, 5:6), s);
+    [x1(iter), l1(iter), b1(iter)] = fit_M2WSLS_v2(a, r, pbound(:,1), s);
+    [x2(iter,:), l2(iter), b2(iter)] = fit_M3RescorlaWagner_v2(a, r, pt, pbound(:,2:3), s);
+    [x3(iter,:), l3(iter), b3(iter)] = fit_M4RWCK_v2(a, r, pt, pbound(:, 2:5), s);
+    [x4(iter,:), l4(iter), b4(iter)] = fit_M5ChoiceKernel_v2(a, r, pt, pbound(:, 4:5), s);
 end
 
 % determine the best fitting parameter for each model
+% [NegLL(1),i(1)]=min(l1(:));
+% [NegLL(2),i(2)]=min(l2(:));
+% [NegLL(3),i(3)]=min(l3(:));
+% [NegLL(4),i(4)]=min(l4(:));
+% [NegLL(5),i(5)]=min(l5(:));
+
 [NegLL(1),i(1)]=min(l1(:));
 [NegLL(2),i(2)]=min(l2(:));
 [NegLL(3),i(3)]=min(l3(:));
 [NegLL(4),i(4)]=min(l4(:));
-[NegLL(5),i(5)]=min(l5(:));
 
 % select the BIC for best fitting parameter
+% bic(1) = b1(i(1));
+% bic(2) = b2(i(2));
+% bic(3) = b3(i(3));
+% bic(4) = b4(i(4));
+% bic(5) = b5(i(5));
 bic(1) = b1(i(1));
 bic(2) = b2(i(2));
 bic(3) = b3(i(3));
 bic(4) = b4(i(4));
-bic(5) = b5(i(5));
+
 
 % store the best fitting parameter
 pars = nan(nMod);
+% pars(1,1) = x1(i(1));
+% pars(2,1) = x2(i(2));
+% pars(3,1:2) = x3(i(3),:);
+% pars(4,1:4) = x4(i(4),:);
+% pars(5,1:2) = x5(i(5),:);
 pars(1,1) = x1(i(1));
-pars(2,1) = x2(i(2));
-pars(3,1:2) = x3(i(3),:);
-pars(4,1:4) = x4(i(4),:);
-pars(5,1:2) = x5(i(5),:);
+pars(2,1:2) = x2(i(2),:);
+pars(3,1:4) = x3(i(3),:);
+pars(4,1:2) = x4(i(4),:);
 
 % find the model that best fits the data
 %bic(1) = NaN;
