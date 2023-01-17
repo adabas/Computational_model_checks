@@ -1,5 +1,5 @@
 % Fitting data to the following models.
-%       Model 1: Random responding
+%       Model 1: Null responding
 %               b : bias for an option; here it is assumed that
 %               participants choose the options randomly, perhaps with some
 %               overall bias for one option (PE or NE stimuli) over the other.
@@ -27,7 +27,6 @@
 % 04/2020
 % =========================================================================
 
-% NOTE: Check subjectAnalysis -> fit_all_v1
 %% Section 1: Preparation
 close all;
 clearvars
@@ -178,7 +177,7 @@ if saveData
 end
 
 
-%% Section 3: Plot choice behaviour for simulation task
+%% Section 3: Plot smoothed choice behaviour for simulation task
 % Is the data.choice behaviour evolving over the trials to move towards the 
 % p(reward|HR) threshold?
 
@@ -312,4 +311,36 @@ if saveData
     writetable(t10, sprintf("DataOutput/realEstimatedChoices.csv"));   
     
 end
+
+%% Section 4: Plot subject choice behaviour for simulation task
+
+fh.subjAvg = figure('Name','Subject average choices and model estimates'); 
+set(fh.subjAvg,'position', [500 500 700 400],'paperunits','centimeters',...
+        'paperposition',[0 0 5 5],'Color','w');
+set(gca, 'fontsize', 12)
+hold on
+box off; hold on;
+ylim([0.3 1]);
+
+% plot
+pl = plot(meanChoice, '-','color', AZblack,'linewidth',1.5); hold on
+%hl1 = boundedline(trialSeq,PP.mean1, PP.sem1,'alpha','cmap',AZsky); hold on
+%hl2 = boundedline(trialSeq,PP.mean2, PP.sem2,'alpha','cmap',[0.9290 0.6940 0.1250]); hold on
+hl3 = boundedline(trialSeq,PP.mean3, PP.sem3,'alpha','cmap',[0 0.4470 0.7410]); hold on
+%hl4 = boundedline(trialSeq,PP.mean4, PP.sem4,'alpha','cmap',AZred); hold on
+%hl5 = boundedline(trialSeq,PP.mean5, PP.sem5,'alpha','cmap',AZgreen); hold on
+
+% add labels and legend
+ylabel('choice');
+xlabel('trial');
+Lgnd = legend([pl hl3], 'real choice', modNames{3},'location', 'best');
+Lgnd.Box = 'off';
+title('Average real and estimated choices');
+
+% save plot
+if savePlots
+    fh.subjAvg.PaperPositionMode = 'auto';
+    saveas(gcf, sprintf('%s/Model_RW.png', plotFolder))
+end
+
 % done
