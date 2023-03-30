@@ -32,12 +32,18 @@ for t = 1:T
     PP(t,:) = p;
     
     % compute choice probability for actual choice
-    choiceProb(t) = p(sSorted(t,:) == a(t));
-    %choiceProb(t) = p(a(t));
+    if a(t) == 0
+        choiceProb(t) = NaN;
+    else
+        choiceProb(t) = p(sSorted(t,:) == a(t));
+    end
     
 end
 
+% update PP for missed trials
+PP(a == 0,:) = NaN;
+
 % compute negative log-likelihood
-NegLL = -sum(log(choiceProb));
+NegLL = -sum(log(choiceProb(~isnan(choiceProb))));
 
 end

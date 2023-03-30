@@ -35,19 +35,6 @@ function [bic, iBEST, BEST, pars, NegLL] = fit_all_withNull_v2(a, r, pt, nMod, p
 % October 2022
 % =========================================================================
 
-% remove all NaN inputs
-if any(isnan(a))
-    [id,~] = find(isnan(a));
-    a(id,:) = [];
-    r(id,:) = [];
-    s(id,:) = [];
-elseif any(a == 0)
-    [id,~] = find(a == 0);
-    a(id,:) = [];
-    r(id,:) = [];
-    s(id,:) = [];
-end
-
 % iterate to find the parameter values that best fit the data
 for iter = 1:10
    [x1(iter), l1(iter), b1(iter)] = fit_M1random_v2(a, pbound(:,1), s);

@@ -45,15 +45,25 @@ for t = 1:T
     % store choice probabilities
     PP(t,:) = p;
     
-    % compute choice probability for actual choice
-    choiceProb(t) = p(sSorted(t,:) == a(t));%p(a(t));
-    
-    % update choice kernel
-    k(a(t)) = M5_CKUpdate(alpha_c, k(a(t)));
+    if isnan(a(t)) || a(t) == 0
+        choiceProb(t) = NaN;
+        
+    else
+        % compute choice probability for actual choice
+        choiceProb(t) = p(sSorted(t,:) == a(t));
+
+        % update choice kernel
+        k(a(t)) = M5_CKUpdate(alpha_c, k(a(t)));
+    end
 
 end
 
+CK(t+1,:) = k;
+CK(find(a == 0)+1,:) = [];
+
+PP(a == 0,:) = NaN;
+
 % compute negative log-likelihood
-NegLL = -sum(log(choiceProb));
+NegLL = -sum(log(choiceProb(~isnan(choiceProb))));
 
 end

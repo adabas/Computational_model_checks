@@ -55,14 +55,21 @@ for t = 1:T
     PP(t,:) = p;
     
     % compute choice probability for the selected choice
-    idChoice = find(trial_choices == a(t));
-    choiceProb(t) = p(idChoice);
+    if a(t) == 0
+        choiceProb(t) = NaN;
+    else
+        idChoice = find(trial_choices == a(t));
+        choiceProb(t) = p(idChoice);
     
-    % update last choice
-    [c.(sprintf('%s', trial_comb)).aLast, c.(sprintf('%s', trial_comb)).rLast] = M2_updateChoice(idChoice, r(t));
+        % update last choice
+        [c.(sprintf('%s', trial_comb)).aLast, c.(sprintf('%s', trial_comb)).rLast] = M2_updateChoice(idChoice, r(t));
+    end
 
 end
 
+% update PP for missed trials
+PP(a == 0,:) = NaN;
+
 % compute negative log-likelihood
-NegLL = -sum(log(choiceProb));
+NegLL = -sum(log(choiceProb(~isnan(choiceProb))));
 end

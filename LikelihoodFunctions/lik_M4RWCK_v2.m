@@ -52,20 +52,31 @@ for t = 1:T
     
     % store choice probability
     PP(t,:) = p;
-                
-    % compute choice probability for actual choice
-    choiceProb(t) = p(sSorted(t,:) == a(t));%p(a(t));
     
-    % update value and choice kernel
-    [q(a(t)), k(a(t)), delta(t)] = M4_valueUpdate(alpha, alpha_c, q(a(t)), k(a(t)), r(t), t, pt);
+    if isnan(a(t)) || a(t) == 0
+        choiceProb(t) = NaN; %choiceProb(t-1);
+        delta(t) = NaN;
+    
+    else
+        % compute choice probability for actual choice
+        choiceProb(t) = p(sSorted(t,:) == a(t));%p(a(t));
+
+        % update value and choice kernel
+        [q(a(t)), k(a(t)), delta(t)] = M4_valueUpdate(alpha, alpha_c, q(a(t)), k(a(t)), r(t), t, pt);
+    end
     
 end
 
 % for the last trial
-QQ(t,:) = q;
-CK(t,:) = k;
+QQ(t+1,:) = q;
+CK(t+1,:) = k;
+
+% update QQ and CK for missed trial
+QQ(find(a == 0)+1,:) = [];
+CK(find(a == 0)+1,:) = [];
+PP(a == 0,:) = NaN;
 
 % compute negative log-likelihood
-NegLL = -sum(log(choiceProb));
+NegLL = -sum(log(choiceProb(~isnan(choiceProb))));
 
 end

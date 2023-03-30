@@ -25,12 +25,6 @@ options=optimset('MaxFunEval', 100000, 'Display', 'notify', ...
 % fitting a function (obFunc) to the data (a is the choice and r is the
 % reward).
 
-% remove all NaN (missed) inputs
-if any(isnan(a))
-    [id,~] = find(isnan(a));
-    a(id,:) = [];
-end
-
 % specify the function
 obFunc = @(x) lik_M1random_v2(a, x, s);
 

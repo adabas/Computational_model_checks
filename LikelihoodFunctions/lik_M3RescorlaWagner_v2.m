@@ -22,8 +22,10 @@ function [NegLL, PP, delta, QQ, choiceProb] = lik_M3RescorlaWagner_v2(a, r, alph
 % October 2022
 % =========================================================================
 
+
 % number of trials
 T = length(a);
+
 % initialise values
 q = [0.5 0.5 0.5 0.5];      % initial value of all four stimuli
 PP = nan(T,2);              % probability of selecting either of the stimuli
@@ -49,14 +51,9 @@ for t = 1:T
     % store choice probabilities
     PP(t,:) = p;
     
-    if isnan(a(t))
-        if t == 1   % missed first trial
-            choiceProb(t) = 0.5;
-            delta(t) = 0; %NaN; better 0 - no diff. b/w exp. and actual rew
-        else
-            choiceProb(t) = choiceProb(t-1);
-            delta(t) = 0;
-        end
+    if isnan(a(t)) || a(t) == 0
+        choiceProb(t) = NaN;
+        delta(t) = NaN;
         
     else
         % compute choice probability for actual choice
@@ -68,9 +65,13 @@ for t = 1:T
 end
 
 % for last trial
-QQ(t,:) = q; 
+QQ(t+1,:) = q;
 
-% compute negative log-likelihood
-NegLL = -sum(log(choiceProb));
+% update Q for missed trials
+QQ(find(a == 0)+1,:) = [];
+PP(a == 0,:) = NaN;
+
+% compute negative log-likelihood, exluding the missed trials
+NegLL = -sum(log(choiceProb(~isnan(choiceProb))));
 
 end
