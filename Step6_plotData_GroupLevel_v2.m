@@ -31,37 +31,24 @@
 close all;
 clearvars
 
-rng(244);    % set seed
+% set seed
+rng(244);
 
 % ================== Modify ===============================================
-subjects    = [11:55 57:60]; %[11:18 20:21 23:55 57:60];  % specify subject IDs
+subjects    = [11:55 57:60];
 trialSeq    = 1:96;
-savePlots   = false;    % true will save plots in plotFolder directory
+savePlots   = false; 
 saveData    = false;     
-highRewAction = 2;      % set 2 and 1 to plot HR choices and LR choices, respectively.
+highRewAction = 2;      % 2 plot HR choices and 1 plot LR choices
 rprob       = [0.8 0.3];
-plotFolder  = './Figures/GroupLevel';     % figure path as a string
-
-% store labels for plotting
-cond        = {'High Reward', 'Low Reward'};    % unconditioned stimuli labels
-n.cond      = length(cond);                     % no. of UCS
-paramLabel  = {'alpha', 'beta'};                % parameter labels
-n.param     = length(paramLabel);               % no. of parameters
+plotFolder  = './Figures/GroupLevel';
 
 % ================== Model information ====================================
-nMod        = 5;        % number of models
-
-% specify the bounds, and the number of bins for grid search
-bounds  = [0 1; % alpha
-    0 50]; % beta
-n.bin   = [20 30] ;
-
 % parameter bounds [lower; upper] * parameters [b epsilon alpha(RW) beta(RW) alpha(CK) beta(CK) alpha_c beta_c]
 pbounds = [0.5 0 0 0 0 0;     % parameter bounds updated to empirical data     
   0.5 1 1 400 1 250];
 
-% ================== Models ===============================================
-modNames    = {'RR', 'WSLS', 'RW', 'RW-CK', 'CK'}; % don't change the order
+modNames    = {'Null', 'WSLS', 'RW', 'RW-CK', 'CK'}; % don't change the order
 nMod        = numel(modNames);
 
 % ================== Plot colors ==========================================
@@ -75,41 +62,47 @@ AZgreen = [0.4660 0.6740 0.1880];
 % ================== Add paths ============================================
 
 % add path of the current folder
-tmp = fileparts(which('Step6_plotData_GroupLevel_v2'));
-addpath(tmp);
+tmp = strsplit(fileparts(which('Step6_plotData_GroupLevel_v2')), '/');
 
 % add path to required folders in the current folder
-addpath(genpath(fullfile(tmp, 'HelperFunctions')))
-addpath(fullfile(tmp, 'HelperFunctions'));
-addpath(genpath(fullfile(tmp, 'HelperFunctions')))
-addpath(fullfile(tmp, 'LikelihoodFunctions'))
-addpath(fullfile(tmp, 'SimulationFunctions'))
-addpath(fullfile(tmp, 'FittingFunctions'))
+addpath(genpath('./HelperFunctions'))
+addpath('./LikelihoodFunctions')
+addpath('./SimulationFunctions')
+addpath('./FittingFunctions')
 
 % add path to the data folder
-rootdir     = tmp(1:end-37);
+rootdir     = fullfile('/', tmp{2}, tmp{3});
 datapath    = fullfile(rootdir, '01_Data', 'LSim_3_behavioural');
-
 clear tmp
 
-%% Section 2: For each subject, load and analyse simulation task data
+% add path to VBA toolbox
+if ~exist('VBA-toolbox', 'dir')
+    addpath(genpath('/data/u_dabas_software/VBA-toolbox'))
+end
 
-% start counter
-a = 1;
-b = 2;
+%% Section 2: Load simulation task data and estimate model fit
+
+% initiate structures
+data    = struct();
+p       = struct();
 
 for i = 1:length(subjects)  
-
+    
+    % load and estimate model fit
     [data_subj, BIC(i,:), iBEST(i), BEST(i,:), pars, NegLL(i,:)] = subjectAnalysis_v2(subjects(i), datapath, nMod, pbounds);
     
-    % for missed trials, re  
+    % if last trial was missed, update the last trial 'stimuli' field entry
+    % as 0
     if isnan(data_subj.choice(end)); data_subj.stimuli(end+1) = 0; end
+    
+    % counter for storing stimuli presentation
+    a = 2*i - 1; 
     
     % store subject data
     data.score(i) = data_subj.score;
-    data.choice(:,i) = data_subj.choice;
-    data.stim(:,i) = data_subj.stimuli;
-    data.pres(:,a:b) = data_subj.stimPresented;
+    data.choice(:,i) = data_subj.choice;    % HR or LR
+    data.stim(:,i) = data_subj.stimuli;     % raw choices
+    data.pres(:,a:a+1) = data_subj.stimPresented;
     data.binRate(:,i) = data_subj.rate.binary;
     
     % store parameter values
@@ -123,10 +116,7 @@ for i = 1:length(subjects)
     p(8).value(i) = pars(4,4);  % beta_c
     p(9).value(i) = pars(5,1);  % alpha_ck
     p(10).value(i) = pars(5,2); % beta_ck
-    
-    a = a + 2;
-    b = b + 2;
-    
+
 end
 
 % Store parameters in a table
@@ -162,10 +152,17 @@ t4.Properties.VariableNames(2) = {'Accuracy'};
 t5 = table(subjects', data.choice');
 t5.Properties.VariableNames(1) = {'Subjects'};
 
+% Compute exceedance probability and model frequency using VBA toolbox
+[posterior,out] = VBA_groupBMC(-0.5*BIC'); % BIC / AIC need to be rescaled and reversed when using the VBA toolbox (see:https://muut.com/vba-toolbox#!/vba-toolbox/questions:aicbic-calculation)
+f = out.Ef;
+EP = out.ep;
+t6 = table(modNames', EP', f);
+t6.Properties.VariableNames = {'Model', 'ExceedanceProbability', 'ModelFrequeny'};
+
 % % calculate LRT
 % df = length(subjects)*2;
 % [h,pValue,stat,cValue] = lratiotest(LL_sum(:,3), LL_sum(:,1), df)
-% t6 = table(subjects', h, pValue, stat, cValue);
+% t7 = table(subjects', h, pValue, stat, cValue);
 
 % save tables
 if saveData
@@ -174,6 +171,7 @@ if saveData
     writetable(t3, sprintf("DataOutput/BICVal.csv"));
     writetable(t4, sprintf("DataOutput/accuracy.csv"));
     writetable(t5, sprintf("DataOutput/choices.csv"));
+    writetable(t6, sprintf("DataOutput/modelComparison.csv"))
 end
 
 
@@ -206,35 +204,40 @@ end
 
 % ======== Plot raw behavioural data & smoothed response function ========
 
-% estimate the mean HR choice for each model
+% estimate the mean HR choice and AUC of choices for each model
 m = 1;
 n = 2;
 for i = 1:numel(subjects)
-    
-    % remove missed trials
-    id = ~isnan(data.binRate(:,i));
-    stim = data.stim(id, i);
-    binRate = data.binRate(id, i);
-    stimPres = data.pres(id,m:n);
+      
+    % select subject data
+    stim = data.stim(:, i);
+    binRate = data.binRate(:, i);
+    stimPres = data.pres(:,m:n);
 
     % estimate the 5 models
     [~, ~, tmp.p1] = lik_M1random_v2(stim, b(i), stimPres);
     [~, ~, tmp.p2] = lik_M2WSLS_v2(stim, binRate, epsilon(i), stimPres);
-    [~, tmp.p3, d] = lik_M3RescorlaWagner_v2(stim, binRate,...
+    [~, tmp.p3, d, tmp.q3] = lik_M3RescorlaWagner_v2(stim, binRate,...
         alpha_rw(i), beta_rw(i), [], stimPres);
     [~, tmp.p4] = lik_M4RWCK_v2(stim, binRate, alpha_rwck_rw(i), beta_rwck_rw(i),...
         alpha_rwck_ck(i), beta_rwck_ck(i), [], stimPres);
     [~, tmp.p5] = lik_M5ChoiceKernel_v2(stim, alpha_ck(i), beta_ck(i), stimPres);
 
+    % calculate AUC for RW model
+    auc_g(i) = AUC(tmp.p3(:,1), trialSeq);
+    
     % replace missed trials with mean of nearest neighbours
     for j = 1:5
-        tmp2 = nan(size(data.stim(:,i)));
-        tmp2(id) = tmp.(sprintf('p%d', j))(:,1);
+        tmp2 = tmp.(sprintf('p%d', j))(:,1);
         tmp2 = interp1(trialSeq(~isnan(tmp2)), tmp2(~isnan(tmp2)), trialSeq);
         PP.(sprintf('m%d', j))(i,:) = tmp2;
         
         clear tmp2
     end
+    
+    % store choice values for RW model
+    meanQQ = nanmean(tmp.q3);
+    QQ(i,:) = [mean(meanQQ(:,1:2)) mean(meanQQ(:,3:4))];
     
     m = m + 2;
     n = n + 2;
@@ -246,7 +249,7 @@ end
 % calculate mean and standard error of mean across subject for HR choice
 for j = 1:5
     PP.(sprintf('mean%d', j)) = nanmean(PP.(sprintf('m%d', j)), 1);
-    PP.(sprintf('smean%d',j)) = mySmooth(PP.(sprintf('mean%d', j)),6,[],'backward');
+    PP.(sprintf('smean%d',j)) = mySmooth(PP.(sprintf('mean%d', j)),5,[],'center');
     PP.(sprintf('std%d', j)) = nanstd( PP.(sprintf('m%d', j)) );
     PP.(sprintf('sem%d', j)) = nanstd( PP.(sprintf('m%d', j)) ) / sqrt( numel(subjects) );
 end
@@ -258,9 +261,10 @@ else
     choice = (data.choice - 1)';
 end
 meanChoice = nanmean(choice, 1);
+semChoice = nanstd(choice,[],1)/sqrt(size(choice,1));
 
 % smooth the mean
-smoothMeanChoice = mySmooth(meanChoice,6,[],'backward');
+smoothMeanChoice = mySmooth(meanChoice,5,[],'center');
 
 % ---
 % plot the mean with shaded standard error of mean for each model
@@ -302,13 +306,23 @@ if saveData
     
     % convert estimated choices and estimated standard error of mean to a
     % table
-    t10 = table(meanChoice', smoothMeanChoice', PP.smean1', PP.sem1', PP.smean2', PP.sem2',...
+    t10 = table(meanChoice', semChoice', smoothMeanChoice', PP.smean1', PP.sem1', PP.smean2', PP.sem2',...
         PP.smean3', PP.sem3', PP.smean4', PP.sem4', PP.smean5', PP.sem5');
-    t10.Properties.VariableNames = {'meanChoice', 'smoothMeanChoice', 'nullMeanEst', 'nullSEMEst', 'wslsMeanEst', 'wslsSEMEst',...
+    t10.Properties.VariableNames = {'meanChoice', 'semChoice', 'smoothMeanChoice', 'nullMeanEst', 'nullSEMEst', 'wslsMeanEst', 'wslsSEMEst',...
         'rwMeanEst', 'rwSEMEst', 'rwckMeanEst', 'rwckSEMEst', 'ckMeanEst', 'ckSEMEst'};
     
+    % store RW computed Q values
+    t11 = table(subjects', QQ(:,1), QQ(:,2));
+    t11.Properties.VariableNames = {'subId', 'Q_HR', 'Q_LR'};
+    
+    % store AUC_g computed using the RW computed choice probabilities
+    t12 = table(subjects', auc_g');
+    t12.Properties.VariableNames = {'subId', 'AUCg'};
+    
     % save
-    writetable(t10, sprintf("DataOutput/realEstimatedChoices.csv"));   
+    writetable(t10, sprintf("DataOutput/realEstimatedChoices_13March2023_centeredSmooth.csv"));   
+    writetable(t11, sprintf("DataOutput/LSim_Q.csv"));   
+    writetable(t12, sprintf("DataOutput/LSim_AUCg.csv"));
     
 end
 
@@ -323,10 +337,10 @@ box off; hold on;
 ylim([0.3 1]);
 
 % plot
-pl = plot(meanChoice, '-','color', AZblack,'linewidth',1.5); hold on
+pl = boundedline(trialSeq, meanChoice, semChoice, 'alpha','cmap',AZblack); hold on
 %hl1 = boundedline(trialSeq,PP.mean1, PP.sem1,'alpha','cmap',AZsky); hold on
 %hl2 = boundedline(trialSeq,PP.mean2, PP.sem2,'alpha','cmap',[0.9290 0.6940 0.1250]); hold on
-hl3 = boundedline(trialSeq,PP.mean3, PP.sem3,'alpha','cmap',[0 0.4470 0.7410]); hold on
+hl3 = plot(PP.mean3, '-', 'color', [0 0.4470 0.7410], 'linewidth', 1.5); 
 %hl4 = boundedline(trialSeq,PP.mean4, PP.sem4,'alpha','cmap',AZred); hold on
 %hl5 = boundedline(trialSeq,PP.mean5, PP.sem5,'alpha','cmap',AZgreen); hold on
 
