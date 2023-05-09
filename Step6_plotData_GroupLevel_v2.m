@@ -38,7 +38,7 @@ rng(244);
 subjects    = [11:55 57:60];
 trialSeq    = 1:96;
 savePlots   = false; 
-saveData    = false;     
+saveData    = true;     
 highRewAction = 2;      % 2 plot HR choices and 1 plot LR choices
 rprob       = [0.8 0.3];
 plotFolder  = './Figures/GroupLevel';
@@ -149,15 +149,17 @@ t4.Properties.VariableNames(1) = {'Subjects'};
 t4.Properties.VariableNames(2) = {'Accuracy'};
 
 % Save choice behaviour
-t5 = table(subjects', data.choice');
+t5 = table(subjects', data.stim');
 t5.Properties.VariableNames(1) = {'Subjects'};
+t6 = table(subjects', data.binRate');
+t6.Properties.VariableNames(1) = {'Subjects'};
 
 % Compute exceedance probability and model frequency using VBA toolbox
 [posterior,out] = VBA_groupBMC(-0.5*BIC'); % BIC / AIC need to be rescaled and reversed when using the VBA toolbox (see:https://muut.com/vba-toolbox#!/vba-toolbox/questions:aicbic-calculation)
 f = out.Ef;
 EP = out.ep;
-t6 = table(modNames', EP', f);
-t6.Properties.VariableNames = {'Model', 'ExceedanceProbability', 'ModelFrequeny'};
+t7 = table(modNames', EP', f);
+t7.Properties.VariableNames = {'Model', 'ExceedanceProbability', 'ModelFrequeny'};
 
 % % calculate LRT
 % df = length(subjects)*2;
@@ -171,7 +173,8 @@ if saveData
     writetable(t3, sprintf("DataOutput/BICVal.csv"));
     writetable(t4, sprintf("DataOutput/accuracy.csv"));
     writetable(t5, sprintf("DataOutput/choices.csv"));
-    writetable(t6, sprintf("DataOutput/modelComparison.csv"))
+    writetable(t6, sprintf("DataOutput/rewards.csv"));
+    writetable(t7, sprintf("DataOutput/modelComparison.csv"))
 end
 
 
@@ -224,7 +227,10 @@ for i = 1:numel(subjects)
     [~, tmp.p5] = lik_M5ChoiceKernel_v2(stim, alpha_ck(i), beta_ck(i), stimPres);
 
     % calculate AUC for RW model
-    auc_g(i) = AUC(tmp.p3(:,1), trialSeq);
+    auc_rw(i) = AUC(tmp.p3(:,1), trialSeq);
+    
+    % calculate AUC for choices
+    auc_data(i) = AUC(2-data.choice(:,i), trialSeq);
     
     % replace missed trials with mean of nearest neighbours
     for j = 1:5
@@ -316,11 +322,11 @@ if saveData
     t11.Properties.VariableNames = {'subId', 'Q_HR', 'Q_LR'};
     
     % store AUC_g computed using the RW computed choice probabilities
-    t12 = table(subjects', auc_g');
-    t12.Properties.VariableNames = {'subId', 'AUCg'};
+    t12 = table(subjects', auc_rw', auc_data');
+    t12.Properties.VariableNames = {'subId', 'AUC_rw', 'AUC_data'};
     
     % save
-    writetable(t10, sprintf("DataOutput/realEstimatedChoices_13March2023_centeredSmooth.csv"));   
+    writetable(t10, sprintf("DataOutput/realEstimatedChoices_centeredSmooth.csv"));   
     writetable(t11, sprintf("DataOutput/LSim_Q.csv"));   
     writetable(t12, sprintf("DataOutput/LSim_AUCg.csv"));
     
