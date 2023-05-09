@@ -35,7 +35,7 @@ clearvars
 rng(244);
 
 % ================== Modify ===============================================
-subjects    = [11:55 57:60];
+subjects    = [11:60];
 trialSeq    = 1:96;
 savePlots   = false; 
 saveData    = true;     
@@ -90,10 +90,6 @@ for i = 1:length(subjects)
     
     % load and estimate model fit
     [data_subj, BIC(i,:), iBEST(i), BEST(i,:), pars, NegLL(i,:)] = subjectAnalysis_v2(subjects(i), datapath, nMod, pbounds);
-    
-    % if last trial was missed, update the last trial 'stimuli' field entry
-    % as 0
-    if isnan(data_subj.choice(end)); data_subj.stimuli(end+1) = 0; end
     
     % counter for storing stimuli presentation
     a = 2*i - 1; 

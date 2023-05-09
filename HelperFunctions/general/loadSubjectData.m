@@ -76,9 +76,24 @@ for i = 1:length(itemmat)
     cond_id(i,2) = itemmat(i).cond;
 end
 
+% store trial wise stimuli selected
 data.stimuliID = cell2mat(results(2:end, 7));
-for i = 1:4; data.stimuli(data.stimuliID == cond_id(i,1)) = cond_id(i,2); end
-data.stimuli = data.stimuli';
+
+% loop over trials to avoid accidental stimuli ids that match cond_id
+% replacements.
+for i = 1:numel(data.stimuliID)
+    if data.stimuliID(i) == cond_id(1,1)
+        data.stimuli(i) = cond_id(1,2);
+    elseif data.stimuliID(i) == cond_id(2,1)
+        data.stimuli(i) = cond_id(2,2);
+    elseif data.stimuliID(i) == cond_id(3,1)
+        data.stimuli(i) = cond_id(3,2);
+    elseif data.stimuliID(i) == cond_id(4,1)
+        data.stimuli(i) = cond_id(4,2);
+    elseif isnan(data.stimuliID(i))
+        data.stimuli(i) = 0;
+    end
+end
 
 data.stimPresented = [stimmat.presentation(1).trials; stimmat.presentation(2).trials;...
     stimmat.presentation(3).trials; stimmat.presentation(4).trials];
