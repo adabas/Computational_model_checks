@@ -45,20 +45,20 @@ for iter = 1:10
 end
 
 % determine the best fitting parameter for each model
-[NegLL(1),i(1)]=min(l1(:));
-[NegLL(2),i(2)]=min(l2(:));
-[NegLL(3),i(3)]=min(l3(:));
-[NegLL(4),i(4)]=min(l4(:));
-[NegLL(5),i(5)]=min(l5(:));
+[NegLL(1),~]=min(l1(:));
+[NegLL(2),~]=min(l2(:));
+[NegLL(3),~]=min(l3(:));
+[NegLL(4),~]=min(l4(:));
+[NegLL(5),~]=min(l5(:));
 
 % select the BIC for best fitting parameter
-bic(1) = b1(i(1));
-bic(2) = b2(i(2));
-bic(3) = b3(i(3));
-bic(4) = b4(i(4));
-bic(5) = b5(i(5));
+[bic(1),i(1)]=min(b1(:));
+[bic(2),i(2)]=min(b2(:));
+[bic(3),i(3)]=min(b3(:));
+[bic(4),i(4)]=min(b4(:));
+[bic(5),i(5)]=min(b5(:));
 
-% store the best fitting parameter
+% store the best BIC fitting parameter
 pars = nan(nMod);
 pars(1,1) = x1(i(1));
 pars(2,1) = x2(i(2));

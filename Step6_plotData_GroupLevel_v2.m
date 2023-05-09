@@ -137,34 +137,26 @@ t1 = table(subjects', alpha_rw, beta_rw, alpha_rwck_rw, beta_rwck_rw,...
 t1.Properties.VariableNames(1) = {'Subjects'};
 
 % Store negative loglikelihoods and BIC values
-t2 = table(subjects', NegLL);
-t2.Properties.VariableNames(1) = {'Subjects'};
+t2 = table(subjects', 'VariableNames', {'Subject'});
+t2 = addvars(t2, NegLL(:,1), NegLL(:,2), NegLL(:,3), NegLL(:,4), NegLL(:,5),...
+    'NewVariableNames', cellfun(@(x) ['NegLL_' x], modNames, 'UniformOutput', false));
 
-t3 = table(subjects', iBEST', BIC);
-t3.Properties.VariableNames(1:2) = {'Subjects', 'winModel'};
+t3 = table(subjects', iBEST', 'VariableNames',  {'Subjects', 'winModel'});
+t3 = addvars(t3, BIC(:,1), BIC(:,2), BIC(:,3), BIC(:,4), BIC(:,5),...
+    'NewVariableNames', cellfun(@(x) ['BIC_' x], modNames, 'UniformOutput', false));
  
 % Store accuracy
-t4 = table(subjects', data.score');
-t4.Properties.VariableNames(1) = {'Subjects'};
-t4.Properties.VariableNames(2) = {'Accuracy'};
+t4 = table(subjects', data.score', 'VariableNames', {'Subjects', 'Accuracy'});
 
 % Save choice behaviour
-t5 = table(subjects', data.stim');
-t5.Properties.VariableNames(1) = {'Subjects'};
-t6 = table(subjects', data.binRate');
-t6.Properties.VariableNames(1) = {'Subjects'};
+t5 = table(subjects', data.stim', 'VariableNames', {'Subjects', 'Selected_stimulus'});
+t6 = table(subjects', data.binRate', 'VariableNames', {'Subjects', 'Binarised_rewards'});
 
 % Compute exceedance probability and model frequency using VBA toolbox
 [posterior,out] = VBA_groupBMC(-0.5*BIC'); % BIC / AIC need to be rescaled and reversed when using the VBA toolbox (see:https://muut.com/vba-toolbox#!/vba-toolbox/questions:aicbic-calculation)
 f = out.Ef;
 EP = out.ep;
-t7 = table(modNames', EP', f);
-t7.Properties.VariableNames = {'Model', 'ExceedanceProbability', 'ModelFrequeny'};
-
-% % calculate LRT
-% df = length(subjects)*2;
-% [h,pValue,stat,cValue] = lratiotest(LL_sum(:,3), LL_sum(:,1), df)
-% t7 = table(subjects', h, pValue, stat, cValue);
+t7 = table(modNames', EP', f, 'VariableNames', {'Model', 'ExceedanceProbability', 'ModelFrequeny'});
 
 % save tables
 if saveData
@@ -176,7 +168,6 @@ if saveData
     writetable(t6, sprintf("DataOutput/rewards.csv"));
     writetable(t7, sprintf("DataOutput/modelComparison.csv"))
 end
-
 
 %% Section 3: Plot smoothed choice behaviour for simulation task
 % Is the data.choice behaviour evolving over the trials to move towards the 
