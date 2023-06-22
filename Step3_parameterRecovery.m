@@ -287,47 +287,140 @@ for i = 1:length(symbols)
 end
 
 % print on window
-fprintf('\nRMSE values\nalpha = %.3f\n', fminX.RMSE(1,:))
+fprintf('\nRMSE values of RW model:\nalpha = %.3f\n', fminX.RMSE(1,:))
 fprintf('beta = %.3f\n', fminX.RMSE(2,:))
-fprintf('epsilon = %.3f\n', fminX.RMSE(3,:))
-% --
 
-% PLOT
+% % --
+% 
+% % PLOT
+% 
+%  % initiate figure
+%  fh3 = figure('Name', 'Parameter Estimation Error'); clf;
+%  set(gcf, 'Position',[500   113   1050   370])
+% 
+%  % plot estimation error
+%  for i = 1:size(fminX.error,1)
+%      % select the subplot
+%      subplot(1,size(fminX.error,1),i); hold on;
+%      
+%      % boxplot
+%      boxplot(fminX.error(i,:)', 'Labels',{[]}); hold on;
+%      
+%      % set y axis limits
+%      yl = get(gca, 'ylim');
+%      yl_max = max(abs(yl));
+%      ylim([-yl_max yl_max]);
+%     
+%      % add reference line
+%      line([0, 3], [0, 0], 'LineStyle', ':', 'Color', 'black');
+%      
+%      % add label
+%      xlabel(sprintf('%s', symbols{i}));
+%      
+%      % set font and tick sizes
+%      ax = gca;
+%      set(ax, 'tickdir', 'out', 'fontsize', 11);
+% 
+%  end
+% title('true - estimated error');
+%  
+% % save plot
+% if savePlots
+%     filename = fullfile(plotFolder, 'ParameterRecovery', 'biasVariance_allModels.png');
+%     saveas(gcf, filename)
+% end
+% 
+% % --- updated plots
 
- % initiate figure
- fh3 = figure('Name', 'Parameter Estimation Error'); clf;
- set(gcf, 'Position',[500   113   1050   370])
+% ---
+% plot 1: alpha of all models
 
- % plot estimation error
- for i = 1:size(fminX.error,1)
-     % select the subplot
-     subplot(1,size(fminX.error,1),i); hold on;
-     
-     % boxplot
-     boxplot(fminX.error(i,:)', 'Labels',{[]}); hold on;
-     
-     % set y axis limits
-     yl = get(gca, 'ylim');
-     yl_max = max(abs(yl));
-     ylim([-yl_max yl_max]);
-    
-     % add reference line
-     line([0, 3], [0, 0], 'LineStyle', ':', 'Color', 'black');
-     
-     % add label
-     xlabel(sprintf('%s', symbols{i}));
-     
-     % set font and tick sizes
-     ax = gca;
-     set(ax, 'tickdir', 'out', 'fontsize', 11);
+% convert all alpha values to long format
+error.alpha = [fminX.error(1,:)'; fminX.error(4,:)';...
+    fminX.error(6,:)'; fminX.error(8,:)'];
 
- end
-title('true - estimated error');
- 
-% save plot
+name.alpha = cell(200, 1);  % Initialize the cell array
+for i = 1:nRep; name.alpha{i} = 'RW'; end
+for i = nRep+1:nRep*2; name.alpha{i} = 'RW-CK (RW)'; end
+for i = nRep*2+1:nRep*3; name.alpha{i} = 'RW-CK (CK)'; end
+for i = nRep*3+1:nRep*4; name.alpha{i} = 'CK'; end
+
+% initiate figure
+fh_alpha = figure('Name', 'Alpha parameter recovery', 'color', 'w');
+ax = axes('NextPlot','add','FontSize',16,'TickDir','out');
+
+% boxplot
+boxplot(error.alpha, name.alpha, 'Parent', ax) %, 'Symbol', 'o', 'Whisker', inf)
+
+h =findobj(ax, 'LineStyle','--'); set(h, 'LineStyle','-');
+h = findobj('Marker','+'); set(h, 'Marker','o'); set(h,'MarkerFaceColor','b', 'MarkerEdgeColor', 'b')
+
+% modify boxes
+myboxes = findobj(ax,'Tag','Box');
+arrayfun( @(box) patch( box.XData, box.YData, 'b', 'FaceAlpha', 0.5), myboxes(1:4) )
+
 if savePlots
-    filename = fullfile(plotFolder, 'ParameterRecovery', 'biasVariance_allModels.png');
+    filename = fullfile(plotFolder, 'ParameterRecovery', 'biasVariance_alpha.png');
     saveas(gcf, filename)
 end
+
+% ---
+% plot 2: beta of all models
+% convert all alpha values to long format
+error.beta = [fminX.error(2,:)'; fminX.error(5,:)';...
+    fminX.error(7,:)'; fminX.error(9,:)'];
+
+name.beta = cell(200, 1);  % Initialize the cell array
+for i = 1:nRep; name.beta{i} = 'RW'; end
+for i = nRep+1:nRep*2; name.beta{i} = 'RW-CK (RW)'; end
+for i = nRep*2+1:nRep*3; name.beta{i} = 'RW-CK (CK)'; end
+for i = nRep*3+1:nRep*4; name.beta{i} = 'CK'; end
+
+% initiate figure
+fh_beta = figure('Name', 'Beta parameter recovery', 'color', 'w');
+ax = axes('NextPlot','add','FontSize',16,'TickDir','out');
+
+% boxplot
+boxplot(error.beta, name.beta, 'Parent', ax) %, 'Symbol', 'o', 'Whisker', inf)
+
+h =findobj(ax, 'LineStyle','--'); set(h, 'LineStyle','-');
+h = findobj('Marker','+'); set(h, 'Marker','o'); set(h,'MarkerFaceColor','b', 'MarkerEdgeColor', 'b')
+
+% modify boxes
+myboxes = findobj(ax,'Tag','Box');
+arrayfun( @(box) patch( box.XData, box.YData, 'b', 'FaceAlpha', 0.5), myboxes(1:4) )
+
+if savePlots
+    filename = fullfile(plotFolder, 'ParameterRecovery', 'biasVariance_beta.png');
+    saveas(gcf, filename)
+end
+
+% plot 3: epsilon WSLS model
+
+error.epsilon = fminX.error(3,:)';
+
+name.epsilong = cell(50, 1);  % Initialize the cell array
+for i = 1:nRep; name.epsilon{i} = 'WSLS'; end
+
+% initiate figure
+fh_epsilon = figure('Name', 'Epsilon parameter recovery', 'color', 'w');
+ax = axes('NextPlot','add','FontSize',16,'TickDir','out');
+
+% boxplot
+boxplot(error.epsilon, name.epsilon, 'Parent', ax) %, 'Symbol', 'o', 'Whisker', inf)
+
+h =findobj(ax, 'LineStyle','--'); set(h, 'LineStyle','-');
+h = findobj('Marker','+'); set(h, 'Marker','o'); set(h,'MarkerFaceColor','b', 'MarkerEdgeColor', 'b')
+
+% modify boxes
+myboxes = findobj(ax,'Tag','Box');
+arrayfun( @(box) patch( box.XData, box.YData, 'b', 'FaceAlpha', 0.5), myboxes(1) )
+ylim([-.4 .4])
+
+if savePlots
+    filename = fullfile(plotFolder, 'ParameterRecovery', 'biasVariance_epsilon.png');
+    saveas(gcf, filename)
+end
+
 
 % done
