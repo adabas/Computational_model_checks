@@ -19,12 +19,12 @@ clearvars; close all
 % ================== Modify ===============================================
 
 T       = 96;               % number of trials
-mu      = [.8 .8 .3 .3]; %[.8 .3];          % reward probabilities
-nRep    = 50;               % number of repetitions
+mu      = [.8 .8 .3 .3];    % reward probabilities
+nRep    =  50;              % number of repetitions
 rbounds = [0 1];            % bounds of the mean reward
 Npt     = 0;                % number of partial trials
 nMod    = 4;                % number of models
-pbounds = [0 0 0 0 0;     % parameter bounds updated to empirical data     
+pbounds = [0 0 0 0 0;       % parameter bounds updated to empirical data     
   1 1 400 1 250];
 
 % ================== Add paths ============================================
@@ -37,7 +37,7 @@ addpath('./LikelihoodFunctions')
 
 % ================== Plot settings ========================================
 
-savePlots = 1;
+savePlots = 0;
 plotFolder = './Figures/ModelSimulation/';
 
 % colors
@@ -64,51 +64,40 @@ rng(2, 'twister');
 
 for count = 1:nRep
     
-%     % Model 1
-%     b = rand;
-%     [a, r, pt, s] = simulate_M1random_v2(T, rbounds, b, mu, Npt);
-%     %[a, r, pt] = simulate_M1random_v1(T, rbounds, b, mu, Npt);
-%     [~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s); %fit_all_v1(a, r, pt, nMod, pbounds); 
-%     CM(1,:) = CM(1,:) + BEST;
-    
     % Model 2
     epsilon = rand;
     [a, r, pt, s] = simulate_M2WSLS_v2(T, rbounds, epsilon, mu, Npt);
-    %[a, r, pt] = simulate_M2WSLS_v1(T, rbounds, epsilon, mu, Npt);
-    [~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s); %fit_all_v1(a, r, pt, nMod, pbounds);
-    CM(1,:) = CM(1,:) + BEST; %CM(2,:) = CM(2,:) + BEST;
+    [~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s);
+    CM(1,:) = CM(1,:) + BEST;
     
     % Model 3
     alpha = rand;
     beta  = 3 + exprnd(3);
     [a, r, pt, s] = simulate_M3RescorlaWagner_v2(T, alpha, beta, mu, rbounds, Npt);
-    %[a, r, pt] = simulate_M3RescorlaWagner_v1(T, alpha, beta, mu, rbounds, Npt);
-    [~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s); %fit_all_v1(a, r, pt, nMod, pbounds);
-    CM(2,:) = CM(2,:) + BEST;%CM(3,:) = CM(3,:) + BEST;
+    [~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s);
+    CM(2,:) = CM(2,:) + BEST;
     
      % Model 4
     alpha = rand;
-    beta  = 3 + exprnd(3); % 1 + exprnd(1);
+    beta  = 3 + exprnd(3); 
     alpha_c = rand;
-    beta_c  = 3 + exprnd(3);
+    beta_c  = 3 + exprnd(3); 
     [a, r, pt, s] = simulate_M4RWCK_v2(T, alpha, beta, alpha_c, beta_c, mu, rbounds, Npt);
-%    [a, r, pt] = simulate_M4RWCK_v1(T, alpha, beta, alpha_c, beta_c, mu, rbounds, Npt);
-    [~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s); %fit_all_v1(a, r, pt, nMod, pbounds);
-    CM(3,:) = CM(3,:) + BEST;%CM(4,:) = CM(4,:) + BEST;
+    [~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s); 
+    CM(3,:) = CM(3,:) + BEST;
     
     % Model 5
     alpha_c = rand;
     beta_c  = 3 + exprnd(3);
     [a, r, pt, s] = simulate_M5CK_v2(T, alpha_c, beta_c, mu, rbounds, Npt);
-%     [a, r, pt] = simulate_M5CK_v1(T, alpha_c, beta_c, mu, rbounds, Npt);
-    [~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s); %fit_all_v1(a, r, pt, nMod, pbounds);
-    CM(4,:) = CM(4,:) + BEST; %CM(5,:) = CM(5,:) + BEST;
+    [~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s);
+    CM(4,:) = CM(4,:) + BEST; 
     
     % calculate probability
     FM = round(100*CM/sum(CM(2,:)))/100;
     
     % display number/text on scaled image 
-    t = imageTextMatrix(FM);
+    t = imageTextMatrix(FM, {'WSLS', 'RW', 'RW-CK', 'CK'}, {'WSLS', 'RW', 'RW-CK', 'CK'});
     
     % set font color of values less than 0.3 to white
     set(t(FM'<0.3), 'color', 'w')
@@ -178,7 +167,7 @@ set(gca, 'fontsize', 24);
 
 % save plot
 if savePlots
-    filename = fullfile(plotFolder, 'ModelRecovery', sprintf('CM_t%d.png', T));
+    filename = fullfile(plotFolder, 'ModelRecovery', 'CM.png');
     saveas(gcf, filename)
 end
 
