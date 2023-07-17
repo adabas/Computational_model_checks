@@ -1,4 +1,4 @@
-function [Xfit, NegLL, b] = fit_M5ChoiceKernel_v2(a, r, pt, pbound, s)
+function [Xfit, NegLL, b] = fit_M5ChoiceKernel_v2(a, r, pbound, s)
 
 % FIT_M5RESCORLAWAGNER_v2
 % Function to find the parameter values that best fit the data.
@@ -6,7 +6,6 @@ function [Xfit, NegLL, b] = fit_M5ChoiceKernel_v2(a, r, pt, pbound, s)
 % INPUT:
 %       a       : choices vector
 %       r       : reward received
-%       pt      : vector containing partial trial numbers
 %       pbound  : parameter bounds [lower; upper];
 %       s       : trial wise stimuli presented
 %

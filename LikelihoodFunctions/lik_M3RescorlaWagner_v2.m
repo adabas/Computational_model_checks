@@ -1,4 +1,4 @@
-function [NegLL, PP, delta, QQ, choiceProb] = lik_M3RescorlaWagner_v2(a, r, alpha, beta, pt, s)
+function [NegLL, PP, delta, QQ, choiceProb] = lik_M3RescorlaWagner_v2(a, r, alpha, beta, s)
 
 % LIK_M3RESCORLAWAGNER_v1
 % Function to compute the negative log-likelihood values for fitting the model to the data.
@@ -9,7 +9,6 @@ function [NegLL, PP, delta, QQ, choiceProb] = lik_M3RescorlaWagner_v2(a, r, alph
 %       r       : reward received
 %       alpha   : parameter alpha value
 %       beta    : parameter beta value
-%       pt      : vector containing partial trial numbers
 %       s       : stimuli presented at the trial
 %
 % OUPUT:
@@ -60,7 +59,7 @@ for t = 1:T
         choiceProb(t) = p(sSorted(t,:) == a(t)); %p(a(t));
 
         % value update
-        [q(a(t)), delta(t)] = M3_valueUpdate(alpha, q(a(t)), r(t), t, pt);
+        [q(a(t)), delta(t)] = M3_valueUpdate(alpha, q(a(t)), r(t));
     end
 end
 

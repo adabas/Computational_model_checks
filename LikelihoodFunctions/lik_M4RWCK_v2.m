@@ -1,22 +1,23 @@
-function [NegLL, PP, delta, QQ, CK] = lik_M4RWCK_v2(a, r, alpha, beta, alpha_c, beta_c, pt, s)
+function [NegLL, PP, delta, QQ, CK] = lik_M4RWCK_v2(a, r, alpha, beta, alpha_c, beta_c, s)
 
 % LIK_M4RWCK_v1
 % Function to compute the negative log-likelihood values for fitting the model to the data.
 %
 % INPUT:
-%       a       : choices vector
-%       r       : reward received
-%       alpha   : parameter alpha value
-%       beta    : parameter beta value
-%       pt      : vector containing partial trial numbers
+%       a       : choices
+%       r       : reward
+%       alpha   : RW alpha
+%       beta    : RW beta
+%       alpha_c : CK alpha
+%       beta_c  : CK beta
 %       s       : stimuli presented trial wise
 %
 % OUPUT:
 %       NegLL   : the negative log likelihood value
-%       PP      : matrix containing choice probabilities at each trial
-%       delta   : vector containing prediction error at each trial
-%       QQ      : matrix containing choice values at each trial
-%       CK      : matrix containing choice kernel value update
+%       PP      : trial-wise choice probability matrix
+%       delta   : trial-wise prediction error vector
+%       QQ      : trial-wise choice value matrix
+%       CK      : trial-wise choice kernel matrix
 %
 % Aroma Dabas
 % October 2022
@@ -54,15 +55,15 @@ for t = 1:T
     PP(t,:) = p;
     
     if isnan(a(t)) || a(t) == 0
-        choiceProb(t) = NaN; %choiceProb(t-1);
+        choiceProb(t) = NaN;
         delta(t) = NaN;
     
     else
         % compute choice probability for actual choice
-        choiceProb(t) = p(sSorted(t,:) == a(t));%p(a(t));
+        choiceProb(t) = p(sSorted(t,:) == a(t));
 
         % update value and choice kernel
-        [q(a(t)), k(a(t)), delta(t)] = M4_valueUpdate(alpha, alpha_c, q(a(t)), k(a(t)), r(t), t, pt);
+        [q(a(t)), k(a(t)), delta(t)] = M4_valueUpdate(alpha, alpha_c, q(a(t)), k(a(t)), r(t));
     end
     
 end
@@ -71,7 +72,7 @@ end
 QQ(t+1,:) = q;
 CK(t+1,:) = k;
 
-% update QQ and CK for missed trial
+% remove missed trial choice value, kernel and probability
 QQ(find(a == 0)+1,:) = [];
 CK(find(a == 0)+1,:) = [];
 PP(a == 0,:) = NaN;

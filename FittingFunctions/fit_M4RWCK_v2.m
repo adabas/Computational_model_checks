@@ -1,4 +1,4 @@
-function [Xfit, NegLL, b] = fit_M4RWCK_v2(a, r, pt, pbound, s)
+function [Xfit, NegLL, b] = fit_M4RWCK_v2(a, r, pbound, s)
 
 % FIT_M3RESCORLAWAGNER_v2
 % Function to find the parameter values that best fit the data.
@@ -23,10 +23,9 @@ options=optimset('MaxFunEval', 100000, 'Display', 'notify', ...
     'algorithm', 'active-set');
 
 % create function capturing the RW with softmax function
-obFunc = @(x) lik_M4RWCK_v2(a, r, x(1), x(2), x(3), x(4), pt, s);
+obFunc = @(x) lik_M4RWCK_v2(a, r, x(1), x(2), x(3), x(4), s);
 
 % create vector storing random alpha and beta starting values [alpha beta alpha_c beta_c]
-% X0 = [rand exprnd(4) rand 0.5+exprnd(1)];
 X0 = [rand exprnd(4) rand 0.5+exprnd(4)];
 
 % store the lower and upper bounds of [alpha beta] parameters

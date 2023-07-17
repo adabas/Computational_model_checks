@@ -1,4 +1,4 @@
-function [bic, iBEST, BEST, pars, NegLL] = fit_all_v2(a, r, pt, nMod, pbound, s)
+function [bic, BESTbic, NegLL, BESTnegll, pars] = fit_all_v2(a, r, pt, nMod, pbound, s) %[bic, iBEST, BEST, pars, NegLL] = fit_all_v2(a, r, pt, nMod, pbound, s)
 
 % FIT_ALL_v2 Function to compute the parameter values of each of the models
 % of interest that best fit the data. Currently, we have five models of
@@ -101,8 +101,12 @@ pars(4,1:2) = x4(i(4),:);
 
 % find the model that best fits the data
 %bic(1) = NaN;
-[M, iBEST] = min(bic); %min(NegLL);
-BEST = bic == M; %NegLL == M;
-BEST = BEST / sum(BEST);
+[M, iBEST] = min(bic); 
+BEST = bic == M; 
+BESTbic = BEST / sum(BEST);
+
+[M, iBEST] = min(NegLL); 
+BEST = NegLL == M; 
+BESTnegll = BEST / sum(BEST);
 
 end

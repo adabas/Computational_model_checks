@@ -1,4 +1,4 @@
-function [Xfit, NegLL, b] = fit_M3RescorlaWagner_v2(a, r, pt, pbound, s)
+function [Xfit, NegLL, b] = fit_M3RescorlaWagner_v2(a, r, pbound, s)
 
 % FIT_M3RESCORLAWAGNER_v2
 % Function to find the parameter values that best fit the data.
@@ -6,7 +6,6 @@ function [Xfit, NegLL, b] = fit_M3RescorlaWagner_v2(a, r, pt, pbound, s)
 % INPUT:
 %       a       : choices vector
 %       r       : reward received
-%       pt      : vector containing partial trial numbers
 %       pbound  : parameter bounds [lower; upper];
 %       s       : trial wise stimuli presentation
 %
@@ -24,7 +23,7 @@ options=optimset('MaxFunEval', 100000, 'Display', 'notify', ...
     'algorithm', 'active-set');
 
 % create function capturing the RW with softmax function
-obFunc = @(x) lik_M3RescorlaWagner_v2(a, r, x(1), x(2), pt, s);
+obFunc = @(x) lik_M3RescorlaWagner_v2(a, r, x(1), x(2), s);
 
 % create vector storing random alpha and beta starting values [alpha beta]
 X0 = [rand exprnd(4)];
