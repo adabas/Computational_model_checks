@@ -1,9 +1,7 @@
-% The script assesses the probability that the best fitting model model to
-% a data is the model that simulated the data. This allows us to arbitrate
-% between the different models of interest. This is summarised in a
-% confusion matrix. The confusion matix is defined as the probability that
-% simulated by one model is best fit by another, i.e., p(fit
-% model|simulated model).
+% The script tests model recovery. We test if we can arbitrate different
+% models. This is summarised in a confusion matrix, p(fit model|simulated
+% model). We also run the inverse of this matrix, i.e. inversion matrix
+% p(simulated model | fit model).
 %
 % This is a modification of the script by Bob Wilson and Anne Collins
 % (2019).
@@ -24,8 +22,11 @@ nRep    =  50;              % number of repetitions
 rbounds = [0 1];            % bounds of the mean reward
 Npt     = 0;                % number of partial trials
 nMod    = 4;                % number of models
-pbounds = [0 0 0 0 0;       % parameter bounds updated to empirical data     
-  1 1 400 1 250];
+% pbounds = [0 0.05 0 0.05 0;       % parameter bounds updated to empirical data     
+%   1 1 200 1 40];
+pbounds = [0 0.05 0 0.05 0;       % parameter bounds updated to empirical data     
+  1 1 50 1 50];
+
 
 % ================== Add paths ============================================
 
@@ -51,12 +52,16 @@ plotCol = {AZred AZcactus AZsky brown purple};
 %% Section 2a: Confusion matrix.
 % simulate and fit data. Calculate the best-fit probability conditional on the model used for simulation.
 
-% initiate confusion matrix 
-CM = zeros(nMod);
+% initiate confusion matrix using BIC
+CMbic = zeros(nMod);
+fh.cmbic = figure('Name','CM-BIC');
+set(fh.cmbic,'position',[100 50 700 600],'paperunits','centimeters','Color','w');
+set(gca, 'fontsize', 12)
 
-% initiate the plot
-fh.cm = figure('Name','CM');
-set(fh.cm,'position',[100 50 700 600],'paperunits','centimeters','Color','w');
+% initiate confusion matrix using negative loglikelihood
+CMnll = zeros(nMod);
+fh.cmnll = figure('Name','CM-negLL');
+set(fh.cmnll,'position',[100 50 700 600],'paperunits','centimeters','Color','w');
 set(gca, 'fontsize', 12)
 
 % set seed
@@ -66,47 +71,57 @@ for count = 1:nRep
     
     % Model 2
     epsilon = rand;
-    [a, r, pt, s] = simulate_M2WSLS_v2(T, rbounds, epsilon, mu, Npt);
-    [~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s);
-    CM(1,:) = CM(1,:) + BEST;
+    [a, r, s] = simulate_M2WSLS_v2(T, rbounds, epsilon, mu);
+    [~, BESTbic, ~, BESTnegll, ~] = fit_all_v2(a, r, nMod, pbounds, s);
+   % [~, ~, BEST] = fit_all_v2(a, r, nMod, pbounds, s);
+    CMbic(1,:) = CMbic(1,:) + BESTbic;
+    CMnll(1,:) = CMnll(1,:) + BESTnegll;
     
     % Model 3
     alpha = rand;
     beta  = 3 + exprnd(3);
-    [a, r, pt, s] = simulate_M3RescorlaWagner_v2(T, alpha, beta, mu, rbounds, Npt);
-    [~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s);
-    CM(2,:) = CM(2,:) + BEST;
+    [a, r, s] = simulate_M3RescorlaWagner_v2(T, alpha, beta, mu, rbounds);
+    [~, BESTbic, ~, BESTnegll, ~] = fit_all_v2(a, r, nMod, pbounds, s);
+   % [~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s);
+    CMbic(2,:) = CMbic(2,:) + BESTbic;
+    CMnll(2,:) = CMnll(2,:) + BESTnegll;
     
      % Model 4
     alpha = rand;
     beta  = 3 + exprnd(3); 
     alpha_c = rand;
     beta_c  = 3 + exprnd(3); 
-    [a, r, pt, s] = simulate_M4RWCK_v2(T, alpha, beta, alpha_c, beta_c, mu, rbounds, Npt);
-    [~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s); 
-    CM(3,:) = CM(3,:) + BEST;
+    [a, r, s] = simulate_M4RWCK_v2(T, alpha, beta, alpha_c, beta_c, mu, rbounds);
+    [~, BESTbic, ~, BESTnegll, ~]  = fit_all_v2(a, r, nMod, pbounds, s);
+    %[~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s); 
+    CMbic(3,:) = CMbic(3,:) + BESTbic;
+    CMnll(3,:) = CMnll(3,:) + BESTnegll;
     
     % Model 5
     alpha_c = rand;
     beta_c  = 3 + exprnd(3);
-    [a, r, pt, s] = simulate_M5CK_v2(T, alpha_c, beta_c, mu, rbounds, Npt);
-    [~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s);
-    CM(4,:) = CM(4,:) + BEST; 
+    [a, r, s] = simulate_M5CK_v2(T, alpha_c, beta_c, mu, rbounds);
+    [~, BESTbic, ~, BESTnegll, ~] =  fit_all_v2(a, r, nMod, pbounds, s);
+    %[~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s);
+    CMbic(4,:) = CMbic(4,:) + BESTbic;
+    CMnll(4,:) = CMnll(4,:) + BESTnegll;
     
-    % calculate probability
-    FM = round(100*CM/sum(CM(2,:)))/100;
+    % ---
+    % calculate probability for BIC
+    figure(1);
+    FMbic = round(100*CMbic/sum(CMbic(2,:)))/100;
     
     % display number/text on scaled image 
-    t = imageTextMatrix(FM, {'WSLS', 'RW', 'RW-CK', 'CK'}, {'WSLS', 'RW', 'RW-CK', 'CK'});
+    t = imageTextMatrix(FMbic, {'WSLS', 'RW', 'RW-CK', 'CK'}, {'WSLS', 'RW', 'RW-CK', 'CK'});
     
     % set font color of values less than 0.3 to white
-    set(t(FM'<0.3), 'color', 'w')
+    set(t(FMbic'<0.3), 'color', 'w')
     set(t, 'fontsize', 22)
     
     hold on;
     
     % add matrix lines
-    [l1, l2] = addFacetLines(CM);
+    [l1, l2] = addFacetLines(CMbic);
     
     % add count number as title
     title(['count = ' num2str(count)]);
@@ -120,6 +135,34 @@ for count = 1:nRep
     % update the figure
     drawnow
     
+    % ---
+    % calculate probability for negLL
+    figure(2);
+    FMnegLL = round(100*CMnll/sum(CMnll(2,:)))/100;
+    
+    % display number/text on scaled image 
+    t = imageTextMatrix(FMnegLL, {'WSLS', 'RW', 'RW-CK', 'CK'}, {'WSLS', 'RW', 'RW-CK', 'CK'});
+    
+    % set font color of values less than 0.3 to white
+    set(t(FMnegLL'<0.3), 'color', 'w')
+    set(t, 'fontsize', 22)
+    
+    hold on;
+    
+    % add matrix lines
+    [l1, l2] = addFacetLines(CMnll);
+    
+    % add count number as title
+    title(['count = ' num2str(count)]);
+   
+    % set ticks and labels
+    set(gca, 'xtick', 1:nMod, 'ytick', 1:nMod, 'fontsize', 18, ...
+        'xaxislocation', 'top', 'tickdir', 'out')
+    xlabel('fit model')
+    ylabel('simulated model')
+    
+    % update the figure
+    drawnow
 end
 
 % This is a nice way of checking model recovery. I would certainly keep on
@@ -161,14 +204,25 @@ end
 % But let's first concentrate on the first extension I proposed. 
 
 % settings
-title(sprintf('confusion matrix:\np(fit model | simulated model)'))
+figure(1)
+title(sprintf('confusion matrix (BIC):\np(fit model | simulated model)'))
 set(gcf, 'Position', [311   217   700   600]) 
-set(gca, 'fontsize', 24);
+set(gca, 'fontsize', 20);
+
+figure(2)
+title(sprintf('confusion matrix (-LL):\np(fit model | simulated model)'))
+set(gcf, 'Position', [311   217   700   600]) 
+set(gca, 'fontsize', 20);
 
 % save plot
 if savePlots
-    filename = fullfile(plotFolder, 'ModelRecovery', 'CM.png');
-    saveas(gcf, filename)
+    figure(1)
+    filename = fullfile(plotFolder, 'ModelRecovery', 'CM_BIC.png');
+    saveas(gcf, filename);
+    figure(2)
+    filename = fullfile(plotFolder, 'ModelRecovery', 'CM_negLL.png');
+    saveas(gcf, filename);
+    
 end
 
 %% Section 2b: Additional analysis
@@ -178,156 +232,194 @@ end
 % by trial and testing the Step1_simulation.m script.
 
 % -- Poor learning behaviour --
-% specify the parameter bounds
-pbounds = [0 0 0.7 4 0.7 4;
-     1 1 0.8 6 0.8 6];
+% % specify the parameter bounds
+% pbounds = [0 0 0.7 4 0.7 4;
+%      1 1 0.8 6 0.8 6];
+% 
+% % name the figure
+% nameFig = 'CM (low learning)';
+% 
+% % plot the confusion matrix
+% CM_plot(T, mu, 'name', nameFig, 'pbounds', pbounds, 'nMod', nMod,...
+%     'nRep', nRep);
+% 
+% % save plot
+% if savePlots
+%     filename = fullfile(plotFolder, 'Model_recovery', 'CM_lowLearning.png');
+%     saveas(gcf, filename)
+% end
+% 
+% % -- Fast learning behaviour --
+% % specify the parameter bounds.
+% pbounds = [0.3 0.1 0.7 4 0.7 4;
+%     0.4 0.4 0.8 6 0.8 6];
+% 
+% % name the figure
+% nameFig = 'CM (fast learning)';
+% 
+% % plot the confusion matrix
+% CM_plot(T, mu, 'name', nameFig, 'pbounds', pbounds, 'nMod', nMod,...
+%     'nRep', nRep);
+% 
+% % save plot
+% if savePlots
+%     filename = fullfile(plotFolder, 'Model_recovery', 'CM_fastLearning.png');
+%     saveas(gcf, filename)
+% end
 
-% name the figure
-nameFig = 'CM (low learning)';
 
-% plot the confusion matrix
-CM_plot(T, mu, 'name', nameFig, 'pbounds', pbounds, 'nMod', nMod,...
-    'nRep', nRep);
-
-% save plot
-if savePlots
-    filename = fullfile(plotFolder, 'Model_recovery', 'CM_lowLearning.png');
-    saveas(gcf, filename)
-end
-
-% -- Fast learning behaviour --
-% specify the parameter bounds.
-pbounds = [0.3 0.1 0.7 4 0.7 4;
-    0.4 0.4 0.8 6 0.8 6];
-
-% name the figure
-nameFig = 'CM (fast learning)';
-
-% plot the confusion matrix
-CM_plot(T, mu, 'name', nameFig, 'pbounds', pbounds, 'nMod', nMod,...
-    'nRep', nRep);
-
-% save plot
-if savePlots
-    filename = fullfile(plotFolder, 'Model_recovery', 'CM_fastLearning.png');
-    saveas(gcf, filename)
-end
-
-
-%% Section 3: Plot learning performance
+%% Section 3: Plot learning performance (but we already plotted this in Step1)
 % Simulate data using a model and estimate each model's learning
 % performance. Are the model original and estimation-based results different from one another? 
 
-% parameter bounds for simulating the data
-pbounds = [0 0 0.7 4 0.7 4;
-     1 1 0.8 6 0.8 6];
+% % parameter bounds for simulating the data
+% pbounds = [0 0 0.7 4 0.7 4;
+%      1 1 0.8 6 0.8 6];
 
-% initiate the plot
-fh.ch = figure('Name','Model based choice estimation');
-set(fh.ch,'position',[10 100 800 1000],'paperunits','centimeters','Color','w');
-set(gca, 'fontsize', 12)
-
-% plot
-for model = 1:nMod
-    
-    % simulate and estimate data
-    [sim, fit] = choiceEstimation('pbounds', pbounds, 'model', model, 'rewProb', mu,...
-        'nMod', nMod, 'ntrials', T);
-    
-    % plot
-    % smoothing over the raw data
-    smoothingkernel = 6;
-
-    % extract high-reward choice option
-    highRewAction = find(mu==max(mu));
-
-    hold on
-    % open the model's subplot
-    subplot(nMod-1, 2, model)
-
-    % calculate mean HR choice over each trial for simulated data
-    HR_choiceMean = nanmean(sim(1).a, 2);
-
-    % rescale the choice mean such that it ranges between 0 (LR) and 1 (HR)
-    if highRewAction == 2
-        HR_choiceMean = (2 - HR_choiceMean)';
-    else
-        HR_choiceMean = (HR_choiceMean - 1)';
-    end
-
-    % calculate mean HR choice over each trial for fitted data
-    for m = 1:nMod
-        % calculate mean
-       fit(m).mean = nanmean(fit(m).a,2);
-
-       % rescale
-       if highRewAction == 2
-            fit(m).mean = (2 - fit(m).mean)';
-       else
-            fit(m).mean = (fit(m).mean - 1)';
-       end
-
-    end
-
-    % add data to the plot
-    plot(mySmooth(HR_choiceMean, smoothingkernel,[], 'backward'),...
-        '-','color', plotCol{model},'linewidth',2); hold on
-    for m = 1:nMod
-        plot(mySmooth(fit(m).mean, smoothingkernel, [], 'backward'),...
-            '-', 'color', plotCol{m}, 'linewidth', 0.8); hold on
-    end
-
-     % y axis limits
-    ylim([0.3 0.9]);
-
-    % add labels
-    ylabel('p(HR stimulus)');
-    xlabel('trial');
-    legend({sprintf('sim. model %i', model), 'Model 1', 'Model 2', 'Model 3', 'Model 4', 'Model 5'}, 'location', 'southeast')
-    
-    legend boxoff
-
-end
-
-if savePlots
-    filename = fullfile(plotFolder, 'Model_recovery', 'choice_estimated.png');
-    saveas(gcf, filename)
-end
+% % initiate the plot
+% fh.ch = figure('Name','Model based choice estimation');
+% set(fh.ch,'position',[10 100 800 1000],'paperunits','centimeters','Color','w');
+% set(gca, 'fontsize', 12)
+% 
+% % plot
+% for model = 1:nMod
+%     
+%     % simulate and estimate data
+%     [sim, fit] = choiceEstimation('pbounds', pbounds, 'model', model, 'rewProb', mu,...
+%         'nMod', nMod, 'ntrials', T);
+%     
+%     % plot
+%     % smoothing over the raw data
+%     smoothingkernel = 6;
+% 
+%     % extract high-reward choice option
+%     highRewAction = find(mu==max(mu));
+% 
+%     hold on
+%     % open the model's subplot
+%     subplot(nMod-1, 2, model)
+% 
+%     % calculate mean HR choice over each trial for simulated data
+%     HR_choiceMean = nanmean(sim(1).a, 2);
+% 
+%     % rescale the choice mean such that it ranges between 0 (LR) and 1 (HR)
+%     if highRewAction == 2
+%         HR_choiceMean = (2 - HR_choiceMean)';
+%     else
+%         HR_choiceMean = (HR_choiceMean - 1)';
+%     end
+% 
+%     % calculate mean HR choice over each trial for fitted data
+%     for m = 1:nMod
+%         % calculate mean
+%        fit(m).mean = nanmean(fit(m).a,2);
+% 
+%        % rescale
+%        if highRewAction == 2
+%             fit(m).mean = (2 - fit(m).mean)';
+%        else
+%             fit(m).mean = (fit(m).mean - 1)';
+%        end
+% 
+%     end
+% 
+%     % add data to the plot
+%     plot(mySmooth(HR_choiceMean, smoothingkernel,[], 'backward'),...
+%         '-','color', plotCol{model},'linewidth',2); hold on
+%     for m = 1:nMod
+%         plot(mySmooth(fit(m).mean, smoothingkernel, [], 'backward'),...
+%             '-', 'color', plotCol{m}, 'linewidth', 0.8); hold on
+%     end
+% 
+%      % y axis limits
+%     ylim([0.3 0.9]);
+% 
+%     % add labels
+%     ylabel('p(HR stimulus)');
+%     xlabel('trial');
+%     legend({sprintf('sim. model %i', model), 'Model 1', 'Model 2', 'Model 3', 'Model 4', 'Model 5'}, 'location', 'southeast')
+%     
+%     legend boxoff
+% 
+% end
+% 
+% if savePlots
+%     filename = fullfile(plotFolder, 'Model_recovery', 'choice_estimated.png');
+%     saveas(gcf, filename)
+% end
 
 %% Section 4: Inversion matrix
 % Given the model that fits our data best, which model is most likely to have
 % generated the data? p(simulated data|fit model).
 
-for i = 1:size(CM,2)
-    iCM(:,i) = CM(:,i) / sum(CM(:,i));
+% ---
+% BIC based IM
+for i = 1:size(CMbic,2)
+    iCMbic(:,i) = CMbic(:,i) / sum(CMbic(:,i));
 end
 
 % open figure
-figure(2); clf
+figure(3); clf
 set(gcf, 'Position', [211   17   700   600]);
 
  % display number/text on scaled image 
-t = imageTextMatrix(round(iCM, 2));
+t = imageTextMatrix(round(iCMbic, 2));
 
 % set font color of values less than 0.3 to white
-set(t(iCM<0.3), 'color', 'w')
-set(t, 'fontsize', 22)
+set(t(iCMbic<0.3), 'color', 'w')
+set(t, 'fontsize', 20)
 
 % add matrix lines
 hold on
-[l1, l2] = addFacetLines(CM);
+[l1, l2] = addFacetLines(iCMbic);
 
  % set ticks and labels
-set(gca, 'xtick', [1:3], 'ytick', [1:3], 'fontsize', 28, ...
+set(gca, 'xtick', [1:4], 'ytick', [1:4], 'fontsize', 28, ...
     'xaxislocation', 'top', 'tickdir', 'out')
 xlabel('fit model')
 ylabel('simulated model')
-title(sprintf('inversion matrix:\np(simulated model | fit model)'))
-set(gca, 'fontsize', 24);
+title(sprintf('inversion matrix (BIC):\np(simulated model | fit model)'))
+set(gca, 'fontsize', 22);
 
 % save plot
 if savePlots
-    filename = fullfile(plotFolder, 'Model_recovery', 'IM.png');
+    filename = fullfile(plotFolder, 'ModelRecovery', 'IM_BIC.png');
+    saveas(gcf, filename)
+end
+
+% ---
+% negative LL based IM
+
+for i = 1:size(CMnll,2)
+    iCMnll(:,i) = CMnll(:,i) / sum(CMnll(:,i));
+end
+
+% open figure
+figure(4); clf
+set(gcf, 'Position', [211   17   700   600]);
+
+ % display number/text on scaled image 
+t = imageTextMatrix(round(iCMnll, 2));
+
+% set font color of values less than 0.3 to white
+set(t(iCMnll<0.3), 'color', 'w')
+set(t, 'fontsize', 20)
+
+% add matrix lines
+hold on
+[l1, l2] = addFacetLines(iCMnll);
+
+ % set ticks and labels
+set(gca, 'xtick', [1:4], 'ytick', [1:4], 'fontsize', 28, ...
+    'xaxislocation', 'top', 'tickdir', 'out')
+xlabel('fit model')
+ylabel('simulated model')
+title(sprintf('inversion matrix (-LL):\np(simulated model | fit model)'))
+set(gca, 'fontsize', 22);
+
+% save plot
+if savePlots
+    filename = fullfile(plotFolder, 'ModelRecovery', 'IM_negLL.png');
     saveas(gcf, filename)
 end
 
