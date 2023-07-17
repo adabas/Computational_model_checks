@@ -1,4 +1,4 @@
-function [q, k, d] = M4_valueUpdate(alpha, alpha_c, q, k, r, t, pt)
+function [q, k, d] = M4_valueUpdate(alpha, alpha_c, q, k, r)
 
 % M3_VALUEUPDATE
 % The function updates choice value based on the Rescorla Wagner rule.
@@ -9,8 +9,6 @@ function [q, k, d] = M4_valueUpdate(alpha, alpha_c, q, k, r, t, pt)
 %       q       : choice value
 %       k       : kernel
 %       r       : reward value
-%       t       : trial number
-%       pt      : vector containing range of partial trial values
 %
 % OUTPUT
 %       q       : updated choice value
@@ -21,11 +19,7 @@ function [q, k, d] = M4_valueUpdate(alpha, alpha_c, q, k, r, t, pt)
 % =========================================================================
 
 % compute whether the same or a differnt choice was selected
-if ismember(t, pt)
-    d = 0;  % no update for missed/partial
-else
-    d = r - q;
-end
+d = r - q;
 
 % update value
 q = q + alpha * d;

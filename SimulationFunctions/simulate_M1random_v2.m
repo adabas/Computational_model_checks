@@ -1,4 +1,4 @@
-function [a, r, pt, s] = simulate_M1random_v2(T, rbounds, b, rprob, Npt)
+function [a, r, s] = simulate_M1random_v2(T, rbounds, b, rprob)
 %SIMULATE_M1RANDOM_V2   Function for Model 1: Random responding
 %
 % Model captures participants' behaviour to select random choices, perhaps
@@ -13,7 +13,6 @@ function [a, r, pt, s] = simulate_M1random_v2(T, rbounds, b, rprob, Npt)
 %           b       :   option bias parameter value ranging from 0 to 1
 %                       with 0.5 indicating no bias.
 %           rprob   :   reward probabilities for each stimuli as a 1X2 vector
-%           Npt     :   number of partial trials
 %
 % OUTPUT :
 %           a       :   TX1 vector indicating choices at each trial
@@ -30,8 +29,8 @@ function [a, r, pt, s] = simulate_M1random_v2(T, rbounds, b, rprob, Npt)
 s = stimuliPresentation(T); 
 sSorted = sort(s,2); % [HR LR] sorted
 
-% randomise Npt trials over T trials as partial trials
-pt = sort(randperm(T, Npt));
+% % randomise Npt trials over T trials as partial trials
+% pt = sort(randperm(T, Npt));
 
 % initialize variables
 a = nan(T, 1); % action
@@ -54,7 +53,9 @@ for t = 1:T
 % %     select = binornd(1, rprob(a(t)))+1;
 %     
 %     % if the trial is a partial trial...
-%     if ismember(t, pt)
+%     if ismember(t, pt)    % removed partial trials; if we plan to use
+%                             continuous rewards, rework this section
+%                             without partial trials
 %         
 %         % ...find the previous trial when a(t) was selected
 %         tp = find(a(1:(t-1)) == a(t), 1, 'last');

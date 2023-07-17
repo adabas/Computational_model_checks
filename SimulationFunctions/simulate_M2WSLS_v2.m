@@ -1,9 +1,9 @@
-function [a, r, pt, s] = simulate_M2WSLS_v2(T, rbounds, epsilon, rprob, Npt)
+function [a, r, s] = simulate_M2WSLS_v2(T, rbounds, epsilon, rprob)
 %SIMULATE_M2WSLS_V3   Function for Model 2: Noisy Win Stay Lose Sift.
 %
 % At a trial, agent sticks with the option that previously resulted in a
 % reward. In the noisy version, the participant applies the WSLS rule with
-% a probability of 1-epsilon.
+% a probability of 1-epsilon; epsilon is the measure of randomness.
 %
 % Reward value ranges from 0 (unpleasant reward) to 1 (pleasant reward) with
 % 0.5 as neutral reward.
@@ -13,13 +13,11 @@ function [a, r, pt, s] = simulate_M2WSLS_v2(T, rbounds, epsilon, rprob, Npt)
 %       rbounds :   specify reward bounds as a 1X2 vector to generate reward values
 %       epsilon :   probability with which to stick to rewarded stimuli
 %       rprob   :   reward probabilities for each stimuli as a 1X2 vector
-%       Npt     :   number of partial trials
 %
 % OUTPUT:
 %       a       :   TX1 vector indicating choices at each trial
 %       r       :   TX1 vector indicating rewards received for choices
 %                   at each trial
-%       pt      :   a 1XNpt vector containing partial trial numbers
 %
 %
 % Originally written by Rob Wilson & Anne Collins (2018).
@@ -50,9 +48,6 @@ for i = 1:numel(cName)
     c.(sprintf('%s', cName{i})).rLast = nan;
     c.(sprintf('%s', cName{i})).aLast = nan;
 end
-
-% randomise Npt trials over T trials as partial trials
-pt = sort(randperm(T,Npt));
 
 % initialize variables
 a = nan(T, 1); % action

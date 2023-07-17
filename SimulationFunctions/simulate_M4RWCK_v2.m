@@ -1,4 +1,4 @@
-function [a, r, pt, s, PP, QQ, CK, delta] = simulate_M4RWCK_v2(T, alpha, beta, alpha_c, beta_c, rprob, rbounds, Npt)
+function [a, r, s, PP, QQ, CK, delta] = simulate_M4RWCK_v2(T, alpha, beta, alpha_c, beta_c, rprob, rbounds)
 
 % SIMULATE_M4RWCK_V2
 % Function simulates data for a Rescorla Wagner and a choice kernel model.
@@ -13,13 +13,11 @@ function [a, r, pt, s, PP, QQ, CK, delta] = simulate_M4RWCK_v2(T, alpha, beta, a
 %       beta_c  : choice kernel beta parameter value
 %       rprob   : reward probability 0-1
 %       rbounds : specify reward bounds as a 1X2 vector
-%       Npt     : number of partial trials
 %
 % OUTPUT
 %       a       : choices made at each trial
 %       r       : reward given for each of the choices. Reward ranges from
 %                 0 (unpleasant) to 1 (pleasant) with 0.5 (neutral).
-%       pt      : a 1XNpt vector contatining partial trial numbers
 %       s       : trial wise stimuli presented
 %       PP      : choice probabilities at each trials
 %       QQ      : choice value update at each trial
@@ -29,9 +27,6 @@ function [a, r, pt, s, PP, QQ, CK, delta] = simulate_M4RWCK_v2(T, alpha, beta, a
 % Aroma Dabas [dabas@cbs.mpg.de]
 % October 2022
 % =========================================================================
-
-% make list of partial trials
-pt = sort(randperm(T, Npt));
 
 % initialise variables
 q  = [0.5 0.5 0.5 0.5]; % initial expected values
@@ -80,7 +75,7 @@ for t = 1:T
 %     r(t) = rpos(select);
     
     % update value and choice kernel
-    [q(a(t)), k(a(t)), delta(t)] = M4_valueUpdate(alpha, alpha_c, q(a(t)), k(a(t)), r(t), t, pt);         
+    [q(a(t)), k(a(t)), delta(t)] = M4_valueUpdate(alpha, alpha_c, q(a(t)), k(a(t)), r(t));         
     
 end
 

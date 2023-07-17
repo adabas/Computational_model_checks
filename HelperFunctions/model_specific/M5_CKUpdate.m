@@ -4,10 +4,8 @@ function k = M5_CKUpdate(alpha_c, k)
 % The function updates choice kernel.
 %
 % INPUT
-%       alpha   : learning rate parameter value
-%       r       : reward value
-%       t       : trial number
-%       pt      : vector containing range of partial trial values
+%       alpha_c : choice kernel's learning rate
+%       k       : vector containing range of partial trial values
 %
 % OUTPUT
 %       k       : the updated choice kernel

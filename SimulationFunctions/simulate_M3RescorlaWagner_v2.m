@@ -1,4 +1,4 @@
-function [a, r, pt, s, PP, QQ, delta] = simulate_M3RescorlaWagner_v2(T, alpha, beta, rprob, rbounds, Npt)
+function [a, r, s, PP, QQ, delta] = simulate_M3RescorlaWagner_v2(T, alpha, beta, rprob, rbounds)
 %SIMULATE_M3RESCORLAWAGNER_V2   Function for Model 3: Rescorla Wagner with softmax function.
 %
 % INPUT
@@ -7,13 +7,11 @@ function [a, r, pt, s, PP, QQ, delta] = simulate_M3RescorlaWagner_v2(T, alpha, b
 %       beta    : parameter beta value
 %       rprob   : reward probability 0-1
 %       rbounds : specify reward bounds as a 1X2 vector
-%       Npt     : number of partial trials
 %
 % OUTPUT
 %       a       : choices made at each trial
 %       r       : reward given for each of the choices. Reward ranges from
 %                 0 (unpleasant) to 1 (pleasant) with 0.5 (neutral).
-%       pt      : a 1XNpt vector contatining partial trial numbers
 %       PP      : choice probabilities at each trials
 %       QQ      : choice values at each trial
 %       delta   : prediction error at each trial
@@ -22,9 +20,6 @@ function [a, r, pt, s, PP, QQ, delta] = simulate_M3RescorlaWagner_v2(T, alpha, b
 % Modified by Aroma Dabas [dabas@cbs.mpg.de]
 % October 2022
 % =========================================================================
-
-% make list of partial trials
-pt = sort(randperm(T, Npt));
 
 % initialize variables
 q  = [0.5 0.5 0.5 0.5]; % initial expected reward values
@@ -68,7 +63,7 @@ for t = 1:T
 %     r(t) = rpos(select);
 
     % value update
-    [q(a(t)), delta(t)] = M3_valueUpdate(alpha, q(a(t)), r(t), t, pt);
+    [q(a(t)), delta(t)] = M3_valueUpdate(alpha, q(a(t)), r(t));
     
 end
 

@@ -1,4 +1,4 @@
-function [a, r, pt, s, PP, CK] = simulate_M5CK_v2(T, alpha_c, beta_c, rprob, rbounds, Npt)
+function [a, r, s, PP, CK] = simulate_M5CK_v2(T, alpha_c, beta_c, rprob, rbounds)
 
 % SIMULATE_M5CK_V2
 % Function simulates data for a choice kernel model.
@@ -10,22 +10,17 @@ function [a, r, pt, s, PP, CK] = simulate_M5CK_v2(T, alpha_c, beta_c, rprob, rbo
 %       beta_c  : choice kernel beta parameter value
 %       rprob   : reward probability 0-1
 %       rbounds : specify reward bounds as a 1X2 vector
-%       Npt     : number of partial trials
 %
 % OUTPUT
 %       a       : choices made at each trial
 %       r       : reward given for each of the choices. Reward ranges from
 %                 0 (unpleasant) to 1 (pleasant) with 0.5 (neutral).
-%       pt      : a 1XNpt vector contatining partial trial numbers
 %       s       : trial wise stimuli presented
 %       PP      : choice probabilities at each trials
 %       CK      : choice kernel update at each trial
 %
 % Aroma Dabas [dabas@cbs.mpg.de]
 % =========================================================================
-
-% make list of partial trials
-pt = sort(randperm(T, Npt));
 
 % initialise variables
 k = [0 0 0 0];     % initialise choice kernel
