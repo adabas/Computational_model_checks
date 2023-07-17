@@ -1,10 +1,6 @@
 % Fitting data to the following models.
-%       Model 1: Null responding
-%               b : bias for an option; here it is assumed that
-%               participants choose the options randomly, perhaps with some
-%               overall bias for one option (PE or NE stimuli) over the other.
-%               Reward value ranges from 0 (negative reward) to 1 (positive
-%               reward) with 0.5 as neutral reward.
+%       Model 1: Null model
+%               parameter fixed at 0.5.
 %       Model 2: Win-stay-lose-shift
 %               epsilon : chooses the option probabilistically that is
 %               rewarded and switches away from unrewarded
@@ -14,8 +10,8 @@
 %       Model 4: Rescorla-Wagner + choice kernel
 %               alpha
 %               beta
-%               alpha_c
-%               beta_c
+%               alpha_c : learning rate of choice kernel
+%               beta_c  : inverse temperature
 %       Model 5: Choice Kernel
 %               alpha_c
 %               beta_c
@@ -38,15 +34,15 @@ rng(244);
 subjects    = [11:60];
 trialSeq    = 1:96;
 savePlots   = false; 
-saveData    = true;     
+saveData    = false;     
 highRewAction = 2;      % 2 plot HR choices and 1 plot LR choices
 rprob       = [0.8 0.3];
 plotFolder  = './Figures/GroupLevel';
 
 % ================== Model information ====================================
 % parameter bounds [lower; upper] * parameters [b epsilon alpha(RW) beta(RW) alpha(CK) beta(CK) alpha_c beta_c]
-pbounds = [0.5 0 0 0 0 0;     % parameter bounds updated to empirical data     
-  0.5 1 1 400 1 250];
+pbounds = [0.5 0 0.05 0 0.05 0;     % parameter bounds updated to empirical data     
+  0.5 1 1 200 1 40];
 
 modNames    = {'Null', 'WSLS', 'RW', 'RW-CK', 'CK'}; % don't change the order
 nMod        = numel(modNames);
@@ -208,9 +204,9 @@ for i = 1:numel(subjects)
     [~, ~, tmp.p1] = lik_M1random_v2(stim, b(i), stimPres);
     [~, ~, tmp.p2] = lik_M2WSLS_v2(stim, binRate, epsilon(i), stimPres);
     [~, tmp.p3, d, tmp.q3] = lik_M3RescorlaWagner_v2(stim, binRate,...
-        alpha_rw(i), beta_rw(i), [], stimPres);
+        alpha_rw(i), beta_rw(i), stimPres);
     [~, tmp.p4] = lik_M4RWCK_v2(stim, binRate, alpha_rwck_rw(i), beta_rwck_rw(i),...
-        alpha_rwck_ck(i), beta_rwck_ck(i), [], stimPres);
+        alpha_rwck_ck(i), beta_rwck_ck(i), stimPres);
     [~, tmp.p5] = lik_M5ChoiceKernel_v2(stim, alpha_ck(i), beta_ck(i), stimPres);
 
     % calculate AUC for RW model
