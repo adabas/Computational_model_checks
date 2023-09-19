@@ -29,8 +29,6 @@ rprob   = [0.8 0.8 0.3 0.3]; % reward probability for [HR LR] stimuli
 Npt     = 0;        % number of partial trials
 pbounds = [0.5 0 0.05 0 0.05 0;     % parameter bounds updated to empirical data     
   0.5 1 1 20 1 20];          % fixing null models parameter space to 0.5
-% pbounds = [0.5 0 0.05 0 0.05 0;     % parameter bounds updated to empirical data     
-%   0.5 1 1 400 1 250];          % fixing null models parameter space to 0.5
 
 % reward conditions
 cond        = {'High Reward', 'Low Reward'};
@@ -310,48 +308,6 @@ end
 fprintf('\nRMSE values of RW model:\nalpha = %.3f\n', fminX.RMSE(1,:))
 fprintf('beta = %.3f\n', fminX.RMSE(2,:))
 
-% % --
-% 
-% % PLOT
-% 
-%  % initiate figure
-%  fh3 = figure('Name', 'Parameter Estimation Error'); clf;
-%  set(gcf, 'Position',[500   113   1050   370])
-% 
-%  % plot estimation error
-%  for i = 1:size(fminX.error,1)
-%      % select the subplot
-%      subplot(1,size(fminX.error,1),i); hold on;
-%      
-%      % boxplot
-%      boxplot(fminX.error(i,:)', 'Labels',{[]}); hold on;
-%      
-%      % set y axis limits
-%      yl = get(gca, 'ylim');
-%      yl_max = max(abs(yl));
-%      ylim([-yl_max yl_max]);
-%     
-%      % add reference line
-%      line([0, 3], [0, 0], 'LineStyle', ':', 'Color', 'black');
-%      
-%      % add label
-%      xlabel(sprintf('%s', symbols{i}));
-%      
-%      % set font and tick sizes
-%      ax = gca;
-%      set(ax, 'tickdir', 'out', 'fontsize', 11);
-% 
-%  end
-% title('true - estimated error');
-%  
-% % save plot
-% if savePlots
-%     filename = fullfile(plotFolder, 'ParameterRecovery', 'biasVariance_allModels.png');
-%     saveas(gcf, filename)
-% end
-% 
-% % --- updated plots
-
 % ---
 % plot 1: alpha of all models
 
@@ -441,61 +397,5 @@ if savePlots
     filename = fullfile(plotFolder, 'ParameterRecovery', 'biasVariance_epsilon.png');
     saveas(gcf, filename)
 end
-
-%% Correlation between true and estimated parameters
-% 
-% % estimate Kendall's tau
-% for iparam = 1:numel(names)
-%     [rho(iparam), pval(iparam)] = corr(fminX.sim(iparam,:)', fminX.fit(iparam,:)',...
-%         'Type', 'Kendall');
-% end
-% fprintf('Kendall tau correlation between simulated and fit parameters:\n');
-% fprintf('    RW model:   alpha rho = %.2f (p = %.2f), beta rho = %.2f (p = %.2f)\n', rho(1), pval(1), rho(2), pval(2));
-% fprintf('    WSLS model: epsilon rho = %.2f (p = %.2f)\n', rho(3), pval(3));
-% fprintf('    CK model:   alpha rho = %.2f (p = %.2f), beta rho = %.2f (p = %.2f)\n', rho(8), pval(8), rho(9), pval(9));
-% fprintf('    RW-CK model:\n');
-% fprintf('        RW:     alpha rho = %.2f (p = %.2f), beta rho = %.2f (p = %.2f)\n', rho(4), pval(4), rho(5), pval(5));
-% fprintf('        CK:     alpha rho = %.2f (p = %.2f), beta rho = %.2f (p = %.2f)\n', rho(6), pval(6), rho(7), pval(7));
-% 
-
-% % --- Plot; further work on plot 1
-% 
-% % plot correlation of RW alpha and beta recovery parameters
-% figure(6);
-% fh = figure('Name', 'RW specific Parameter Recovery'); clf;
-% set(gcf, 'Position', [300   313   600   450])
-% 
-% % plot simulate versus fit parameters
-% for i = 1:2
-%     % select the subplot
-%     subplot(1,2,i); hold on
-%     
-%     % plot the true vs fit parameter values
-%     plot(fminX.sim(i,:), fminX.fit(i,:), 'o', 'color', AZblue, 'markersize', 8, 'linewidth', 1)
-%     
-%     % fit linear regression line
-%     h1 = lsline;
-%     h1.Color = 'r';
-%     
-%     % determine bad parameters
-%     if i == 1; thresh = 0.25; elseif i == 2; thresh = 10; end
-%     
-%     % parameter values that exceed the threshold
-%     ind = abs(fminX.sim(i,:) - fminX.fit(i,:)) > thresh;
-%     
-%     % set 'bad' parameter values in grey
-%     plot(fminX.sim(i,ind), fminX.fit(i,ind), 'o', 'color', AZblue, 'markersize', 8, 'linewidth', 1, ...
-%     'markerfacecolor', [1 1 1]*0.5);
-%     
-%     % add label
-%     xlabel(sprintf('true %s', symbols{i}))
-%     ylabel(sprintf('estimated %s', symbols{i}));
-% 
-%     % set font and tick sizes
-%     ax = gca;
-%     set(ax, 'tickdir', 'out', 'fontsize', 12);
-% 
-% end
-
 
 % done
