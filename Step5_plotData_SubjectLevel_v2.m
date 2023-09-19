@@ -19,8 +19,8 @@ plotFolder  = "./Figures/SubjectLevel";
 trialSeq       = 1:96;     % for plotting
 
 % parameter bounds [lower; upper] * parameters [b epsilon alpha(RW) beta(RW) alpha(CK) beta(CK) alpha_c beta_c]
-pbounds = [0 0 0 0 0 0;     % parameter bounds updated to empirical data     
-  1 1 1 400 1 250];
+pbounds = [0.5 0 0.05 0 0.05 0;     % parameter bounds updated to empirical data     
+  0.5 1 1 25 1 25];
 
 % ================== Add paths ============================================
 % add path of the current folder
@@ -126,7 +126,7 @@ for isub = subjects
 
     %% Section 4: Model fit
 
-    [BIC, iBEST, BEST, pars, NegLL] = fit_all_v2(data.stimuli, data.rate.binary, [], 5, pbounds, data.stimPresented);
+    [BIC, iBEST, BEST, pars, NegLL] = fit_all_withNull_v2(data.stimuli, data.rate.binary, 5, pbounds, data.stimPresented);
 
     %% Section 5: Plot estimated parameters
     
@@ -134,9 +134,9 @@ for isub = subjects
     [~, ~, tmp.p1] = lik_M1random_v2(data.stimuli, pars(1,1), data.stimPresented);
     [~, ~, tmp.p2] = lik_M2WSLS_v2(data.stimuli, data.rate.binary, pars(2,1), data.stimPresented);
     [~, tmp.p3, d] = lik_M3RescorlaWagner_v2(data.stimuli, data.rate.binary,...
-        pars(3,1), pars(3,2), [], data.stimPresented);
+        pars(3,1), pars(3,2), data.stimPresented);
     [~, tmp.p4] = lik_M4RWCK_v2(data.stimuli, data.rate.binary, pars(4,1), pars(4,2),...
-        pars(4,3), pars(4,4), [], data.stimPresented);
+        pars(4,3), pars(4,4), data.stimPresented);
     [~, tmp.p5] = lik_M5ChoiceKernel_v2(data.stimuli, pars(5,1), pars(5,2), data.stimPresented);
     
     % replace missed trials with mean of nearest neighbours
@@ -175,8 +175,6 @@ for isub = subjects
         xlabel('trial');
         
     end
-    
-    suptitle(sprintf('Subject %d', isub));
     
     % place legend
     fh.est.Position(3) = fh.est.Position(3) + 250;
