@@ -133,9 +133,6 @@ fh.score = figure('Name','score');
 set(fh.score,'position',[10 90 1400 400], 'paperunits','centimeters','Color','w');
 set(gca, 'fontsize', 12)
 
-% % extract high-reward choice option
-%highRewAction = find(rprob==max(rprob));
-
 % loop over the number of models 
 for m = 1:length(nModels)
     
@@ -146,13 +143,6 @@ for m = 1:length(nModels)
     
     % store choices for the model
     highRewChoice = sim(m).a; %choice = sim(m).a;
-    
-%     % convert the scoring such as the HR is 1 and LR is 0
-%     if highRewAction == 2
-%         highRewChoice = 2 - choice; 
-%     else
-%         highRewChoice = choice -1;
-%     end
         
     % calculate the probability that HR was selected
     score = (nansum(highRewChoice == 1, 1))/T;
@@ -215,13 +205,6 @@ for m = 1:length(nModels)
     
     % calculate HR choice mean over each trial
     HR_choiceMean = nanmean(sim(m).a, 2);
-    
-%     % rescale the choice mean such that it ranges between 0 (LR) and 1 (HR)
-%     if highRewAction == 2
-%         HR_choiceMean = (2 - HR_choiceMean)';
-%     else
-%         HR_choiceMean = (HR_choiceMean - 1)';
-%     end
     
     % add data to the plot
     line([0, length(HR_choiceMean)], [rprob(1), rprob(1)],...
