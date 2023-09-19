@@ -1,15 +1,16 @@
 function [data, idPartial] = loadSubjectData(subID, datapath)
 
-% LOADSUBJECTDATA function to load subject trial choices and rewards.
+% LOADSUBJECTDATA 
+% Function to load subject trial choices and rewards.
 %
 % INPUT:
 %       subID       : binary subject id
-%       datapath    : path to the folder storing all subjects behavioural
+%       datapath    : path to the folder storing all subjects' behavioural
 %                     output files
 %
 % OUTPUT:
-%       data        : structure containing choices, stimuli presented,
-%                     accuracy score, rewards and reward type
+%       data        : structure with fields choices, stimuli presented,
+%                     accuracy score, rewards, and reward type
 %       idPartial   : partial trial ids
 %
 % Aroma Dabas [dabas@cbs.mpg.de]
@@ -49,21 +50,10 @@ for i = 1:n.trials
 end
 data.rate.raw = ratings';
 
-% % normalise the ratings
-% data.rate.min    = min(data.rate.raw);     % store the minimum    
-% data.rate.max    = max(data.rate.raw);     % store the maximum
-% data.rate.norm   = (data.rate.raw - data.rate.min)/...
-%     (data.rate.max - data.rate.min);
-
-% Update: On discussion with Roland, we tried the fMRI data
-% analysis with binarised raw ratings.
-% binary rewards? 0 (neutral-negative) <= 0.5; 1 (positive) > 0.5
+% binarise rewards: 0 (neutral-negative) <= 0.5; 1 (positive) > 0.5
 data.rate.binary = data.rate.raw; %data.rate.norm;
 data.rate.binary(data.rate.raw > 0.5, 1) = 1;
 data.rate.binary(data.rate.raw <= 0.5, 1) = 0;
-% data.rate.binary(data.rate.norm > 0.5, 1) = 1;
-% data.rate.binary(data.rate.norm <= 0.5, 1) = 0;
-% data.rate.binary(isnan(data.rate.norm)) = 'NaN';
 
 % store the event types shown on each trial (Positive, Negative-Neutral & 'Partial')
 data.feedback   = results(2:end, 12);
@@ -97,6 +87,5 @@ end
 
 data.stimPresented = [stimmat.presentation(1).trials; stimmat.presentation(2).trials;...
     stimmat.presentation(3).trials; stimmat.presentation(4).trials];
-
 
 end
