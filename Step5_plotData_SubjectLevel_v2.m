@@ -18,7 +18,7 @@ savePlots   = true;     % true will save plots in plotFolder directory
 plotFolder  = "./Figures/SubjectLevel";
 trialSeq       = 1:96;     % for plotting
 
-% specify the bounds
+% specify the bounds, and the number of bins for grid search
 pbounds = [0 0 0 0 0 0;     % parameter bounds updated to empirical data     
   1 1 1 400 1 250];
 
