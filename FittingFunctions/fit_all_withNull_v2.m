@@ -18,17 +18,12 @@ function [bic, iBEST, BEST, pars, NegLL] = fit_all_withNull_v2(a, r, nMod, pboun
 %       s       : stimuli presented at each trial
 %
 % OUPUT:
-%       bic     : a 1X(number of models) vector containing the BIC values
-%                 for each of the models.
-%       iBEST   : the model number that best accounts for the data
-%       BEST    : a 1X(number of models) vector containing information
-%                 about the degree to which each of the models best
-%                 account for the data. Useful when creating the confusion
-%                 matrix.
-%       pars    : a 5X5 matrix containing the best fitting parameters for
-%                 each model.
-%       LL      : the negative log likelihood value of the best fitting
-%                 parameter.
+%       bic     : vector of BIC values for each model
+%       iBEST   : number of the model that best fits the data
+%       BEST    : vector with winning model's index
+%       pars    : matrix of the best fitting parameters/model
+%       LL      : the negative log-likelihood value of the best fitting
+%                 model
 %
 % Aroma Dabas [dabas@cbs.mpg.de]
 % October 2022
