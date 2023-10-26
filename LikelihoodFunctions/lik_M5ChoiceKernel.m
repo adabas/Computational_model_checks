@@ -1,6 +1,6 @@
-function [NegLL, PP, k] = lik_M5ChoiceKernel_v2(a, alpha_c, beta_c, s)
+function [NegLL, PP, k] = lik_M5ChoiceKernel(a, alpha_c, beta_c, s)
 
-% LIK_M3RESCORLAWAGNER_v1
+% LIK_M3RESCORLAWAGNER
 % Function to compute the negative log-likelihood values for fitting the model to the data.
 %
 % INPUT:

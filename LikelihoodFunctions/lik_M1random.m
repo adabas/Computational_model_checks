@@ -1,6 +1,6 @@
-function [NegLL, choiceProb, PP] = lik_M1random_v2(a, b, s)
+function [NegLL, choiceProb, PP] = lik_M1random(a, b, s)
 
-% LIK_M1RANDOM_v2
+% LIK_M1RANDOM
 % Function to compute the negative log-likelihood values for fitting the model to the data.
 %
 % INPUT:

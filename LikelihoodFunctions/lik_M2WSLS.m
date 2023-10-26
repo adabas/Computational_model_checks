@@ -1,6 +1,6 @@
-function [NegLL, choiceProb, PP] = lik_M2WSLS_v2(a, r, epsilon, s)
+function [NegLL, choiceProb, PP] = lik_M2WSLS(a, r, epsilon, s)
 
-% LIK_M2WSLS_v2
+% LIK_M2WSLS
 % Function to compute the negative log-likelihood values for fitting the model to the data.
 %
 % INPUT:

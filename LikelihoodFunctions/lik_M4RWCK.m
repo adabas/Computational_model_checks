@@ -1,6 +1,6 @@
-function [NegLL, PP, delta, QQ, CK] = lik_M4RWCK_v2(a, r, alpha, beta, alpha_c, beta_c, s)
+function [NegLL, PP, delta, QQ, CK] = lik_M4RWCK(a, r, alpha, beta, alpha_c, beta_c, s)
 
-% LIK_M4RWCK_v1
+% LIK_M4RWCK
 % Function to compute the negative log-likelihood values for fitting the model to the data.
 %
 % INPUT:

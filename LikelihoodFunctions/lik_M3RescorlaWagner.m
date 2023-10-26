@@ -1,6 +1,6 @@
-function [NegLL, PP, delta, QQ, choiceProb] = lik_M3RescorlaWagner_v2(a, r, alpha, beta, s)
+function [NegLL, PP, delta, QQ, choiceProb] = lik_M3RescorlaWagner(a, r, alpha, beta, s)
 
-% LIK_M3RESCORLAWAGNER_v1
+% LIK_M3RESCORLAWAGNER
 % Function to compute the negative log-likelihood values for fitting the model to the data.
 % This script is for stimuli instead of category options.
 %
