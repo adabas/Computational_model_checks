@@ -69,8 +69,8 @@ for count = 1:nRep
     
     % Model 2
     epsilon = rand;
-    [a, r, s] = simulate_M2WSLS_v2(T, rbounds, epsilon, mu);
-    [~, BESTbic, ~, BESTnegll, ~] = fit_all_v2(a, r, nMod, pbounds, s);
+    [a, r, s] = simulate_M2WSLS(T, rbounds, epsilon, mu);
+    [~, BESTbic, ~, BESTnegll, ~] = fit_all(a, r, nMod, pbounds, s);
    % [~, ~, BEST] = fit_all_v2(a, r, nMod, pbounds, s);
     CMbic(1,:) = CMbic(1,:) + BESTbic;
     CMnll(1,:) = CMnll(1,:) + BESTnegll;
@@ -78,8 +78,8 @@ for count = 1:nRep
     % Model 3
     alpha = rand;
     beta  = 3 + exprnd(3);
-    [a, r, s] = simulate_M3RescorlaWagner_v2(T, alpha, beta, mu, rbounds);
-    [~, BESTbic, ~, BESTnegll, ~] = fit_all_v2(a, r, nMod, pbounds, s);
+    [a, r, s] = simulate_M3RescorlaWagner(T, alpha, beta, mu, rbounds);
+    [~, BESTbic, ~, BESTnegll, ~] = fit_all(a, r, nMod, pbounds, s);
    % [~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s);
     CMbic(2,:) = CMbic(2,:) + BESTbic;
     CMnll(2,:) = CMnll(2,:) + BESTnegll;
@@ -89,8 +89,8 @@ for count = 1:nRep
     beta  = 3 + exprnd(3); 
     alpha_c = rand;
     beta_c  = 3 + exprnd(3); 
-    [a, r, s] = simulate_M4RWCK_v2(T, alpha, beta, alpha_c, beta_c, mu, rbounds);
-    [~, BESTbic, ~, BESTnegll, ~]  = fit_all_v2(a, r, nMod, pbounds, s);
+    [a, r, s] = simulate_M4RWCK(T, alpha, beta, alpha_c, beta_c, mu, rbounds);
+    [~, BESTbic, ~, BESTnegll, ~]  = fit_all(a, r, nMod, pbounds, s);
     %[~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s); 
     CMbic(3,:) = CMbic(3,:) + BESTbic;
     CMnll(3,:) = CMnll(3,:) + BESTnegll;
@@ -98,8 +98,8 @@ for count = 1:nRep
     % Model 5
     alpha_c = rand;
     beta_c  = 3 + exprnd(3);
-    [a, r, s] = simulate_M5CK_v2(T, alpha_c, beta_c, mu, rbounds);
-    [~, BESTbic, ~, BESTnegll, ~] =  fit_all_v2(a, r, nMod, pbounds, s);
+    [a, r, s] = simulate_M5CK(T, alpha_c, beta_c, mu, rbounds);
+    [~, BESTbic, ~, BESTnegll, ~] =  fit_all(a, r, nMod, pbounds, s);
     %[~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s);
     CMbic(4,:) = CMbic(4,:) + BESTbic;
     CMnll(4,:) = CMnll(4,:) + BESTnegll;
