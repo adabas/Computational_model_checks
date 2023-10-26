@@ -1,4 +1,4 @@
-function [data, BIC, iBEST, BEST, pars, NegLL] = subjectAnalysis(subID, datapath, nMod, bound)
+function [data, BIC, iBEST, BEST, pars, NegLL] = subjectAnalysis(subID, datapath, nMod, pbound)
 
 % ----------------------------------------------------------------------------------------
 % SUBJECTANALYIS
