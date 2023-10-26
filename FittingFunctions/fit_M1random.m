@@ -1,18 +1,17 @@
-function [Xfit, NegLL, b] = fit_M2WSLS_v2(a, r, pbound, s)
+function [Xfit, NegLL, b] = fit_M1random(a, pbound, s)
 
-% FIT_M2WSLS_v2
+% FIT_M1RANDOM
 % Function to compute the parameter values that best fit the data.
 %
 % INPUT:
-%       a       : choices vector
-%       r       : reward received
-%       pbound  : parameter bounds [lower; upper];
+%       a       : choices vector OR key press vector
+%       pbound  : parameter bound [lower; upper];
 %       s       : trial wise stimuli presentation
 %
 % OUPUT:
 %       Xfit    : a vector containing the best fitting parameter value
-%       NegLL   : the neg. loglikelihood value for the best fitting parameter value
-%       BIC     : the bayesian information criterion value
+%       NegLL      : the negative loglikelihood value for the best fitting parameter value
+%       b       : the bayesian information criterion value
 %
 % Aroma Dabas [dabas@cbs.mpg.de]
 % October 2022
@@ -22,20 +21,24 @@ function [Xfit, NegLL, b] = fit_M2WSLS_v2(a, r, pbound, s)
 options=optimset('MaxFunEval', 100000, 'Display', 'notify', ...
     'algorithm', 'active-set');
 
+% Find the best fitting parameters and the negative loglikelihood, while
+% fitting a function (obFunc) to the data (a is the choice and r is the
+% reward).
+
 % specify the function
-obFunc = @(x) lik_M2WSLS_v2(a, r, x, s);
+obFunc = @(x) lik_M1random(a, x, s);
 
 % random starting point
 X0 = rand;
 
-% state the upper and lower bounds
+% bounds
 LB = pbound(1);
 UB = pbound(2);
 
-% estimate the parameters
+% run fmincon
 [Xfit, NegLL] = fmincon(obFunc, X0, [], [], [], [], LB, UB, [], options);
 
-% store the log
+% save the values as log
 LL = -NegLL;
 
 % calculate the BIC

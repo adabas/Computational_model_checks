@@ -1,13 +1,13 @@
-function [Xfit, NegLL, b] = fit_M3RescorlaWagner_v2(a, r, pbound, s)
+function [Xfit, NegLL, b] = fit_M4RWCK(a, r, pbound, s)
 
-% FIT_M3RESCORLAWAGNER_v2
+% FIT_M3RESCORLAWAGNER
 % Function to find the parameter values that best fit the data.
 %
 % INPUT:
 %       a       : choices vector
 %       r       : reward received
+%       pt      : vector containing partial trial numbers
 %       pbound  : parameter bounds [lower; upper];
-%       s       : trial wise stimuli presentation
 %
 % OUPUT:
 %       Xfit    : a vector containing the best fitting parameter values
@@ -15,7 +15,7 @@ function [Xfit, NegLL, b] = fit_M3RescorlaWagner_v2(a, r, pbound, s)
 %       BIC     : the bayesian information criterion value
 %
 % Aroma Dabas [dabas@cbs.mpg.de]
-% October 2022
+% April 2020
 % =========================================================================
 
 % set fmincon settings
@@ -23,10 +23,10 @@ options=optimset('MaxFunEval', 100000, 'Display', 'notify', ...
     'algorithm', 'active-set');
 
 % create function capturing the RW with softmax function
-obFunc = @(x) lik_M3RescorlaWagner_v2(a, r, x(1), x(2), s);
+obFunc = @(x) lik_M4RWCK(a, r, x(1), x(2), x(3), x(4), s);
 
-% create vector storing random alpha and beta starting values [alpha beta]
-X0 = [rand exprnd(4)];
+% create vector storing random alpha and beta starting values [alpha beta alpha_c beta_c]
+X0 = [rand exprnd(4) rand 0.5+exprnd(4)];
 
 % store the lower and upper bounds of [alpha beta] parameters
 LB = pbound(1,:);
