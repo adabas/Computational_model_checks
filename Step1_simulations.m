@@ -42,9 +42,9 @@ rng(7, 'twister');
 
 % experiment parameters
 T       = 96;       % number of trials
-rbounds = [0 1];     % bounds of the mean reward
-nrep    = 50;        % number of simulation repetitions
-rprob   = [0.8 0.8 0.3 0.3]; %[0.8 0.3]; % reward probability for [HR LR] stimuli 
+rbounds = [0 1];    % bounds of the mean reward
+nrep    = 50;       % number of simulation repetitions
+rprob   = [0.8 0.8 0.3 0.3]; % reward probability for [HR LR] stimuli 
 Npt     = 0;        % number of partial trials
 
 % specify the number and name of the model that you are interested in
@@ -57,6 +57,7 @@ savePlots   = 0;    % set as 1 if you want to save plots, otherwise 0
 plotFolder  = './Figures/ModelSimulation/';
 
 %% Section 2: simulate
+
 % Model 1: Random responding
 for n = 1:nrep
     b = 0.5;    % initiate bias parameter
