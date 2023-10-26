@@ -1,5 +1,5 @@
-function out = analysis_WSLS_v1(a, r)
-%ANALYSIS_WSLS_V1
+function out = analysis_WSLS(a, r)
+%ANALYSIS_WSLS
 %
 % Modified from the online script provided by Bob Wilson & Anne Collins in
 % their 2019 paper "Ten Simple Rules for the computational modeling of
@@ -31,7 +31,6 @@ stay = aLast == a;
 % now split the rewards into three categories
 rCategories = nan(1,length(r));
 rCategories(r>=0.5) = 1;        % for high pleasantness rating
-%rCategories(r>0.4 & r<0.6) = 2; % for neutral pleasantness rating
 rCategories(r<0.5) = 2; %3;        % for low pleasantness rating
 
 % create vector to store the rewards on the previous trials
