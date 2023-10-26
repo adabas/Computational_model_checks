@@ -126,7 +126,7 @@ for isub = subjects
 
     %% Section 4: Model fit
 
-    [BIC, iBEST, BEST, pars, NegLL] = fit_all_withNull(data.stimuli, data.rate.binary, 5, pbounds, data.stimPresented);
+    [BIC, iBEST, BEST, pars, NegLL] = fit_all_models(data.stimuli, data.rate.binary, 5, pbounds, data.stimPresented);
 
     %% Section 5: Plot estimated parameters
     
@@ -220,14 +220,11 @@ for isub = subjects
         'YGrid'     , 'off');
 
     % add labels
-    %title(sprintf('subject %i',subjects));
     ylabel('prediction error', 'FontSize', 15);
     xlabel('trial', 'FontSize', 15);
 
     if savePlots
         fh.delta.PaperPositionMode = 'auto';
-        %print -depsc2 predictionError.eps
-        %fh.delta.PaperPositionMode = 'auto';
         saveas(gcf, sprintf('%s/PredictionError_0%i.png', plotFolder, isub))
     end
     

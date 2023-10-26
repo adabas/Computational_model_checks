@@ -258,7 +258,7 @@ for i = 1:length(sim)
     % loop over repetitions
     for n = 1:nrep
         
-        sim(i).wsls(:,n) = analysis_WSLS_v1(sim(i).a(:,n)', sim(i).r(:,n)');
+        sim(i).wsls(:,n) = analysis_WSLS(sim(i).a(:,n)', sim(i).r(:,n)');
         
     end
     
