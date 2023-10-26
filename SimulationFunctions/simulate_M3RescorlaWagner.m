@@ -1,5 +1,6 @@
-function [a, r, s, PP, QQ, delta] = simulate_M3RescorlaWagner_v2(T, alpha, beta, rprob, rbounds)
-%SIMULATE_M3RESCORLAWAGNER_V2   Function for Model 3: Rescorla Wagner with softmax function.
+function [a, r, s, PP, QQ, delta] = simulate_M3RescorlaWagner(T, alpha, beta, rprob, rbounds)
+%SIMULATE_M3RESCORLAWAGNER_V2
+% Function for Model 3: Rescorla Wagner with softmax function.
 %
 % INPUT
 %       T       : total number of trials
@@ -53,14 +54,6 @@ for t = 1:T
     
     % UPDATE: for fMRI analysis, we are binaring the rewards.
     r(t) = rand < rprob(a(t));
-%     % determine if the choice a(t) results in a pleasant or unpleasant reward
-%     select = choiceReward(rprob(s(t,:)), a(t));
-% %     select = binornd(1, rprob(a(t)))+1;
-%     
-%     % determine the corresponding reward value
-%     rpos = rewardValues(rbounds);
-% %     rpos = [abs(rbounds(2)-0.5*rand()) abs(rbounds(1)-0.5*rand())];
-%     r(t) = rpos(select);
 
     % value update
     [q(a(t)), delta(t)] = M3_valueUpdate(alpha, q(a(t)), r(t));

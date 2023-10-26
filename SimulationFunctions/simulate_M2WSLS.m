@@ -1,5 +1,6 @@
-function [a, r, s] = simulate_M2WSLS_v2(T, rbounds, epsilon, rprob)
-%SIMULATE_M2WSLS_V3   Function for Model 2: Noisy Win Stay Lose Sift.
+function [a, r, s] = simulate_M2WSLS(T, rbounds, epsilon, rprob)
+%SIMULATE_M2WSLS_V3
+% Function for Model 2: Noisy Win Stay Lose Sift.
 %
 % At a trial, agent sticks with the option that previously resulted in a
 % reward. In the noisy version, the participant applies the WSLS rule with
@@ -71,15 +72,6 @@ for t = 1:T
     
     % UPDATE: for fMRI analysis, we are binaring the rewards.
     r(t) = rand < rprob(a(t));
-    
-%     % determine if the choice a(t) results in a pleasant or unpleasant reward
-%     select = choiceReward(rprob, a(t));
-% %     select = binornd(1, rprob(a(t)))+1;
-%     
-%     % determine the corresponding reward value (range 0 to 1 with 0.5 as neutral)
-%     rpos = rewardValues(rbounds);
-% %     rpos = [abs(rbounds(2)-0.5*rand()) abs(rbounds(1)-0.5*rand())];
-%     r(t) = rpos(select);
     
     % update last choice trial as 1 for HR or 2 for LR; we need not store
     % the exact stimuli selected
