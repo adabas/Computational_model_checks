@@ -126,18 +126,18 @@ for isub = subjects
 
     %% Section 4: Model fit
 
-    [BIC, iBEST, BEST, pars, NegLL] = fit_all_withNull_v2(data.stimuli, data.rate.binary, 5, pbounds, data.stimPresented);
+    [BIC, iBEST, BEST, pars, NegLL] = fit_all_withNull(data.stimuli, data.rate.binary, 5, pbounds, data.stimPresented);
 
     %% Section 5: Plot estimated parameters
     
     % estimate the 5 models
-    [~, ~, tmp.p1] = lik_M1random_v2(data.stimuli, pars(1,1), data.stimPresented);
-    [~, ~, tmp.p2] = lik_M2WSLS_v2(data.stimuli, data.rate.binary, pars(2,1), data.stimPresented);
-    [~, tmp.p3, d] = lik_M3RescorlaWagner_v2(data.stimuli, data.rate.binary,...
+    [~, ~, tmp.p1] = lik_M1random(data.stimuli, pars(1,1), data.stimPresented);
+    [~, ~, tmp.p2] = lik_M2WSLS(data.stimuli, data.rate.binary, pars(2,1), data.stimPresented);
+    [~, tmp.p3, d] = lik_M3RescorlaWagner(data.stimuli, data.rate.binary,...
         pars(3,1), pars(3,2), data.stimPresented);
-    [~, tmp.p4] = lik_M4RWCK_v2(data.stimuli, data.rate.binary, pars(4,1), pars(4,2),...
+    [~, tmp.p4] = lik_M4RWCK(data.stimuli, data.rate.binary, pars(4,1), pars(4,2),...
         pars(4,3), pars(4,4), data.stimPresented);
-    [~, tmp.p5] = lik_M5ChoiceKernel_v2(data.stimuli, pars(5,1), pars(5,2), data.stimPresented);
+    [~, tmp.p5] = lik_M5ChoiceKernel(data.stimuli, pars(5,1), pars(5,2), data.stimPresented);
     
     % replace missed trials with mean of nearest neighbours
     for i = 1:5
