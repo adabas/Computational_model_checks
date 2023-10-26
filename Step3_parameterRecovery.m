@@ -68,10 +68,10 @@ for count = 1:nRep
     beta = exprnd(4);
     
     % simulate data
-    [choice, reward, s] = simulate_M3RescorlaWagner_v2(T, alpha, beta, rprob, rbounds);
+    [choice, reward, s] = simulate_M3RescorlaWagner(T, alpha, beta, rprob, rbounds);
     
     % fit the data
-    [xf, LL] = fit_M3RescorlaWagner_v2(choice, reward, pbounds(:, 3:4), s);
+    [xf, LL] = fit_M3RescorlaWagner(choice, reward, pbounds(:, 3:4), s);
 
     % store true values, estimated values, and - loglikelihood
     fminX.sim(1,count) = alpha;
@@ -93,10 +93,10 @@ for count = 1:nRep
     epsilon = rand;
     
     % simulate data
-    [choice, reward, s] = simulate_M2WSLS_v2(T, rbounds, epsilon, rprob);
+    [choice, reward, s] = simulate_M2WSLS(T, rbounds, epsilon, rprob);
     
     % fit the data
-    [xf, LL] = fit_M2WSLS_v2(choice, reward, pbounds(:,2), s);
+    [xf, LL] = fit_M2WSLS(choice, reward, pbounds(:,2), s);
     
     % store true values, estimated values and the - loglikelihood
     fminX.sim(3,count) = epsilon;
@@ -117,11 +117,11 @@ for count = 1:nRep
     beta_c  = exprnd(4);
     
     % simulate data
-    [choice, reward, s] = simulate_M4RWCK_v2(T, alpha, beta, alpha_c, beta_c,...
+    [choice, reward, s] = simulate_M4RWCK(T, alpha, beta, alpha_c, beta_c,...
         rprob, rbounds);
     
     % fit the data
-    [xf, LL] = fit_M4RWCK_v2(choice, reward, pbounds(:, 3:6), s);
+    [xf, LL] = fit_M4RWCK(choice, reward, pbounds(:, 3:6), s);
 
     % store true values, estimated values, and - loglikelihood
     fminX.sim(4,count) = alpha;
@@ -147,10 +147,10 @@ for count = 1:nRep
     beta_c  = exprnd(4);
     
     % simulate data
-    [choice, reward, s] = simulate_M5CK_v2(T, alpha_c, beta_c, rprob, rbounds);
+    [choice, reward, s] = simulate_M5CK(T, alpha_c, beta_c, rprob, rbounds);
     
     % fit the data
-    [xf, LL] = fit_M5ChoiceKernel_v2(choice, reward, pbounds(:, 5:6), s);
+    [xf, LL] = fit_M5ChoiceKernel(choice, reward, pbounds(:, 5:6), s);
 
     % store true values, estimated values, and - loglikelihood
     fminX.sim(8,count) = alpha_c;
