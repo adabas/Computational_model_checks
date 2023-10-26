@@ -58,7 +58,7 @@ AZgreen = [0.4660 0.6740 0.1880];
 % ================== Add paths ============================================
 
 % add path of the current folder
-tmp = strsplit(fileparts(which('Step6_plotData_GroupLevel_v2')), '/');
+tmp = strsplit(fileparts(which('Step6_plotData_GroupLevel')), '/');
 
 % add path to required folders in the current folder
 addpath(genpath('./HelperFunctions'))
@@ -85,7 +85,7 @@ p       = struct();
 for i = 1:length(subjects)  
     
     % load and estimate model fit
-    [data_subj, BIC(i,:), iBEST(i), BEST(i,:), pars, NegLL(i,:)] = subjectAnalysis_v2(subjects(i), datapath, nMod, pbounds);
+    [data_subj, BIC(i,:), iBEST(i), BEST(i,:), pars, NegLL(i,:)] = subjectAnalysis(subjects(i), datapath, nMod, pbounds);
     
     % counter for storing stimuli presentation
     a = 2*i - 1; 
@@ -201,13 +201,13 @@ for i = 1:numel(subjects)
     stimPres = data.pres(:,m:n);
 
     % estimate the 5 models
-    [~, ~, tmp.p1] = lik_M1random_v2(stim, b(i), stimPres);
-    [~, ~, tmp.p2] = lik_M2WSLS_v2(stim, binRate, epsilon(i), stimPres);
-    [~, tmp.p3, d, tmp.q3] = lik_M3RescorlaWagner_v2(stim, binRate,...
+    [~, ~, tmp.p1] = lik_M1random(stim, b(i), stimPres);
+    [~, ~, tmp.p2] = lik_M2WSLS(stim, binRate, epsilon(i), stimPres);
+    [~, tmp.p3, d, tmp.q3] = lik_M3RescorlaWagner(stim, binRate,...
         alpha_rw(i), beta_rw(i), stimPres);
-    [~, tmp.p4] = lik_M4RWCK_v2(stim, binRate, alpha_rwck_rw(i), beta_rwck_rw(i),...
+    [~, tmp.p4] = lik_M4RWCK(stim, binRate, alpha_rwck_rw(i), beta_rwck_rw(i),...
         alpha_rwck_ck(i), beta_rwck_ck(i), stimPres);
-    [~, tmp.p5] = lik_M5ChoiceKernel_v2(stim, alpha_ck(i), beta_ck(i), stimPres);
+    [~, tmp.p5] = lik_M5ChoiceKernel(stim, alpha_ck(i), beta_ck(i), stimPres);
 
     % calculate AUC for RW model
     auc_rw(i) = AUC(tmp.p3(:,1), trialSeq);
