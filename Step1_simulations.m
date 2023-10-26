@@ -3,11 +3,7 @@
 %
 % Explanation of the parameters for the 5 models:
 %       Model 1: Random responding
-%               b : bias for an option; here it is assumed that
-%               participants choose the options randomly, perhaps with some
-%               overall bias for one option (PE or NE stimuli) over the other.
-%               Reward value ranges from 0 (negative reward) to 1 (positive
-%               reward) with 0.5 as neutral reward.
+%               b : random choice at mid point
 %       Model 2: Win-stay-lose-shift
 %               epsilon : chooses the option probabilistically that is
 %               rewarded and switches away from unrewarded
@@ -64,8 +60,7 @@ plotFolder  = './Figures/ModelSimulation/';
 % Model 1: Random responding
 for n = 1:nrep
     b = 0.5;    % initiate bias parameter
-    %[a, r] = simulate_M1random_v1(T, rbounds, b, rprob, Npt); % simulate data
-    [a, r] = simulate_M1random_v2(T, rbounds, b, rprob);
+    [a, r] = simulate_M1random(T, rbounds, b, rprob);
     sim(1).a(:,n) = a;  
     sim(1).r(:,n) = r;
 end
@@ -74,8 +69,7 @@ clear a r
 % Model 2: Noisy Win-stay-lose-shift
 for n = 1:nrep
     epsilon = 0.3; % probability of selecting an option
-    %[a, r] = simulate_M2WSLS_v1(T, rbounds, epsilon, rprob, Npt);
-    [a, r] = simulate_M2WSLS_v2(T, rbounds, epsilon, rprob); 
+    [a, r] = simulate_M2WSLS(T, rbounds, epsilon, rprob); 
     sim(2).a(:,n) = a;
     sim(2).r(:,n) = r;
 end
@@ -85,8 +79,7 @@ clear a r
 for n = 1:nrep
     alpha   = 0.1; 
     beta    = 5; 
-    %[a, r] = simulate_M3RescorlaWagner_v1(T, alpha, beta, rprob, rbounds, Npt);
-    [a, r] = simulate_M3RescorlaWagner_v2(T, alpha, beta, rprob, rbounds);
+    [a, r] = simulate_M3RescorlaWagner(T, alpha, beta, rprob, rbounds);
     sim(3).a(:,n) = a;
     sim(3).r(:,n) = r;
 end
@@ -98,8 +91,7 @@ for n = 1:nrep
     beta    = 5;
     alpha_c = 0.1;
     beta_c = 3;
-    %[a, r] = simulate_M4RWCK_v1(T, alpha, beta, alpha_c, beta_c, rprob, rbounds, Npt);
-    [a, r] = simulate_M4RWCK_v2(T, alpha, beta, alpha_c, beta_c, rprob, rbounds);
+    [a, r] = simulate_M4RWCK(T, alpha, beta, alpha_c, beta_c, rprob, rbounds);
     sim(4).a(:,n) = a;
     sim(4).r(:,n) = r;
 end
@@ -109,8 +101,7 @@ clear a r
 for n = 1:nrep
     alpha_c = 0.1;
     beta_c = 3;
-    %[a, r] = simulate_M5CK_v1(T, alpha_c, beta_c, rprob, rbounds, Npt);
-    [a, r] = simulate_M5CK_v2(T, alpha_c, beta_c, rprob, rbounds);
+    [a, r] = simulate_M5CK(T, alpha_c, beta_c, rprob, rbounds);
     sim(5).a(:,n) = a;
     sim(5).r(:,n) = r;
 end
