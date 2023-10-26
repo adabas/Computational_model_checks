@@ -1,5 +1,6 @@
-function [a, r, s] = simulate_M1random_v2(T, rbounds, b, rprob)
-%SIMULATE_M1RANDOM_V2   Function for Model 1: Random responding
+function [a, r, s] = simulate_M1random(T, rbounds, b, rprob)
+% SIMULATE_M1RANDOM
+% Function for Model 1: Random responding
 %
 % Model captures participants' behaviour to select random choices, perhaps
 % with some overall bias for one option (left or right button press) over the other.
@@ -48,29 +49,7 @@ for t = 1:T
     % reward
     r(t) = rand < rprob(a(t));
     
-%     % determine if the choice a(t) results in a pleasant or unpleasant reward
-%     select = choiceReward(rprob, a(t));
-% %     select = binornd(1, rprob(a(t)))+1;
-%     
-%     % if the trial is a partial trial...
-%     if ismember(t, pt)    % removed partial trials; if we plan to use
-%                             continuous rewards, rework this section
-%                             without partial trials
-%         
-%         % ...find the previous trial when a(t) was selected
-%         tp = find(a(1:(t-1)) == a(t), 1, 'last');
-%         if isempty(tp)
-%             r(t) = 0.5;     % neutral reward
-%         else
-%             r(t) = r(tp);   % select reward received on the previous trial for the stimulus
-%         end
-%         
-%     else
-%         rpos = rewardValues(rbounds);
-% %        rpos = [abs(rbounds(2)-0.5*rand()) abs(rbounds(1)-0.5*rand())];
-%         r(t) = rpos(select);
-%         
-%     end
 end
 
+% function end
 end
