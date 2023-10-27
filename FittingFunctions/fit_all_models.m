@@ -32,7 +32,7 @@ function [bic, iBEST, BEST, pars, NegLL] = fit_all_models(a, r, nMod, pbound, s)
 
 % iterate to find the parameter values that best fit the data
 for iter = 1:10
-   [x1(iter), l1(iter), b1(iter)] = fit_M1random(a, pbound(:,1), s);
+    [x1(iter), l1(iter), b1(iter)] = fit_M1random(a, pbound(:,1), s);
     [x2(iter), l2(iter), b2(iter)] = fit_M2WSLS(a, r, pbound(:,2), s);
     [x3(iter,:), l3(iter), b3(iter)] = fit_M3RescorlaWagner(a, r, pbound(:,3:4), s);
     [x4(iter,:), l4(iter), b4(iter)] = fit_M4RWCK(a, r, pbound(:, 3:6), s);

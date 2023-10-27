@@ -38,7 +38,7 @@ data.choice = cell2mat(results(2:end,9));
 n.trials = settings.design.ntrialblock * settings.design.nblock;
 
 % calculate the probability with which the participant selected HR stimuli
-data.score = (sum(data.choice == 1))/(n.trials - sum(isnan(data.choice)));%(sum(data.choice == 1))/(n.trials);
+data.score = (sum(data.choice == 1))/(n.trials - sum(isnan(data.choice)));
 
 % load the pleasantness ratings
 for i = 1:n.trials

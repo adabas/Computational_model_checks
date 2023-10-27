@@ -14,7 +14,7 @@ rng(244, 'twister');    % set seed
 
 % ================== Modify ===============================================
 subjects    = [11:55 57:60];       % specify subject ID
-savePlots   = 0;           % true will save plots in plotFolder directory
+savePlots   = 1;           % true will save plots in plotFolder directory
 plotFolder  = "./Figures/SubjectLevel";
 trialSeq       = 1:96;     % for plotting
 
@@ -58,13 +58,13 @@ for isub = subjects
 
     data = loadSubjectData(isub, datapath);
     
-    % remove missed trials
-    if any(data.stimuli == 0)
-        [id,~] = find(data.stimuli == 0);
-        data.stimuli(id,:) = [];
-        data.rate.binary(id,:) = [];
-        data.stimPresented(id,:) = [];
-    end
+%     % remove missed trials
+%     if any(data.stimuli == 0)
+%         id = find(data.stimuli == 0);
+%         data.stimuli(id) = [];
+%         data.rate.binary(id,:) = [];
+%         data.stimPresented(id,:) = [];
+%     end
 
     %% Section 3: Plot choice behaviour
     % Is the data.choice behaviour evolving over the trials to move towards the 
@@ -92,7 +92,7 @@ for isub = subjects
 
     data.choice_plot = 2-data.choice(:)';     % recode data.choices such that HR is stored 
                                     % as 1 and LR is stored as 0
-    smoothingkernel = 6;            % no. of trials over which to smooth
+    smoothingkernel = 5;            % no. of trials over which to smooth
 
     % start plot
     fh.choice = figure('Name', 'Trial-by-trial choice');
@@ -102,10 +102,9 @@ for isub = subjects
 
     % set y axis limits
     ylim([-0.1 1.1]);
-    %xlim([0, 100]);
 
     % smoothed data
-    data.choice_smooth = mySmooth(data.choice_plot,smoothingkernel,[],'backward');
+    data.choice_smooth = mySmooth(data.choice_plot,smoothingkernel,[],'center');
     
     % plot
     plot(data.choice_plot, '.r', 'MarkerSize',20, 'color', [0 0 0]);
@@ -120,7 +119,6 @@ for isub = subjects
 
     if savePlots
         fh.choice.PaperPositionMode = 'auto';
-        %print -depsc2 finalPlot1.eps
         saveas(gcf, sprintf('%s/choices_0%i.png', plotFolder, isub))
     end
 
@@ -142,7 +140,7 @@ for isub = subjects
     % replace missed trials with mean of nearest neighbours
     for i = 1:5
         PP.(sprintf('m%d', i)) = nan(size(data.choice));
-        PP.(sprintf('m%d', i))(~isnan(data.choice)) = tmp.(sprintf('p%d', i))(:,1);
+        PP.(sprintf('m%d', i)) = tmp.(sprintf('p%d', i))(:,1);
         PP.(sprintf('m%d', i)) = interp1(trialSeq(~isnan(PP.(sprintf('m%d', i)))),...
             PP.(sprintf('m%d', i))(~isnan(PP.(sprintf('m%d', i)))), trialSeq);
     end
