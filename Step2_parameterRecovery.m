@@ -47,7 +47,7 @@ addpath('./LikelihoodFunctions')
 AZred = [171,5,32]/256;
 AZblue = [12,35,75]/256;
 
-savePlots   = 0;    % set as 1 if you want to save plots, otherwise 0
+savePlots   = 1;    % set as 1 if you want to save plots, otherwise 0
 plotFolder  = './Figures/ModelSimulation/';
 
 % model names, and corresponding parameters and subplot label
@@ -235,12 +235,6 @@ for i = 1:size(names, 2)
     set(ax, 'tickdir', 'out', 'fontsize', 12);
 end
 
-% save figure
-if savePlots
-    fh.PaperPositionMode = 'auto';
-    filename = fullfile(plotFolder, 'ParameterRecovery', 'fit-vs-true.png');
-    saveas(gcf, filename)
-end
 
 %% Section 4: Check correlation between the estimated alpha and beta parameters
 
@@ -255,12 +249,6 @@ figure;
 corrplot(parTable, 'type', 'Spearman', 'testR','on', 'rows', 'pairwise');
 title('RW model correlation plot')
 
-% save figure
-if savePlots
-%     fh2.PaperPositionMode = 'auto';
-    filename = fullfile(plotFolder, 'ParameterRecovery', 'RW_fittedAlphaBetaCorrelation.png');
-    saveas(gcf, filename)
-end
 clear partable
 % ---
 
@@ -276,12 +264,6 @@ parTable = table(alpha, beta, alphaCK, betaCK);
 figure;
 corrplot(parTable, 'type', 'Spearman', 'testR','on', 'rows', 'pairwise');
 title('RW-CK model correlation plot')
-% save figure
-if savePlots
-%     fh2.PaperPositionMode = 'auto';
-    filename = fullfile(plotFolder, 'ParameterRecovery', 'RWCK_fittedAlphaBetaCorrelation.png');
-    saveas(gcf, filename)
-end
 
 %% Section 5: Plot bias-variance tradeoff in parameter estimation (RMSE)
 
