@@ -1,4 +1,4 @@
-% Fitting data to the following models.
+%smooth Fitting data to the following models.
 %       Model 1: Null model
 %               parameter fixed at 0.5.
 %       Model 2: Win-stay-lose-shift
@@ -33,8 +33,8 @@ rng(244);
 % ================== Modify ===============================================
 subjects    = [11:55 57:60];
 trialSeq    = 1:96;
-savePlots   = false; 
-saveData    = false;     
+savePlots   = 1; 
+saveData    = 1;     
 highRewAction = 2;      % 2 plot HR choices and 1 plot LR choices
 rprob       = [0.8 0.3];
 plotFolder  = './Figures/GroupLevel';

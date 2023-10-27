@@ -29,6 +29,6 @@ function [data, BIC, iBEST, BEST, pars, NegLL] = subjectAnalysis(subID, datapath
 
 %% Section 2: Save best fitting parameter and the BIC for each of the models
 
-[BIC, iBEST, BEST, pars, NegLL] = fit_all_models(data.stimuli, data.rate.binary, idPartial, nMod, pbound, data.stimPresented);
+[BIC, iBEST, BEST, pars, NegLL] = fit_all_models(data.stimuli, data.rate.binary, nMod, pbound, data.stimPresented);
 
 end
