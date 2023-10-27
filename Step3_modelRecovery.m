@@ -22,14 +22,12 @@ nRep    =  50;              % number of repetitions
 rbounds = [0 1];            % bounds of the mean reward
 Npt     = 0;                % number of partial trials
 nMod    = 4;                % number of models
-pbounds = [0 0.05 0 0.05 0;       % parameter bounds updated to empirical data     
-  1 1 50 1 50];
-
+pbounds = [0.5 0 0.05 0 0.05 0;     % parameter bounds updated to empirical data     
+  0.5 1 1 20 1 20];    
 
 % ================== Add paths ============================================
 
 addpath('./SimulationFunctions')
-addpath('./AnalysisFunctions')
 addpath(genpath('./HelperFunctions'))
 addpath('./FittingFunctions')
 addpath('./LikelihoodFunctions')
@@ -70,8 +68,7 @@ for count = 1:nRep
     % Model 2
     epsilon = rand;
     [a, r, s] = simulate_M2WSLS(T, rbounds, epsilon, mu);
-    [~, BESTbic, ~, BESTnegll, ~] = fit_all(a, r, nMod, pbounds, s);
-   % [~, ~, BEST] = fit_all_v2(a, r, nMod, pbounds, s);
+    [~, ~, BESTbic, ~, BESTnegll] = fit_M2to5(a, r, nMod, pbounds, s);
     CMbic(1,:) = CMbic(1,:) + BESTbic;
     CMnll(1,:) = CMnll(1,:) + BESTnegll;
     
@@ -79,8 +76,7 @@ for count = 1:nRep
     alpha = rand;
     beta  = 3 + exprnd(3);
     [a, r, s] = simulate_M3RescorlaWagner(T, alpha, beta, mu, rbounds);
-    [~, BESTbic, ~, BESTnegll, ~] = fit_all(a, r, nMod, pbounds, s);
-   % [~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s);
+    [~, ~, BESTbic, ~, BESTnegll] = fit_M2to5(a, r, nMod, pbounds, s);
     CMbic(2,:) = CMbic(2,:) + BESTbic;
     CMnll(2,:) = CMnll(2,:) + BESTnegll;
     
@@ -90,8 +86,7 @@ for count = 1:nRep
     alpha_c = rand;
     beta_c  = 3 + exprnd(3); 
     [a, r, s] = simulate_M4RWCK(T, alpha, beta, alpha_c, beta_c, mu, rbounds);
-    [~, BESTbic, ~, BESTnegll, ~]  = fit_all(a, r, nMod, pbounds, s);
-    %[~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s); 
+    [~, ~, BESTbic, ~, BESTnegll] = fit_M2to5(a, r, nMod, pbounds, s);
     CMbic(3,:) = CMbic(3,:) + BESTbic;
     CMnll(3,:) = CMnll(3,:) + BESTnegll;
     
@@ -99,8 +94,7 @@ for count = 1:nRep
     alpha_c = rand;
     beta_c  = 3 + exprnd(3);
     [a, r, s] = simulate_M5CK(T, alpha_c, beta_c, mu, rbounds);
-    [~, BESTbic, ~, BESTnegll, ~] =  fit_all(a, r, nMod, pbounds, s);
-    %[~, ~, BEST] = fit_all_v2(a, r, pt, nMod, pbounds, s);
+    [~, ~, BESTbic, ~, BESTnegll] = fit_M2to5(a, r, nMod, pbounds, s);
     CMbic(4,:) = CMbic(4,:) + BESTbic;
     CMnll(4,:) = CMnll(4,:) + BESTnegll;
     
