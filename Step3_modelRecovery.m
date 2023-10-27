@@ -34,7 +34,7 @@ addpath('./LikelihoodFunctions')
 
 % ================== Plot settings ========================================
 
-savePlots = 0;
+savePlots = 1;
 plotFolder = './Figures/ModelSimulation/';
 
 % colors
