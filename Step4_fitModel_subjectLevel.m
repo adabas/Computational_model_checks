@@ -13,8 +13,8 @@ close all;
 rng(244, 'twister');    % set seed
 
 % ================== Modify ===============================================
-subjects    = 11:60;       % specify subject ID
-savePlots   = true;     % true will save plots in plotFolder directory
+subjects    = [11:55 57:60];       % specify subject ID
+savePlots   = 0;           % true will save plots in plotFolder directory
 plotFolder  = "./Figures/SubjectLevel";
 trialSeq       = 1:96;     % for plotting
 

@@ -31,7 +31,7 @@ clearvars
 rng(244);
 
 % ================== Modify ===============================================
-subjects    = [11:60];
+subjects    = [11:55 57:60];
 trialSeq    = 1:96;
 savePlots   = false; 
 saveData    = false;     
@@ -42,7 +42,7 @@ plotFolder  = './Figures/GroupLevel';
 % ================== Model information ====================================
 % parameter bounds [lower; upper] * parameters [b epsilon alpha(RW) beta(RW) alpha(CK) beta(CK) alpha_c beta_c]
 pbounds = [0.5 0 0.05 0 0.05 0;     % parameter bounds updated to empirical data     
-  0.5 1 1 200 1 40];
+  0.5 1 1 25 1 25];
 
 modNames    = {'Null', 'WSLS', 'RW', 'RW-CK', 'CK'}; % don't change the order
 nMod        = numel(modNames);
@@ -58,7 +58,7 @@ AZgreen = [0.4660 0.6740 0.1880];
 % ================== Add paths ============================================
 
 % add path of the current folder
-tmp = strsplit(fileparts(which('Step6_plotData_GroupLevel')), '/');
+tmp = strsplit(fileparts(which('Step5_fitModel_groupLevel')), '/');
 
 % add path to required folders in the current folder
 addpath(genpath('./HelperFunctions'))

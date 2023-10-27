@@ -23,7 +23,7 @@ rbounds = [0 1];            % bounds of the mean reward
 Npt     = 0;                % number of partial trials
 nMod    = 4;                % number of models
 pbounds = [0.5 0 0.05 0 0.05 0;     % parameter bounds updated to empirical data     
-  0.5 1 1 20 1 20];    
+  0.5 1 1 25 1 25];    
 
 % ================== Add paths ============================================
 

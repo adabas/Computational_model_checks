@@ -28,7 +28,7 @@ nRep    = 50;       % number of simulation repetitions
 rprob   = [0.8 0.8 0.3 0.3]; % reward probability for [HR LR] stimuli
 Npt     = 0;        % number of partial trials
 pbounds = [0.5 0 0.05 0 0.05 0;     % parameter bounds updated to empirical data     
-  0.5 1 1 20 1 20];          % fixing null models parameter space to 0.5
+  0.5 1 1 25 1 25];          % fixing null models parameter space to 0.5
 
 % reward conditions
 cond        = {'High Reward', 'Low Reward'};
@@ -37,7 +37,6 @@ n.cond      = length(cond);
 % ================== Add paths ============================================
 
 addpath('./SimulationFunctions')
-addpath('./AnalysisFunctions')
 addpath(genpath('./HelperFunctions'))
 addpath('./FittingFunctions')
 addpath('./LikelihoodFunctions')
