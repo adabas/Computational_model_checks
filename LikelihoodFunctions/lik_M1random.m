@@ -7,7 +7,7 @@ function [NegLL, choiceProb, PP] = lik_M1random(a, b, s)
 %       a : choices vector
 %       b : free parameter for estimating overall bias for one option over
 %               the other
-%       s   : trial wise stimuli presentation
+%       s : trial wise stimuli presentation
 % OUPUT:
 %       NegLL   : the negative log likelihood value
 %       choiceProb: choice probability for the selected stimuli
@@ -17,6 +17,7 @@ function [NegLL, choiceProb, PP] = lik_M1random(a, b, s)
 % October 2022
 % =========================================================================
 
+% sort presented stimuli into the order [HR LR]
 sSorted = sort(s,2);
 
 T = length(a);
