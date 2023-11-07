@@ -22,8 +22,7 @@ options=optimset('MaxFunEval', 100000, 'Display', 'notify', ...
     'algorithm', 'active-set');
 
 % Find the best fitting parameters and the negative loglikelihood, while
-% fitting a function (obFunc) to the data (a is the choice and r is the
-% reward).
+% fitting a function (obFunc) to the choice a.
 
 % specify the function
 obFunc = @(x) lik_M1random(a, x, s);
