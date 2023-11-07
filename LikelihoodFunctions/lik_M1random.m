@@ -20,6 +20,7 @@ function [NegLL, choiceProb, PP] = lik_M1random(a, b, s)
 % sort presented stimuli into the order [HR LR]
 sSorted = sort(s,2);
 
+% trial length
 T = length(a);
 
 % track probability of selecting a HR and LR stimuli
