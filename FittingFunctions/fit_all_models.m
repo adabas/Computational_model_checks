@@ -4,12 +4,14 @@ function [bic, iBEST, BEST, pars, NegLL] = fit_all_models(a, r, nMod, pbound, s)
 % Function to compute the parameter values of each of the models
 % of interest that best fit the data. Currently, we have five models of
 % interest: the random model with one free parameter, the noisy WSLS model
-% with one free paramter, the Rescorla Wagner + softmax function model with
+% with one free parameter, the Rescorla Wagner + softmax function model with
 % two free parameters, RW with choice kernel model with four parameters and
 % a simple choice kernel model with two free parameters.
 %
-% Difference from v1: Updated to fit data to the four stimuli, instead of
-% the two categories.
+% Difference from FIT_M2TO5: The FIT_M2TO5 function fits all models with
+% competing learning hypotheses and thus the random/null model is excluded from 
+% the model space. We use this function only for testing model recovery as part 
+% of the sanity check.
 %
 % INPUT:
 %       a       : choices vector
