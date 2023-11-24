@@ -152,13 +152,13 @@ t7 = table(modNames', EP', f, 'VariableNames', {'Model', 'ExceedanceProbability'
 
 % save tables
 if saveData
-    writetable(t1, sprintf("DataOutput/paramVal.csv"));
-    writetable(t2, sprintf("DataOutput/NegLLVal.csv"));
-    writetable(t3, sprintf("DataOutput/BICVal.csv"));
-    writetable(t4, sprintf("DataOutput/accuracy.csv"));
-    writetable(t5, sprintf("DataOutput/choices.csv"));
-    writetable(t6, sprintf("DataOutput/rewards.csv"));
-    writetable(t7, sprintf("DataOutput/modelComparison.csv"))
+    writetable(t1, sprintf("Data/paramVal.csv"));
+    writetable(t2, sprintf("Data/NegLLVal.csv"));
+    writetable(t3, sprintf("Data/BICVal.csv"));
+    writetable(t4, sprintf("Data/accuracy.csv"));
+    writetable(t5, sprintf("Data/choices.csv"));
+    writetable(t6, sprintf("Data/rewards.csv"));
+    writetable(t7, sprintf("Data/modelComparison.csv"))
 end
 
 %% Section 3: Plot smoothed choice behaviour for simulation task
@@ -309,9 +309,9 @@ if saveData
     t12.Properties.VariableNames = {'subId', 'AUC_rw', 'AUC_data'};
     
     % save
-    writetable(t10, sprintf("DataOutput/realEstimatedChoices_centeredSmooth.csv"));   
-    writetable(t11, sprintf("DataOutput/LSim_Q.csv"));   
-    writetable(t12, sprintf("DataOutput/LSim_AUCg.csv"));
+    writetable(t10, sprintf("Data/realEstimatedChoices_centeredSmooth.csv"));   
+    writetable(t11, sprintf("Data/LSim_Q.csv"));   
+    writetable(t12, sprintf("Data/LSim_AUCg.csv"));
     
 end
 
@@ -327,11 +327,7 @@ ylim([0.3 1]);
 
 % plot
 pl = boundedline(trialSeq, meanChoice, semChoice, 'alpha','cmap',AZblack); hold on
-%hl1 = boundedline(trialSeq,PP.mean1, PP.sem1,'alpha','cmap',AZsky); hold on
-%hl2 = boundedline(trialSeq,PP.mean2, PP.sem2,'alpha','cmap',[0.9290 0.6940 0.1250]); hold on
 hl3 = plot(PP.mean3, '-', 'color', [0 0.4470 0.7410], 'linewidth', 1.5); 
-%hl4 = boundedline(trialSeq,PP.mean4, PP.sem4,'alpha','cmap',AZred); hold on
-%hl5 = boundedline(trialSeq,PP.mean5, PP.sem5,'alpha','cmap',AZgreen); hold on
 
 % add labels and legend
 ylabel('choice');
