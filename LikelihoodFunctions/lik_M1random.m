@@ -34,8 +34,10 @@ for t = 1:T
     PP(t,:) = p;
     
     % compute choice probability for actual choice
+    % ... if missed
     if a(t) == 0
         choiceProb(t) = NaN;
+    % ... otherwise
     else
         choiceProb(t) = p(sSorted(t,:) == a(t));
     end
