@@ -30,9 +30,6 @@ function [a, r, s] = simulate_M1random(T, rbounds, b, rprob)
 s = stimuliPresentation(T); 
 sSorted = sort(s,2); % [HR LR] sorted
 
-% % randomise Npt trials over T trials as partial trials
-% pt = sort(randperm(T, Npt));
-
 % initialize variables
 a = nan(T, 1); % action
 r = nan(T, 1); % reward
