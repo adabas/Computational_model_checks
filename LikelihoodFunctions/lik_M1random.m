@@ -26,7 +26,7 @@ T = length(a);
 % track probability of selecting a HR and LR stimuli
 PP = nan(T,2);
 
-% loop over all trial
+% loop over all trials
 for t = 1:T
     
     % compute choice probabilities
