@@ -1,4 +1,15 @@
 function t = imageTextMatrix(M, xtl, ytl)
+% IMAGETEXTMATRIX
+% Function to create a matrix figure containing x and y axis text.
+% INPUT:
+%	M :		matrix
+%	xtl:	text for x axis
+%	ytl:	text for y axis
+%
+% OUTPUT:
+%	t :		output figure handle
+%
+% ============================================================
 
 % M = rand(10,5);
 
