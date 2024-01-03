@@ -28,10 +28,10 @@ aLast = [nan a(1:end-1)];
 stay = aLast == a;
 
 % ---
-% now split the rewards into three categories
+% now split the rewards into two categories
 rCategories = nan(1,length(r));
 rCategories(r>=0.5) = 1;        % for high pleasantness rating
-rCategories(r<0.5) = 2; %3;        % for low pleasantness rating
+rCategories(r<0.5) = 2;         % for low pleasantness rating
 
 % create vector to store the rewards on the previous trials
 rLast = [nan rCategories(1:end-1)];
