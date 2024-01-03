@@ -1,4 +1,15 @@
 function [hx, hy] = addFacetLines(M)
+% ADDFACETLINES
+% Function creates matrix lines.
+% 
+% INPUT:
+%		M : 	a matrix containing values
+%
+% OUTPUT:
+%		hx :	type of horizontal line
+%		hy :	type of vertical line
+%
+% =====================================================
 
 % M = rand(10,5);
 S = size(M);
