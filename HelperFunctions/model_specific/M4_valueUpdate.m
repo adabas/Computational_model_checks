@@ -1,6 +1,6 @@
 function [q, k, d] = M4_valueUpdate(alpha, alpha_c, q, k, r)
 
-% M3_VALUEUPDATE
+% M4_VALUEUPDATE
 % The function updates choice value based on the Rescorla Wagner rule.
 %
 % INPUT
