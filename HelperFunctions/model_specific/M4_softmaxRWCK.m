@@ -1,7 +1,7 @@
 function p = M4_softmaxRWCK(q, k, beta, beta_c)
 
-% M3_SOFTMAXFUNCTION
-% Compute choice probabilities for value update and choice kernel.
+% M4_SOFTMAXRWCK
+% This function omputes choice probabilities for value update and choice kernel.
 %
 % INPUT: 
 %       q       : a vector containing choice value
