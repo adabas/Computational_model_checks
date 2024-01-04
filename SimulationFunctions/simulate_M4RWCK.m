@@ -35,7 +35,7 @@ a = nan(T, 1); % action
 r = nan(T, 1); % reward
 PP = nan(T, 2); % probabilities
 QQ = nan(T, size(q, 2)); % value update
-CK = nan(T, size(q, 2)); % choice kernal update
+CK = nan(T, size(q, 2)); % choice kernel update
 delta = nan(T, 1); % prediction error
 
 % load a stimuli presentation
@@ -58,10 +58,10 @@ for t = 1:T
     % store choice probability
     PP(t,:) = p;
     
-    % generate choice according to choice probabability of a_t = 2
+    % generate choice according to choice probability of a_t = 2
     a(t) = sSorted(t, choose(p(2)));
     
-    % UPDATE: for fMRI analysis, we are binaring the rewards.
+    % generate binarized reward
     r(t) = rand < rprob(a(t));
     
     % update value and choice kernel
