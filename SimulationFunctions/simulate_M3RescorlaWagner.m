@@ -49,10 +49,10 @@ for t = 1:T
     % store choice probability
     PP(t,:) = p;
     
-    % generate choice according to choice probabability of a_t = 2
+    % generate choice according to choice probability of a_t = 2
     a(t) = sSorted(t, choose(p(2)));
     
-    % UPDATE: for fMRI analysis, we are binaring the rewards.
+    % generate binarized reward
     r(t) = rand < rprob(a(t));
 
     % value update
