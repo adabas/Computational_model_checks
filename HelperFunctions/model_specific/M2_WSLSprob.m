@@ -28,13 +28,13 @@ else
     % ...choice depends on last reward
     if rLast > 0.5
 
-        % win stay (with probability epsilon)
+        % win stay (with probability 1-epsilon)
         p = epsilon/2*[1 1];
         p(aLast) = 1 - epsilon / 2;
 
     else
 
-        % lose shift (with probability 1-epsilon)
+        % lose shift (with probability epsilon)
         p = (1-epsilon/2) * [1 1];
         p(aLast) = epsilon / 2;
 
