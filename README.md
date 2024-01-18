@@ -1,16 +1,18 @@
-# LSim_simulationChecks
+# Computational analyses
 
-This repository contains the codes for running simulations and checks on the models for the LSim project.
+This repository contains the codes for:
+(a) simulating data with the five models of interest. The scripts also run sanity checks on the code.
+(b) computing model fit to the participant data (choices and rewards).
 
 ## Script overview
-To run the various simulations and checks, run the code in the order of the "Steps". At the starting of each script, you will find commented information about the script.
+To run each script, check and, if required, update the first section.
 
 In brief,
-1. *Step1_simulations.m* : provides information about the models of interest. Simulates fake data from the models and plots some model-independent measures.
-2. *Step3_parameterRecovery.m* : plots how well the parameters are recovered for the simulated models.
-3. *Step4_modelRecovery.m* : sanity checks to validate the models of interest.
-4. *Step5_plotData_subjectLevel_v2.m* : to plot subject data. NOTE, this script will NOT run because of the missing participant data file.
-5. *Step6_plotData_GroupLevel_v2*: model fit for all participants. Again, will not run due to missing participant data paths.
+1. *Step1_simulations.m* : simulates data using each of the five models.
+2. *Step2_parameterRecovery.m* : sanity check to test if the code can recover the parameter that was used to generate the data.
+3. *Step3_modelRecovery.m* : sanity checks to test if the code can recover the model that was used to generate the data.
+4. *Step4_fitModel_subjectLevel.m* : fit models to each of the participant's choices and rewards.
+5. *Step5_fitModel_groupLevel*: fit models to all the participants to test model fit at the group level.
 
 ## Coded on
 Matlab version 9.10
