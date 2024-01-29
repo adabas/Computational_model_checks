@@ -309,7 +309,7 @@ if saveData
     t12.Properties.VariableNames = {'subId', 'AUC_rw', 'AUC_data'};
     
     % save
-    writetable(t10, sprintf("Data/realEstimatedChoices_centeredSmooth.csv"));   
+    writetable(t10, sprintf("Data/trialwise_meanChoices.csv"));   
     writetable(t11, sprintf("Data/LSim_Q.csv"));   
     writetable(t12, sprintf("Data/LSim_AUCg.csv"));
     
