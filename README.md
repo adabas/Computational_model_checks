@@ -1,8 +1,8 @@
 # Computational analyses: Imagined experiences induce endogenous reinforcement learning
 
 This repository contains the codes for:
-a. simulating data with the five models of interest. The scripts also run sanity checks on the code.
-b. computing model fit to the participant data (choices and rewards).
+* simulating data with the five models of interest. The scripts also run sanity checks on the code.
+* computing model fit to the participant data (choices and rewards).
 
 ## Script overview
 To run each script, check and, if required, update the first section.
